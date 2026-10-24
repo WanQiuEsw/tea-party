@@ -1,0 +1,286 @@
+const http = require('node:http');
+const fs = require('node:fs');
+const path = require('node:path');
+const crypto = require('node:crypto');
+const { DatabaseSync } = require('node:sqlite');
+
+const PORT = Number(process.env.PORT) || 3000;
+const PAGE = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+// shortcut: 页面只在启动时读入内存，修改 index.html 后需重启服务
+const db = new DatabaseSync(path.join(__dirname, 'tea.db'));
+
+db.exec(`
+PRAGMA journal_mode = WAL;
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  role TEXT NOT NULL CHECK (role IN ('user', 'admin'))
+);
+CREATE TABLE IF NOT EXISTS drinks (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  brand TEXT NOT NULL,
+  name TEXT NOT NULL,
+  note TEXT NOT NULL DEFAULT '',
+  price REAL,
+  UNIQUE (brand, name)
+);
+CREATE TABLE IF NOT EXISTS draws (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  drink_id INTEGER,
+  brand TEXT NOT NULL,
+  name TEXT NOT NULL,
+  note TEXT,
+  price REAL,
+  created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT);
+`);
+
+function hashPassword(password, salt) {
+  return crypto.scryptSync(password, salt, 32).toString('hex');
+}
+
+// 只有两个固定账号：普通用户与管理员
+const ACCOUNTS = [
+  ['user', '123456', 'user'],
+  ['admin', 'admin123', 'admin'],
+];
+for (const [username, password, role] of ACCOUNTS) {
+  if (!db.prepare('SELECT 1 FROM users WHERE username = ?').get(username)) {
+    const salt = crypto.randomBytes(16).toString('hex');
+    db.prepare('INSERT INTO users (username, password, role) VALUES (?, ?, ?)').run(
+      username,
+      `${salt}:${hashPassword(password, salt)}`,
+      role
+    );
+  }
+}
+
+const SEED_DRINKS = [
+  ['一点点', '蔓越莓奶绿', '少冰、三分糖、不加小料', 13],
+  ['一点点', '四季奶青', '少冰、三分糖、加蜜豆（红豆）', 12],
+  ['古茗', '百香果重奏', '五分糖、去珍珠', 12],
+  ['古茗', '桃桃乌龙茶', '五分糖、少冰', 13],
+  ['古茗', '抹茶四季冰', '正常糖、少甜', 14],
+  ['古茗', '生椰拿铁', '少冰、不额外加糖', 9.4],
+  ['古茗', '鲜奶拿铁', '', 9.9],
+  ['爷爷不泡茶', '白兰玉露', '五分糖、少冰', 16.5],
+  ['爷爷不泡茶', '水蜜桃系列', '-', 14],
+  ['林柠', '原谅手打柠檬茶', '标准冰、五分糖', 16],
+  ['喜茶', '清爽芭乐提', '-', 17],
+  ['霸王茶姬', '花田乌龙', '少冰、微糖', 14],
+  ['库迪', '抹茶拿铁', '全脂牛奶 不额外加糖', 9.9],
+  ['煲珠公', '水牛奶红糖珍珠', '少冰、三分糖', 15],
+  ['茉莉奶白', '茉莉奶油芭乐', '少冰、三分糖', 20],
+  ['茶百道', '美式咖啡', '少冰、不加糖、标准浓度', 7.3],
+  ['茶百道', '开心果香椰美式', '少冰、七分糖、标准浓度', 12.9],
+  ['茶百道', '香草冰淇淋拿铁', '少冰、五分糖（或者不额外加糖）', 11.4],
+  ['沪上阿姨', '仙仙玫瑰青提', '', 9],
+  ['瑞幸', '冰吸生椰拿铁', '少冰、不另外加糖', 14],
+  ['瑞幸', '生椰拿铁', '少冰、不另外加糖', 15],
+  ['瑞幸', '泰奶鸳鸯拿铁', '少冰、不另外加糖', 14],
+  ['益禾堂', '芋泥波波奶绿', '少冰（热），三分糖，珍珠换芋泥', 8.75],
+];
+// 只播种一次，管理员清空清单后不会在重启时复活
+if (!db.prepare("SELECT 1 FROM meta WHERE key = 'seeded'").get()) {
+  const insert = db.prepare('INSERT INTO drinks (brand, name, note, price) VALUES (?, ?, ?, ?)');
+  for (const drink of SEED_DRINKS) insert.run(...drink);
+  db.prepare("INSERT INTO meta (key, value) VALUES ('seeded', '1')").run();
+}
+
+const sessions = new Map();
+const SESSION_TTL = 7 * 24 * 60 * 60 * 1000;
+
+function json(res, status, data, headers = {}) {
+  res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', ...headers });
+  res.end(JSON.stringify(data));
+}
+
+function readJson(req) {
+  return new Promise((resolve, reject) => {
+    let raw = '';
+    req.on('data', (chunk) => {
+      raw += chunk;
+      if (raw.length > 10000) {
+        reject(new Error('请求内容过大'));
+        req.destroy();
+      }
+    });
+    req.on('end', () => {
+      try {
+        resolve(raw ? JSON.parse(raw) : {});
+      } catch {
+        reject(new Error('请求格式错误'));
+      }
+    });
+    req.on('error', reject);
+  });
+}
+
+function tokenOf(req) {
+  const match = (req.headers.cookie || '').match(/(?:^|;\s*)tea_session=([^;]+)/);
+  return match && match[1];
+}
+
+function currentUser(req) {
+  const token = tokenOf(req);
+  const session = token && sessions.get(token);
+  if (!session) return null;
+  if (session.expires < Date.now()) {
+    sessions.delete(token);
+    return null;
+  }
+  return db.prepare('SELECT id, username, role FROM users WHERE id = ?').get(session.userId) || null;
+}
+
+function setSession(res, userId) {
+  const token = crypto.randomBytes(24).toString('hex');
+  sessions.set(token, { userId, expires: Date.now() + SESSION_TTL });
+  return `tea_session=${token}; HttpOnly; Path=/; SameSite=Lax; Max-Age=${SESSION_TTL / 1000}`;
+}
+
+async function login(req, res) {
+  const { username, password } = await readJson(req);
+  if (typeof username !== 'string' || typeof password !== 'string' || !username.trim() || !password) {
+    return json(res, 400, { error: '请输入账号和密码' });
+  }
+  const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username.trim());
+  if (!user) return json(res, 401, { error: '账号或密码不正确' });
+  const [salt, stored] = user.password.split(':');
+  const candidate = hashPassword(password, salt);
+  if (!crypto.timingSafeEqual(Buffer.from(stored, 'hex'), Buffer.from(candidate, 'hex'))) {
+    return json(res, 401, { error: '账号或密码不正确' });
+  }
+  res.setHeader('Set-Cookie', setSession(res, user.id));
+  return json(res, 200, { id: user.id, username: user.username, role: user.role });
+}
+
+function logout(req, res) {
+  const token = tokenOf(req);
+  if (token) sessions.delete(token);
+  res.setHeader('Set-Cookie', 'tea_session=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0');
+  return json(res, 200, { ok: true });
+}
+
+function cleanPrice(value) {
+  const price = Number(value);
+  return price > 0 && price <= 999 ? Math.round(price * 10) / 10 : null;
+}
+
+const server = http.createServer(async (req, res) => {
+  try {
+    const pathname = new URL(req.url, 'http://localhost').pathname;
+
+    if (req.method === 'GET' && (pathname === '/' || pathname === '/index.html')) {
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      return res.end(PAGE);
+    }
+    if (!pathname.startsWith('/api/')) return json(res, 404, { error: '页面不存在' });
+
+    if (pathname === '/api/me' && req.method === 'GET') {
+      return json(res, 200, { user: currentUser(req) });
+    }
+    if (pathname === '/api/login' && req.method === 'POST') return login(req, res);
+    if (pathname === '/api/logout' && req.method === 'POST') return logout(req, res);
+
+    const user = currentUser(req);
+    if (!user) return json(res, 401, { error: '请先登录' });
+
+    if (pathname === '/api/drinks' && req.method === 'GET') {
+      return json(res, 200, db.prepare('SELECT id, brand, name, note, price FROM drinks ORDER BY brand, name').all());
+    }
+
+    if (pathname === '/api/drinks' && req.method === 'POST') {
+      if (user.role !== 'admin') return json(res, 403, { error: '只有管理员可以管理饮品' });
+      const body = await readJson(req);
+      const brand = String(body.brand || '').trim().slice(0, 30);
+      const name = String(body.name || '').trim().slice(0, 40);
+      const note = String(body.note || '').trim().slice(0, 100);
+      const price = cleanPrice(body.price);
+      if (!brand || !name) return json(res, 400, { error: '请填写店铺名和奶茶名' });
+      if (price === null) return json(res, 400, { error: '参考价需在 ¥0.1—999 之间' });
+      if (db.prepare('SELECT 1 FROM drinks WHERE brand = ? AND name = ?').get(brand, name)) {
+        return json(res, 409, { error: '这款饮品已经在清单里了' });
+      }
+      if (db.prepare('SELECT COUNT(*) AS total FROM drinks').get().total >= 100) {
+        return json(res, 400, { error: '最多配置 100 款饮品' });
+      }
+      const result = db
+        .prepare('INSERT INTO drinks (brand, name, note, price) VALUES (?, ?, ?, ?)')
+        .run(brand, name, note, price);
+      return json(res, 201, db.prepare('SELECT id, brand, name, note, price FROM drinks WHERE id = ?').get(result.lastInsertRowid));
+    }
+
+    const drinkMatch = pathname.match(/^\/api\/drinks\/(\d+)$/);
+    if (drinkMatch) {
+      if (user.role !== 'admin') return json(res, 403, { error: '只有管理员可以管理饮品' });
+      const id = Number(drinkMatch[1]);
+      if (req.method === 'PATCH') {
+        const body = await readJson(req);
+        const price = cleanPrice(body.price);
+        if (price === null) return json(res, 400, { error: '参考价需在 ¥0.1—999 之间' });
+        const result = db.prepare('UPDATE drinks SET price = ? WHERE id = ?').run(price, id);
+        if (!result.changes) return json(res, 404, { error: '这款饮品不存在' });
+        return json(res, 200, db.prepare('SELECT id, brand, name, note, price FROM drinks WHERE id = ?').get(id));
+      }
+      if (req.method === 'DELETE') {
+        const result = db.prepare('DELETE FROM drinks WHERE id = ?').run(id);
+        if (!result.changes) return json(res, 404, { error: '这款饮品不存在' });
+        return json(res, 200, { ok: true });
+      }
+    }
+
+    if (pathname === '/api/draws' && req.method === 'POST') {
+      const { drinkId } = await readJson(req);
+      const drink = db.prepare('SELECT * FROM drinks WHERE id = ?').get(Number(drinkId));
+      if (!drink) return json(res, 404, { error: '这款饮品不存在' });
+      const createdAt = new Date().toISOString();
+      const result = db
+        .prepare('INSERT INTO draws (user_id, drink_id, brand, name, note, price, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
+        .run(user.id, drink.id, drink.brand, drink.name, drink.note, drink.price, createdAt);
+      return json(
+        res,
+        201,
+        db.prepare('SELECT id, brand, name, note, price, created_at FROM draws WHERE id = ?').get(result.lastInsertRowid)
+      );
+    }
+
+    if (pathname === '/api/draws' && req.method === 'GET') {
+      return json(
+        res,
+        200,
+        db
+          .prepare('SELECT id, brand, name, note, price, created_at FROM draws WHERE user_id = ? ORDER BY id DESC LIMIT 50')
+          .all(user.id)
+      );
+    }
+
+    if (pathname === '/api/draws/all' && req.method === 'GET') {
+      if (user.role !== 'admin') return json(res, 403, { error: '只有管理员可以查看全部记录' });
+      return json(
+        res,
+        200,
+        db
+          .prepare(
+            `SELECT d.id, d.brand, d.name, d.price, d.created_at, u.username
+             FROM draws d JOIN users u ON u.id = d.user_id
+             ORDER BY d.id DESC LIMIT 200`
+          )
+          .all()
+      );
+    }
+
+    return json(res, 404, { error: '接口不存在' });
+  } catch (err) {
+    console.error(err);
+    if (!res.headersSent) json(res, 500, { error: err.message === '请求格式错误' ? err.message : '服务器内部错误' });
+    else res.end();
+  }
+});
+
+server.listen(PORT, () => {
+  console.log(`奶茶转盘已启动：http://localhost:${PORT}`);
+  console.log('用户账号 user / 123456，管理员账号 admin / admin123');
+});
