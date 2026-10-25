@@ -44,7 +44,25 @@ CREATE TABLE IF NOT EXISTS daily_draws (
   completed INTEGER NOT NULL,
   PRIMARY KEY (user_id, day)
 );
+CREATE TABLE IF NOT EXISTS daily_rewards (
+  user_id INTEGER NOT NULL,
+  day TEXT NOT NULL,
+  draw_id INTEGER,
+  redeemed_at TEXT,
+  PRIMARY KEY (user_id, day)
+);
 `);
+
+// Only today's latest legacy win becomes redeemable; historical test draws remain history.
+if (!db.prepare("SELECT 1 FROM meta WHERE key = 'daily_rewards_v1'").get()) {
+  db.exec('BEGIN IMMEDIATE');
+  try {
+    db.prepare("INSERT INTO daily_rewards (user_id, day, draw_id) SELECT user_id, date(created_at, '+8 hours'), MAX(id) FROM draws WHERE date(created_at, '+8 hours') = ? GROUP BY user_id")
+      .run(GameRules.dayKey());
+    db.prepare("INSERT INTO meta (key, value) VALUES ('daily_rewards_v1', '1')").run();
+    db.exec('COMMIT');
+  } catch (err) { db.exec('ROLLBACK'); throw err; }
+}
 
 function hashPassword(password, salt) {
   return crypto.scryptSync(password, salt, 32).toString('hex');
@@ -101,9 +119,15 @@ const SESSION_TTL = 7 * 24 * 60 * 60 * 1000;
 
 function quota(user) {
   const day = GameRules.dayKey();
-  const used = !!db.prepare('SELECT 1 FROM daily_draws WHERE user_id = ? AND day = ? AND completed = 1').get(user.id, day)
-    || !!db.prepare("SELECT 1 FROM draws WHERE user_id = ? AND date(created_at, '+8 hours') = ? LIMIT 1").get(user.id, day);
-  return { day, unlimited: user.role === 'admin', remaining: user.role === 'admin' ? null : used ? 0 : 1 };
+  const reward = rewardsFor(user).find(r => r.day === day);
+  const redeemed = !!reward?.redeemed_at;
+  return {day, unlimited: true, remaining: redeemed ? 0 : 1, redeemed, currentReward: reward && !redeemed ? reward : null};
+}
+
+function rewardsFor(user) {
+  return db.prepare(`SELECT d.id, d.brand, d.name, d.note, d.price, r.day, r.redeemed_at
+    FROM daily_rewards r JOIN draws d ON d.id = r.draw_id
+    WHERE r.user_id = ? ORDER BY r.day DESC`).all(user.id);
 }
 
 function json(res, status, data, headers = {}) {
@@ -207,6 +231,29 @@ const server = http.createServer(async (req, res) => {
 
     if (pathname === '/api/quota' && req.method === 'GET') return json(res, 200, quota(user));
 
+    if (pathname === '/api/rewards' && req.method === 'GET') return json(res, 200, rewardsFor(user));
+
+    if (pathname === '/api/rewards/redeem' && req.method === 'POST') {
+      const {drawIds} = await readJson(req) || {};
+      if (!Array.isArray(drawIds) || !drawIds.length || new Set(drawIds).size !== drawIds.length || !drawIds.every(id => Number.isSafeInteger(id) && id > 0)) {
+        return json(res, 400, {error:'请选择要兑换的奖励'});
+      }
+      db.exec('BEGIN IMMEDIATE');
+      try {
+        const pending = rewardsFor(user).filter(r => !r.redeemed_at);
+        if (!drawIds.every(id => pending.some(r => r.id === id))) {
+          db.exec('ROLLBACK');
+          return json(res, 409, {error:'奖励已兑换或发生变化，请刷新后重试'});
+        }
+        const redeem = db.prepare('UPDATE daily_rewards SET redeemed_at = ? WHERE user_id = ? AND draw_id = ? AND redeemed_at IS NULL');
+        const now = new Date().toISOString();
+        for (const id of drawIds) redeem.run(now, user.id, id);
+        const result = {rewards: rewardsFor(user), quota: quota(user)};
+        db.exec('COMMIT');
+        return json(res, 200, result);
+      } catch (err) { db.exec('ROLLBACK'); throw err; }
+    }
+
     if (pathname === '/api/drinks' && req.method === 'GET') {
       return json(res, 200, db.prepare('SELECT id, brand, name, note, price FROM drinks ORDER BY brand, name').all());
     }
@@ -265,25 +312,29 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (pathname === '/api/draws' && req.method === 'POST') {
-      await readJson(req);
+      const {replaceDrawId} = await readJson(req) || {};
       db.exec('BEGIN IMMEDIATE');
       try {
         const allowance = quota(user);
-        if (!allowance.unlimited && !allowance.remaining) {
+        if (allowance.redeemed) {
           db.exec('ROLLBACK');
-          return json(res, 429, {error: '今天的抽奖次数已用完，请北京时间明天 00:00 后再来'});
+          return json(res, 429, {error: '今天的奖励已兑换，请北京时间明天 00:00 后再来'});
+        }
+        if ((allowance.currentReward?.id ?? null) !== (replaceDrawId ?? null)) {
+          db.exec('ROLLBACK');
+          return json(res, 409, {error:'当前奖励已变化，请确认是否放弃当前奖励后再抽', quota: allowance});
         }
         const drinks = db.prepare('SELECT * FROM drinks ORDER BY brand, name').all();
         if (!drinks.length) { db.exec('ROLLBACK'); return json(res, 400, {error:'清单为空，请先添加奖品'}); }
         const outcome = GameRules.pick(drinks, () => crypto.randomInt(0, 2 ** 32) / 2 ** 32);
-        db.prepare('INSERT INTO daily_draws (user_id, day, completed) VALUES (?, ?, ?) ON CONFLICT(user_id, day) DO UPDATE SET completed = excluded.completed')
-          .run(user.id, allowance.day, outcome.kind === 'retry' ? 0 : 1);
         let record = null;
         if (!outcome.kind) {
           const result = db.prepare('INSERT INTO draws (user_id, drink_id, brand, name, note, price, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
             .run(user.id, outcome.id, outcome.brand, outcome.name, outcome.note, outcome.price, new Date().toISOString());
           record = db.prepare('SELECT id, brand, name, note, price, created_at FROM draws WHERE id = ?').get(result.lastInsertRowid);
         }
+        db.prepare('INSERT INTO daily_rewards (user_id, day, draw_id) VALUES (?, ?, ?) ON CONFLICT(user_id, day) DO UPDATE SET draw_id = excluded.draw_id')
+          .run(user.id, allowance.day, record?.id ?? null);
         const remaining = quota(user);
         db.exec('COMMIT');
         return json(res, 201, {outcome, record, quota: remaining});
