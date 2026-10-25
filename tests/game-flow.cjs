@@ -6,17 +6,33 @@ const {chromium}=require('playwright');
 const root=path.join(__dirname,'..'),temp=fs.mkdtempSync(path.join(os.tmpdir(),'tea-games-'));
 for(const file of ['server.js','index.html','inventory.js','game-rules.js'])fs.copyFileSync(path.join(root,file),path.join(temp,file));
 fs.appendFileSync(path.join(temp,'game-rules.js'),"\nif(typeof module!=='undefined'){let calls=0;module.exports.pick=drinks=>calls++%2===0?module.exports.RETRY:drinks[0]}\n");
-const server=spawn(process.execPath,['server.js'],{cwd:temp,env:{...process.env,PORT:'3147'},windowsHide:true,stdio:'pipe'});
+const port=32000+process.pid%20000,baseUrl='http://127.0.0.1:'+port;
+const server=spawn(process.execPath,['server.js'],{cwd:temp,env:{...process.env,PORT:String(port)},windowsHide:true,stdio:'pipe'});
 let browser;
 (async()=>{
-  for(let i=0;i<80;i++){try{if((await fetch('http://127.0.0.1:3147/api/me')).ok)break}catch{}await new Promise(r=>setTimeout(r,100))}
+  for(let i=0;i<80;i++){try{if((await fetch(baseUrl+'/api/me')).ok)break}catch{}await new Promise(r=>setTimeout(r,100))}
   browser=await chromium.launch({headless:true,channel:process.env.TEA_BROWSER||'chrome'});
-  const page=await browser.newPage({viewport:{width:1280,height:900},reducedMotion:'reduce'}),errors=[];
+  const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'}),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
-  await page.goto('http://127.0.0.1:3147');await page.locator('#app-main').waitFor({state:'visible'});
+  await page.goto(baseUrl);await page.locator('#app-main').waitFor({state:'visible'});
   await page.evaluate(async()=>enterApp(await api('/api/login',{method:'POST',body:JSON.stringify({username:'admin',password:'admin123'})})));
   assert.equal(await page.locator('.mode-switch button').count(),6);
   assert.equal(await page.locator('#scratch-number').count(),0);
+  await page.evaluate(()=>scrollTo(0,0));
+  const hub=page.locator('#wheel-spin'),hubRect=await hub.boundingBox();
+  assert.ok(hubRect.y>=0&&hubRect.y+hubRect.height<=844,'mobile center button visible without scrolling');
+  assert.equal(await hub.isEnabled(),true);
+  await page.locator('#open-odds').click();
+  assert.equal(await page.locator('.rare-prize').count(),await page.evaluate(()=>layout.filter(s=>!s.special&&s.prob<.055).length));
+  assert.equal(await page.locator('.rare-prize .odds-name small').first().textContent().then(t=>t.includes('稀有')),true);
+  await page.locator('#odds-close').click();
+  await page.evaluate(()=>{const saved=drinks;drinks=[];renderAll();window.emptyHubDisabled=$('wheel-spin').disabled;drinks=saved;renderAll()});
+  assert.equal(await page.evaluate(()=>window.emptyHubDisabled),true);
+  assert.equal(await page.evaluate(()=>celebrate(2)), 'legendary','reduced motion retains rarity');
+  await page.evaluate(()=>scrollTo(0,0));
+  if(process.env.TEA_SCREENSHOT)await page.screenshot({path:process.env.TEA_SCREENSHOT,fullPage:true});
+  let wheelRequests=0;
+  await page.route('**/api/draws',async route=>{if(route.request().method()==='POST'){wheelRequests++;await new Promise(r=>setTimeout(r,300))}await route.continue()}, {times:1});
   let recorded=0;
   const close=async()=>{await page.locator('#close').click()};
   const play=async(mode)=>{
@@ -36,7 +52,12 @@ let browser;
     if(mode==='box'){await page.locator('.lucky-box').first().click();await page.locator('#box-detail').click()}
     else if(mode==='slot')await page.locator('#slot-play').click();
     else{
-      await page.locator('#spin').click();
+      if(mode==='wheel'){
+        await hub.click();
+        assert.equal(await hub.isDisabled(),true);
+        assert.equal(await page.locator('#spin').isDisabled(),true);
+        await hub.evaluate(b=>b.click());
+      }else await page.locator('#spin').click();
       if(mode==='capsule'){await page.waitForFunction(()=>capsulePhase==='ready');await page.locator('#capsule-drop').click()}
     }
     await page.locator('#result[open]').waitFor();
@@ -44,6 +65,7 @@ let browser;
   for(const mode of ['wheel','scratch','number','capsule','box','slot']){
     await page.locator('#mode-'+mode).click();
     await play(mode);
+    if(mode==='wheel')assert.equal(wheelRequests,1,'center click submits once');
     assert.equal(await page.locator('#name').textContent(),'再来一次');
     assert.equal(await page.locator('#copy').isVisible(),false);
     assert.equal(await page.evaluate(()=>history.length),recorded);
@@ -69,7 +91,7 @@ let browser;
   await play('slot');assert.equal(await page.locator('#name').textContent(),'再来一次');
   await page.locator('#confirm').click();await page.locator('#result[open]').waitFor();await close();
   assert.equal(await page.locator('#slot-play').isDisabled(),true);
-  await page.locator('#mode-wheel').click();assert.equal(await page.locator('#spin').isDisabled(),true);
+  await page.locator('#mode-wheel').click();assert.equal(await page.locator('#spin').isDisabled(),true);assert.equal(await hub.isDisabled(),true);
   assert.equal(await page.evaluate(async()=>{try{await api('/api/draws',{method:'POST',body:'{}'});return false}catch{return true}}),true);
   await page.reload();await page.locator('#app-main').waitFor({state:'visible'});
   assert.equal(await page.locator('#spin').isDisabled(),true);
