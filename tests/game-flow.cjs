@@ -41,7 +41,10 @@ let browser;
   await page.route('**/api/draws',async route=>{if(route.request().method()==='POST'){wheelRequests++;await new Promise(r=>setTimeout(r,300))}await route.continue()}, {times:1});
   let recorded=0;
   const close=async()=>{await page.locator('#close').click()};
+  let rememberRedraw=false;
+  const approveReminder=async()=>{await page.locator('#replace-reward[open]').waitFor();if(rememberRedraw)await page.locator('#skip-redraw-reminder').check();await page.locator('#replace-continue').click()};
   const play=async(mode)=>{
+    let needsReminder=await page.evaluate(()=>!!drawQuota.currentReward&&localStorage.getItem('tea_skip_redraw_'+currentUserId)!=='1');
     if(mode==='number'){
       // Reproduce the reported 50 -> another number bug using a fixed preview.
       await page.evaluate(()=>{const random=Math.random;Math.random=()=>.5;try{prepareTicket()}finally{Math.random=random}});
@@ -49,14 +52,15 @@ let browser;
       const before=await snapshot();assert.equal(before.lucky,'50');
       await page.locator('#scratch').scrollIntoViewIfNeeded();const rect=await page.locator('#scratch').boundingBox();
       await page.mouse.move(rect.x+rect.width/2,rect.y+rect.height/2);await page.mouse.down();
+      if(needsReminder){await page.mouse.up();await approveReminder();needsReminder=false}
       await page.waitForFunction(()=>scratchStarted&&!requestingDraw);await page.mouse.up();
       assert.deepEqual(await snapshot(),before,'scratching must preserve every number and the ticket ID');
       await page.evaluate(()=>setMode('scratch'));assert.equal(await page.evaluate(()=>mode),'number','an unfinished ticket must not be discarded');
       const expected=await page.evaluate(()=>scratchDrink.name);
       assert.equal(await page.locator('.ticket-number-row.winner .number-prize>span').textContent(),expected);
     }
-    if(mode==='box'){await page.locator('.lucky-box').first().click();await page.locator('#box-detail').click()}
-    else if(mode==='slot')await page.locator('#slot-play').click();
+    if(mode==='box'){await page.locator('.lucky-box').first().click();if(needsReminder)await approveReminder();await page.locator('#box-detail').click()}
+    else if(mode==='slot'){await page.locator('#slot-play').click();if(needsReminder)await approveReminder()}
     else{
       if(mode==='wheel'){
         await hub.click();
@@ -64,6 +68,7 @@ let browser;
         assert.equal(await page.locator('#spin').isDisabled(),true);
         await hub.evaluate(b=>b.click());
       }else await page.locator('#spin').click();
+      if(needsReminder)await approveReminder();
       if(mode==='capsule'){await page.waitForFunction(()=>capsulePhase==='ready');await page.locator('#capsule-drop').click()}
     }
     await page.locator('#result[open]').waitFor();
@@ -99,15 +104,22 @@ let browser;
   assert.equal(await page.locator('#slot-play').isEnabled(),true);
   assert.equal(await page.locator('#pending-rewards li:not(.reward-empty)').count(),1);
   const held=await page.evaluate(()=>drawQuota.currentReward.id),beforeCancel=drawRequests;
-  acceptConfirm=false;await page.locator('#mode-wheel').click();await page.locator('#spin').click();
+  await page.locator('#mode-wheel').click();await page.locator('#spin').click();
+  await page.locator('#replace-reward[open]').waitFor();await page.locator('#skip-redraw-reminder').check();await page.locator('#replace-cancel').click();
   await page.waitForFunction(()=>!requestingDraw);
+  assert.equal(await page.evaluate(()=>localStorage.getItem('tea_skip_redraw_'+currentUserId)),null,'cancel must not remember the checkbox');
   assert.equal(drawRequests,beforeCancel,'cancel must not submit a draw');
   assert.equal(await page.evaluate(()=>drawQuota.currentReward.id),held);
-  acceptConfirm=true;await page.locator('#mode-slot').click();await play('slot');
+  rememberRedraw=true;await page.locator('#mode-slot').click();await play('slot');
+  assert.equal(await page.evaluate(()=>localStorage.getItem('tea_skip_redraw_'+currentUserId)),'1');
   assert.equal(await page.evaluate(()=>drawQuota.currentReward),null,'retry replaces the forfeited prize');
   await page.locator('#confirm').click();await page.locator('#result[open]').waitFor();await close();
   assert.notEqual(await page.evaluate(()=>drawQuota.currentReward.id),held);
   assert.equal(await page.locator('#pending-rewards li:not(.reward-empty)').count(),1);
+  await page.reload();await page.waitForFunction(()=>drawQuota!==null&&drinks.length>0);
+  await play('wheel');assert.equal(await page.locator('#replace-reward').isVisible(),false,'saved choice suppresses reminders after reload');
+  assert.equal(await page.locator('#name').textContent(),'再来一次');
+  await page.locator('#confirm').click();await page.locator('#result[open]').waitFor();await close();
   acceptConfirm=false;await page.locator('#redeem-all').click();
   assert.equal(await page.evaluate(()=>drawQuota.redeemed),false);
   acceptConfirm=true;await page.locator('#redeem-all').click();await page.waitForFunction(()=>drawQuota.redeemed);
@@ -119,7 +131,8 @@ let browser;
   assert.equal(await page.locator('#spin').isDisabled(),true);
   // Another account can scratch and redeem only after the ticket is revealed.
   await page.evaluate(async()=>enterApp(await api('/api/login',{method:'POST',body:JSON.stringify({username:'ping',password:'123456'})})));
-  await page.locator('#mode-scratch').click();await play('scratch');await page.locator('#confirm').click();
+  assert.equal(await page.evaluate(()=>localStorage.getItem('tea_skip_redraw_'+currentUserId)),null,'another account has its own reminder setting');
+  rememberRedraw=false;await page.locator('#mode-scratch').click();await play('scratch');await page.locator('#confirm').click();
   await page.evaluate(()=>startScratch());
   assert.equal(await page.locator('#redeem-all').isDisabled(),true);
   assert.equal(await page.locator('#spin').isDisabled(),false);
