@@ -7,9 +7,10 @@ A tiny tea-drink lucky wheel with login, SQLite persistence and a minimal admin 
 ## Features
 
 - **Spinning wheel**: every drink is a sector on a Canvas wheel; the result is decided by price-weighted odds.
-- **Scratch cards**: classic reveal and a number ticket with one lucky number. Five rows contain 1, 2, 3, 4, and 5 numbers (15 total), each row sharing one prize and reference value on the right (including a free retry); matching any number awards that row’s prize. The match can appear anywhere; a blank ticket has no match. Existing 20% blank, 3% retry, and prize weights are preserved, with at most one reward per ticket. Number tickets reveal at 90% scratched; classic cards at 40%. Touch, mouse, and one-click reveal are supported.
-- **Lucky Shake**: three reels draw independently in order. Only three matching prize IDs win; mixed results or blanks lose. Three retries grant another round. Use the lever, button, or opt-in phone motion. Each prize wins with its per-reel probability cubed; the page discloses final-round odds.
-- **Base odds (per reel for Lucky Shake)**: 20% blank, 3% retry, 77% drinks. Drink weight is `1 / reference price`; expensive drinks remain rarer. The complete odds are disclosed in the page and refresh when prices change. Only drink wins enter drink history.
+- **Scratch cards**: classic and number tickets with one matching lucky number across 15 positions in five rows. Outcomes are a prize or free retry. Number cards reveal at 90% scratched; classic cards at 40%. The server draws when scratching starts; mode previews cost no attempt.
+- **Lucky Shake**: the server draws one outcome, then all three reels stop on that same prize or retry. Lever, button and opt-in phone motion are supported.
+- **Shared odds**: all modes award a prize with 97% probability and a retry with 3%; no blank outcomes. Prize weights are `1 / reference price`. The server selects and immediately records prizes; clients cannot specify the winning prize.
+- **Daily quota**: ordinary accounts share one daily allowance across all modes, resetting at midnight Asia/Shanghai. A retry permits another draw until a prize is won. The existing `admin` account has unlimited test draws. SQLite preserves limits across reloads, concurrent requests and server restarts; existing wins today also count.
 - **Login**: the page signs in as `user` automatically; use “切换账号” in the header to log in as `ping` or the admin.
 - **Admin panel**: add, edit, and delete general prizes (tea, gifts, etc.), with a required name and reference value plus optional brand/source and notes. Values range from ¥0.01 to ¥1,000,000, with two decimal places. Existing tea data and draw records remain compatible.
 - **CSV import/export**: download a blank template or export the current list. Fill the template in Excel/WPS and save as CSV UTF-8 (not XLSX), then preview and confirm the import. Matching brand/source and name are skipped without overwriting; validation failures reject the entire batch. Up to 100 prizes total, 1–100 rows per import, and 250 KB per file.
@@ -44,6 +45,6 @@ After logging in as admin, the admin sections appear below the wheel and odds li
 
 ## Validation
 
-Run `node --test tests/game-rules.test.cjs tests/inventory.test.cjs` for probability and card-generation checks, including 100,000 draws and single/empty menus.
+Run `node --test tests/game-rules.test.cjs tests/inventory.test.cjs tests/quota.test.cjs` for probability and card-generation checks, including 100,000 draws and single/empty menus.
 
-With Playwright and Chrome available, run `node tests/game-flow.cjs` (`NODE_PATH` can point to an existing Playwright installation; set `TEA_BROWSER=msedge` for Edge). It uses an isolated temporary app/database and tests wins, blanks, retries, pointer scratching, lever/keyboard/synthetic motion, duplicate clicks, history, existing modes, and mobile layout. Physical phone sensors still need device testing.
+With Playwright and Chrome available, run `node tests/game-flow.cjs` (`NODE_PATH` can point to an existing Playwright installation; set `TEA_BROWSER=msedge` for Edge). It uses an isolated temporary app/database and tests all five modes, retry continuation, pointer scratching, history, daily quotas, and mobile layout. Physical phone sensors still need device testing.

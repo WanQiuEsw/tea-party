@@ -22,7 +22,7 @@ test('CSV and item validation reject malformed data', () => {
 
 test('admin import is atomic, skips duplicates, preserves old data and enforces permissions and capacity', async () => {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'tea-inventory-'));
-  for (const file of ['server.js','index.html','inventory.js']) fs.copyFileSync(path.join(__dirname,'..',file),path.join(temp,file));
+  for (const file of ['server.js','index.html','inventory.js','game-rules.js']) fs.copyFileSync(path.join(__dirname,'..',file),path.join(temp,file));
   const server = spawn(process.execPath, ['server.js'], {cwd:temp, env:{...process.env,PORT:'3148'},windowsHide:true,stdio:'pipe'});
   const request = async (url, body, cookie='', method=body?'POST':'GET') => {
     const res = await fetch('http://127.0.0.1:3148'+url,{method,headers:{'Content-Type':'application/json',cookie},body:body?JSON.stringify(body):undefined});
@@ -50,8 +50,8 @@ test('admin import is atomic, skips duplicates, preserves old data and enforces 
     assert.equal(res.status,409);
     res=await request('/api/drinks',{name:'礼品卡',price:100},admin);
     assert.equal(res.status,201);
-    res=await request('/api/draws',{drinkId:saved.id},user);
-    assert.equal(res.data.note,'凭券领取');assert.equal(res.data.price,2999.95);
+    assert.equal(saved.note,'一年保修');
+    assert.equal((await request('/api/drinks',null,admin)).data.find(d=>d.id===saved.id).note,'凭券领取');
     res=await request('/api/drinks/import',{items:Array.from({length:76},(_,i)=>({name:'礼物'+i,price:10}))},admin);
     assert.equal(res.status,400);
     assert.equal((await request('/api/drinks',null,admin)).data.length,25);

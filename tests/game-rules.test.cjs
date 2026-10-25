@@ -2,6 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
+const GameRules=require('../game-rules');
 const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html'), 'utf8');
 function source(name) {
   const start = html.indexOf('function ' + name + '(');
@@ -17,26 +18,26 @@ function source(name) {
 // Read the real page's functions and constants so the test follows production rules.
 function rules(prices = [7.3, 12, 20]) {
   let seed = 17;
-  const context = vm.createContext({ crypto: { getRandomValues(a) { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; a[0] = seed; } } });
+  const context = vm.createContext({ GameRules, crypto: { getRandomValues(a) { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; a[0] = seed; } } });
   vm.runInContext(`${html.match(/const PRICE_POWER=[^\n]+/)[0]}
     ${html.match(/const SPECIAL_PRIZES=[^\n]+/)[0]}
     const drinks=${JSON.stringify(prices.map((price, i) => ({ id: i + 1, brand: '测试', name: '饮品' + i, price })))};
     let layout=[],layoutTotal=0;const tau=Math.PI*2;const priceOf=d=>d.price;
-    ${['computeLayout','randomIndex','makeNumberTicket','slotResult','slotProbability','checkScratch'].map(source).join('\n')}
+    ${['computeLayout','randomIndex','makeNumberTicket','slotProbability','checkScratch'].map(source).join('\n')}
     computeLayout();`, context);
   return expression => vm.runInContext(expression, context);
 }
-test('probabilities sum to 100%, with 20% blank, 3% retry and inverse-price drinks', () => {
+test('probabilities sum to 100%, with no blanks, 3% retry and inverse-price prizes', () => {
   const run = rules();
   assert.ok(Math.abs(run('layout.reduce((s,x)=>s+x.prob,0)') - 1) < 1e-12);
-  assert.equal(run('layout.find(x=>x.drink.kind==="blank").prob'), .2);
+  assert.equal(run('layout.some(x=>x.drink.kind==="blank")'), false);
   assert.equal(run('layout.find(x=>x.drink.kind==="retry").prob'), .03);
   assert.ok(Math.abs(run('layout[0].prob/layout[2].prob') - 20 / 7.3) < 1e-12);
   run('const counts=Array(layout.length).fill(0);for(let i=0;i<100000;i++)counts[randomIndex()]++');
   assert.equal(run('counts.reduce((a,b)=>a+b,0)'), 100000);
   assert.ok(run('counts.every((n,i)=>Math.abs(n/100000-layout[i].prob)<.006)'));
 });
-test('one lucky number matches at any of 15 positions, while blank tickets never match', () => {
+test('one lucky number matches at any of 15 positions, with one guaranteed matching outcome', () => {
   for (const size of [1,3,23,100]) {
     const run=rules(Array.from({length:size},(_,i)=>7+i));
     run(`const positions=new Set();for(let i=0;i<500;i++)for(const result of [drinks[0],...SPECIAL_PRIZES]){
@@ -69,25 +70,24 @@ test('number cards wait for 90% scratched; other cards retain 40%', () => {
   run('ratio=.9;checkScratch()');assert.equal(run('revealed'),1);
   run("scratchType='classic';ratio=.4;checkScratch()");assert.equal(run('revealed'),2);
 });
-test('shake only awards three identical prize IDs; mixed results and blanks lose', () => {
-  const run=rules();
-  assert.equal(run('slotResult([drinks[0],drinks[0],drinks[0]])===drinks[0]'),true);
-  for(const symbols of ['[drinks[0],drinks[1],drinks[0]]','[drinks[0],drinks[0],drinks[1]]','[drinks[0],drinks[1],SPECIAL_PRIZES[0]]','Array(3).fill(SPECIAL_PRIZES[0])','[drinks[0],SPECIAL_PRIZES[1],drinks[0]]','[drinks[0],{...drinks[0],id:99},drinks[0]]'])assert.equal(run(`slotResult(${symbols}).kind`),'blank');
-  assert.equal(run('slotResult(Array(3).fill(SPECIAL_PRIZES[1])).kind'),'retry');
-  const single=rules([13]);
-  assert.equal(single('slotResult([drinks[0],SPECIAL_PRIZES[0],drinks[0]]).kind'),'blank');
-});
-test('shake final odds use cubes; independent reel simulation agrees with disclosure', () => {
+test('server sampler and shake disclosure agree at 97% prizes and 3% retry', () => {
   const run=rules(Array(23).fill(13));
-  assert.ok(Math.abs(run('slotProbability(drinks[0])-layout[0].prob**3'))<1e-12);
+  assert.equal(run('slotProbability(SPECIAL_PRIZES[0])'),.03);
   assert.ok(Math.abs(run('layout.reduce((s,x)=>s+slotProbability(x.drink),0)')-1)<1e-12);
-  run(`let wins=0,retries=0;for(let i=0;i<100000;i++){
-    const result=slotResult(Array.from({length:3},()=>layout[randomIndex()].drink));
-    if(!result.kind)wins++;if(result.kind==='retry')retries++;
-  }`);
-  assert.ok(Math.abs(run('wins/100000-layout.filter(s=>!s.drink.kind).reduce((n,s)=>n+s.prob**3,0)'))<.0004);
-  assert.ok(Math.abs(run('retries/100000-.03**3'))<.0001);
+  let retries=0;const counts=Array(23).fill(0);
+  const drinks=counts.map((_,id)=>({id,price:13}));
+  for(let i=0;i<100000;i++){
+    const result=GameRules.pick(drinks,()=> (i+.5)/100000);
+    if(result.kind){assert.equal(result.kind,'retry');retries++}else counts[result.id]++;
+  }
+  assert.equal(retries,3000);
+  assert.ok(counts.every(n=>Math.abs(n/100000-.97/23)<.00002));
 });
+test('day resets at midnight in Beijing regardless of host timezone',()=>{
+  assert.equal(GameRules.dayKey(new Date('2026-10-25T15:59:59.999Z')),'2026-10-25');
+  assert.equal(GameRules.dayKey(new Date('2026-10-25T16:00:00.000Z')),'2026-10-26');
+});
+
 test('empty menu has no drawable outcomes', () => {
   const run = rules([]);
   assert.equal(run('layout.length'), 0);

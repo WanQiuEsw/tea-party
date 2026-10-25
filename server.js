@@ -5,6 +5,7 @@ const crypto = require('node:crypto');
 const { DatabaseSync } = require('node:sqlite');
 
 const Inventory = require('./inventory.js');
+const GameRules = require('./game-rules.js');
 const PORT = Number(process.env.PORT) || 3000;
 const PAGE = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 // shortcut: 页面只在启动时读入内存，修改 index.html 后需重启服务
@@ -37,6 +38,12 @@ CREATE TABLE IF NOT EXISTS draws (
   created_at TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT);
+CREATE TABLE IF NOT EXISTS daily_draws (
+  user_id INTEGER NOT NULL,
+  day TEXT NOT NULL,
+  completed INTEGER NOT NULL,
+  PRIMARY KEY (user_id, day)
+);
 `);
 
 function hashPassword(password, salt) {
@@ -91,6 +98,13 @@ if (!db.prepare("SELECT 1 FROM meta WHERE key = 'seeded'").get()) {
 
 const sessions = new Map();
 const SESSION_TTL = 7 * 24 * 60 * 60 * 1000;
+
+function quota(user) {
+  const day = GameRules.dayKey();
+  const used = !!db.prepare('SELECT 1 FROM daily_draws WHERE user_id = ? AND day = ? AND completed = 1').get(user.id, day)
+    || !!db.prepare("SELECT 1 FROM draws WHERE user_id = ? AND date(created_at, '+8 hours') = ? LIMIT 1").get(user.id, day);
+  return { day, unlimited: user.role === 'admin', remaining: user.role === 'admin' ? null : used ? 0 : 1 };
+}
 
 function json(res, status, data, headers = {}) {
   res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', ...headers });
@@ -176,9 +190,9 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       return res.end(PAGE);
     }
-    if (pathname === '/inventory.js' && req.method === 'GET') {
+    if (['/inventory.js', '/game-rules.js'].includes(pathname) && req.method === 'GET') {
       res.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8' });
-      return res.end(fs.readFileSync(path.join(__dirname, 'inventory.js')));
+      return res.end(fs.readFileSync(path.join(__dirname, pathname.slice(1))));
     }
     if (!pathname.startsWith('/api/')) return json(res, 404, { error: '页面不存在' });
 
@@ -190,6 +204,8 @@ const server = http.createServer(async (req, res) => {
 
     const user = currentUser(req);
     if (!user) return json(res, 401, { error: '请先登录' });
+
+    if (pathname === '/api/quota' && req.method === 'GET') return json(res, 200, quota(user));
 
     if (pathname === '/api/drinks' && req.method === 'GET') {
       return json(res, 200, db.prepare('SELECT id, brand, name, note, price FROM drinks ORDER BY brand, name').all());
@@ -249,18 +265,29 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (pathname === '/api/draws' && req.method === 'POST') {
-      const { drinkId } = await readJson(req);
-      const drink = db.prepare('SELECT * FROM drinks WHERE id = ?').get(Number(drinkId));
-      if (!drink) return json(res, 404, { error: '该奖品不存在' });
-      const createdAt = new Date().toISOString();
-      const result = db
-        .prepare('INSERT INTO draws (user_id, drink_id, brand, name, note, price, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
-        .run(user.id, drink.id, drink.brand, drink.name, drink.note, drink.price, createdAt);
-      return json(
-        res,
-        201,
-        db.prepare('SELECT id, brand, name, note, price, created_at FROM draws WHERE id = ?').get(result.lastInsertRowid)
-      );
+      await readJson(req);
+      db.exec('BEGIN IMMEDIATE');
+      try {
+        const allowance = quota(user);
+        if (!allowance.unlimited && !allowance.remaining) {
+          db.exec('ROLLBACK');
+          return json(res, 429, {error: '今天的抽奖次数已用完，请北京时间明天 00:00 后再来'});
+        }
+        const drinks = db.prepare('SELECT * FROM drinks ORDER BY brand, name').all();
+        if (!drinks.length) { db.exec('ROLLBACK'); return json(res, 400, {error:'清单为空，请先添加奖品'}); }
+        const outcome = GameRules.pick(drinks, () => crypto.randomInt(0, 2 ** 32) / 2 ** 32);
+        db.prepare('INSERT INTO daily_draws (user_id, day, completed) VALUES (?, ?, ?) ON CONFLICT(user_id, day) DO UPDATE SET completed = excluded.completed')
+          .run(user.id, allowance.day, outcome.kind === 'retry' ? 0 : 1);
+        let record = null;
+        if (!outcome.kind) {
+          const result = db.prepare('INSERT INTO draws (user_id, drink_id, brand, name, note, price, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
+            .run(user.id, outcome.id, outcome.brand, outcome.name, outcome.note, outcome.price, new Date().toISOString());
+          record = db.prepare('SELECT id, brand, name, note, price, created_at FROM draws WHERE id = ?').get(result.lastInsertRowid);
+        }
+        const remaining = quota(user);
+        db.exec('COMMIT');
+        return json(res, 201, {outcome, record, quota: remaining});
+      } catch (err) { db.exec('ROLLBACK'); throw err; }
     }
 
     if (pathname === '/api/draws' && req.method === 'GET') {
