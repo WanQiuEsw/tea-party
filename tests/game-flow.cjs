@@ -24,25 +24,28 @@ let browser;
   await page.goto('http://127.0.0.1:3147');
   await page.locator('#app-main').waitFor({ state: 'visible' });
   await page.waitForFunction(() => drinks.length === 23);
-  await page.evaluate(() => { const original=makeNumberTicket;window.numberTicketOriginal=original;makeNumberTicket=result=>original(result,1); });
   const force = kind => page.evaluate(kind => { randomIndex = () => kind === 'win' ? 0 : layout.findIndex(s => s.drink.kind === kind); }, kind);
   const close = async () => { await page.locator('#result[open]').waitFor(); await page.locator('#close').click(); };
   const total = () => page.evaluate(async () => (await api('/api/draws')).length);
   let recorded = await total();
   await page.locator('#mode-scratch').click();
-  for (const type of ['number', 'word']) {
+  for (const type of ['number', 'classic']) {
     for (const kind of ['win', 'blank', 'retry']) {
       await force(kind);
       await page.locator('#scratch-' + type).click();
-      if (kind === 'win') assert.equal(await page.locator(type === 'number' ? '.ticket-cell.winner' : '.ticket-word').count(), 1);
+      if (kind === 'win') assert.equal(await page.locator(type === 'number' ? '.ticket-cell.winner' : '#ticket-face').count(), 1);
       if(type==='number'){
-        assert.equal(await page.locator('.ticket-number-row').count(),15);
+        assert.equal(await page.locator('.ticket-number-row').count(),5);
         assert.equal(await page.locator('.ticket-cell').count(),15);
         assert.equal(await page.locator('.ticket-cell.winner').count(),kind==='blank'?0:1);
-        assert.equal(await page.locator('.ticket-cell em').count(),15);
+        assert.equal(await page.locator('.number-prize').count(),5);
+        assert.equal(await page.locator('.lucky-number').count(),1);
+        assert.deepEqual(await page.locator('.ticket-number-row').evaluateAll(rows=>rows.map(row=>row.querySelectorAll('.ticket-cell').length)),[1,2,3,4,5]);
         const lucky=await page.locator('.lucky-number').textContent();
-        const numbers=await page.locator('.ticket-cell b').allTextContents();
+        const numbers=await page.locator('.ticket-cell').allTextContents();
         assert.equal(numbers.includes(lucky),kind!=='blank');
+        assert.ok(await page.locator('.ticket-number-row').evaluateAll(rows=>rows.every(row=>row.querySelectorAll('.number-prize').length===1)));
+        if(kind!=='blank')assert.equal(await page.locator('.ticket-number-row.winner .number-prize>span').textContent(),kind==='retry'?'再来一次':await page.evaluate(()=>drinks[0].name));
       }
       await page.locator('#spin').click();
       await page.locator('#result[open]').waitFor();
@@ -57,26 +60,7 @@ let browser;
       } else await close();
     }
   }
-  // Multiple matches are real rewards, appear in the summary, and each save once.
-  for(const count of [2,3]){
-    await force('win');
-    await page.evaluate(count=>{makeNumberTicket=result=>numberTicketOriginal(result,count)},count);
-    await page.locator('#scratch-number').click();
-    assert.equal(await page.locator('.lucky-number').count(),count);
-    assert.equal(await page.locator('.ticket-cell.winner').count(),count);
-    await page.locator('#spin').click();await page.locator('#result[open]').waitFor();
-    assert.equal(await page.locator('#name').textContent(),'收获 '+count+' 份好运！');
-    assert.equal(await page.locator('#notes').textContent().then(s=>s.split('参考价值').length-1),count);
-    recorded+=count;await page.waitForFunction(n=>history.length===n,recorded);
-    assert.equal(await total(),recorded);await close();
-    if(count===3){
-      await page.locator('#ticket').screenshot({path:path.join(root,'.screenshots','number-ticket-multi-desktop.png')});
-      await page.setViewportSize({width:390,height:844});
-      await page.locator('#ticket').screenshot({path:path.join(root,'.screenshots','number-ticket-multi-mobile.png')});
-      await page.setViewportSize({width:1280,height:900});
-    }
-  }
-  await page.evaluate(()=>{makeNumberTicket=result=>numberTicketOriginal(result,1)});
+  assert.equal(await page.locator('#scratch-word').count(),0);
   // Scratch using the real pointer/canvas path, not the direct reveal button.
   await force('win');await page.locator('#scratch-number').click();
   await page.locator('#scratch').scrollIntoViewIfNeeded();
@@ -89,6 +73,7 @@ let browser;
   await page.mouse.up();await page.locator('#result[open]').waitFor();recorded++;
   await page.waitForFunction(n => history.length === n, recorded);await close();
   assert.equal(await page.locator('#scratch-progress').getAttribute('aria-valuenow'), '100');
+  await page.locator('#ticket').screenshot({path:path.join(root,'.screenshots','number-ticket-rows-desktop.png')});
   // Slot animation, repeated clicks, win/blank/retry and keyboard access.
   await page.locator('#mode-slot').click();
   await page.emulateMedia({ reducedMotion: 'no-preference' });
@@ -119,10 +104,23 @@ let browser;
   for (const kind of ['blank','retry']) {
     await force(kind);await page.locator('#slot-play').focus();await page.keyboard.press('Enter');
     await page.locator('#result[open]').waitFor();
-    if (kind === 'blank') assert.ok(new Set(await page.locator('.slot-reel b').allTextContents()).size > 1);
+    if (kind === 'blank') assert.equal(await page.locator('#name').textContent(),'空奖');
     else { await force('win');await page.locator('#confirm').click();await page.locator('#result[open]').waitFor();recorded++;await page.waitForFunction(n => history.length === n, recorded); }
     await close();
   }
+  // Each stop consumes a fresh draw; the first reel never forces the next two.
+  for(const sequence of [[0,1,'blank'],[0,0,1],[0,'retry',0]]){
+    await page.evaluate(sequence=>{const queue=sequence.map(x=>typeof x==='number'?x:layout.findIndex(s=>s.drink.kind===x));randomIndex=()=>{if(!queue.length)throw Error('too many reel draws');return queue.shift()}},sequence);
+    await page.locator('#slot-play').click();await page.locator('#result[open]').waitFor();
+    const expected=await page.evaluate(sequence=>sequence.map(x=>typeof x==='number'?drinks[x].name:SPECIAL_PRIZES.find(p=>p.kind===x).name),sequence);
+    assert.deepEqual(await page.locator('.slot-reel b').allTextContents(),expected);
+    assert.equal(await page.locator('#name').textContent(),'空奖');
+    assert.equal(await total(),recorded,'mixed reels must not record a prize');await close();
+  }
+  await page.locator('#open-odds').click();
+  assert.match(await page.locator('#odds-summary').textContent(),/整局概率/);
+  assert.equal(await page.locator('.odds-pct').allTextContents().then(a=>Math.round(a.reduce((n,v)=>n+parseFloat(v),0)*10000)),1000000);
+  await page.locator('#odds-close').click();
   // Synthetic device motion validates the handler; physical sensor testing remains manual.
   await page.evaluate(() => { window.DeviceMotionEvent = class {}; });
   await page.locator('#slot-motion').click();
@@ -174,7 +172,7 @@ let browser;
   await page.setViewportSize({ width: 390, height: 844 });
   for (const mode of ['slot','scratch','capsule']) {
     await page.locator('#mode-' + mode).click();
-    if (mode === 'scratch') await page.locator('#scratch-word').click();
+    if (mode === 'scratch') await page.locator('#scratch-number').click();
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), mode + ' mobile overflow');
     await page.screenshot({ path: path.join(root, '.screenshots', 'games-' + mode + '-mobile.png'), fullPage: true });
   }
@@ -183,7 +181,7 @@ let browser;
     await page.setViewportSize({width,height:844});
     await force('blank');await page.locator('#scratch-number').click();
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'number ticket mobile overflow');
-    assert.equal(await page.locator('.ticket-number-row').count(),15);
+    assert.equal(await page.locator('.ticket-number-row').count(),5);
     await page.locator('#spin').click();await close();
     assert.equal(await page.locator('.ticket-cell.winner').count(),0);
     assert.equal(await page.locator('.ticket-cell').count(),15);
@@ -198,7 +196,7 @@ let browser;
   // Single drink and empty menus: no accidental three-of-a-kind blank, no stale ticket.
   await page.evaluate(() => { drinks=drinks.slice(0,1);renderAll(); });
   await force('blank');await page.locator('#mode-slot').click();await page.locator('#slot-play').click();
-  await page.locator('#result[open]').waitFor();assert.ok(new Set(await page.locator('.slot-reel b').allTextContents()).size > 1);await close();
+  await page.locator('#result[open]').waitFor();assert.equal(await page.locator('#name').textContent(),'空奖');await close();
   await page.evaluate(() => { drinks=[];renderAll(); });
   assert.equal(await page.locator('#slot-play').isDisabled(), true);
   await page.locator('#mode-scratch').click();assert.equal(await page.locator('#spin').isDisabled(), true);
