@@ -7,7 +7,8 @@ A tiny tea-drink lucky wheel with login, SQLite persistence and a minimal admin 
 ## Features
 
 - **Spinning wheel**: every drink is a sector on a Canvas wheel; the result is decided by price-weighted odds.
-- **Scratch cards**: classic and number tickets with one matching lucky number across 15 positions in five rows. Outcomes are a prize or free retry. Number cards reveal at 90% scratched; classic cards at 40%. The server draws when scratching starts; mode previews cost no attempt.
+- **Scratch cards**: standalone classic cards reveal at 40% scratched, with touch, mouse and one-click reveal.
+- **Lucky Numbers**: a standalone sixth mode, with one lucky number and 15 positions across five rows. One match awards a prize or retry; reveal at 90% scratched. Lucky number, ticket numbers and ticket ID stay fixed when scratching begins; only the server-selected prize is bound. Reveal a started ticket before switching modes. Previews cost no attempt.
 - **Lucky Shake**: the server draws one outcome, then all three reels stop on that same prize or retry. Lever, button and opt-in phone motion are supported.
 - **Shared odds**: all modes award a prize with 97% probability and a retry with 3%; no blank outcomes. Prize weights are `1 / reference price`. The server selects and immediately records prizes; clients cannot specify the winning prize.
 - **Daily quota**: ordinary accounts share one daily allowance across all modes, resetting at midnight Asia/Shanghai. A retry permits another draw until a prize is won. The existing `admin` account has unlimited test draws. SQLite preserves limits across reloads, concurrent requests and server restarts; existing wins today also count.
@@ -47,4 +48,4 @@ After logging in as admin, the admin sections appear below the wheel and odds li
 
 Run `node --test tests/game-rules.test.cjs tests/inventory.test.cjs tests/quota.test.cjs` for probability and card-generation checks, including 100,000 draws and single/empty menus.
 
-With Playwright and Chrome available, run `node tests/game-flow.cjs` (`NODE_PATH` can point to an existing Playwright installation; set `TEA_BROWSER=msedge` for Edge). It uses an isolated temporary app/database and tests all five modes, retry continuation, pointer scratching, history, daily quotas, and mobile layout. Physical phone sensors still need device testing.
+With Playwright and Chrome available, run `node tests/game-flow.cjs` (`NODE_PATH` can point to an existing Playwright installation; set `TEA_BROWSER=msedge` for Edge). It uses an isolated temporary app/database and tests all six modes, stable numbers before and after scratching, retry continuation, pointer scratching, history, daily quotas, and mobile layout. Physical phone sensors still need device testing.

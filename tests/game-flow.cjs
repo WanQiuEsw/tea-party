@@ -15,9 +15,24 @@ let browser;
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto('http://127.0.0.1:3147');await page.locator('#app-main').waitFor({state:'visible'});
   await page.evaluate(async()=>enterApp(await api('/api/login',{method:'POST',body:JSON.stringify({username:'admin',password:'admin123'})})));
+  assert.equal(await page.locator('.mode-switch button').count(),6);
+  assert.equal(await page.locator('#scratch-number').count(),0);
   let recorded=0;
   const close=async()=>{await page.locator('#close').click()};
   const play=async(mode)=>{
+    if(mode==='number'){
+      // Reproduce the reported 50 -> another number bug using a fixed preview.
+      await page.evaluate(()=>{const random=Math.random;Math.random=()=>.5;try{prepareTicket()}finally{Math.random=random}});
+      const snapshot=async()=>({lucky:await page.locator('.lucky-number').textContent(),numbers:await page.locator('.ticket-cell').allTextContents(),ticket:await page.locator('#ticket-no').textContent()});
+      const before=await snapshot();assert.equal(before.lucky,'50');
+      await page.locator('#scratch').scrollIntoViewIfNeeded();const rect=await page.locator('#scratch').boundingBox();
+      await page.mouse.move(rect.x+rect.width/2,rect.y+rect.height/2);await page.mouse.down();
+      await page.waitForFunction(()=>scratchStarted&&!requestingDraw);await page.mouse.up();
+      assert.deepEqual(await snapshot(),before,'scratching must preserve every number and the ticket ID');
+      await page.evaluate(()=>setMode('scratch'));assert.equal(await page.evaluate(()=>mode),'number','an unfinished ticket must not be discarded');
+      const expected=await page.evaluate(()=>scratchDrink.name);
+      assert.equal(await page.locator('.ticket-number-row.winner .number-prize>span').textContent(),expected);
+    }
     if(mode==='box'){await page.locator('.lucky-box').first().click();await page.locator('#box-detail').click()}
     else if(mode==='slot')await page.locator('#slot-play').click();
     else{
@@ -26,15 +41,14 @@ let browser;
     }
     await page.locator('#result[open]').waitFor();
   };
-  for(const mode of ['wheel','scratch','capsule','box','slot']){
+  for(const mode of ['wheel','scratch','number','capsule','box','slot']){
     await page.locator('#mode-'+mode).click();
-    if(mode==='scratch')await page.locator('#scratch-number').click();
     await play(mode);
     assert.equal(await page.locator('#name').textContent(),'再来一次');
     assert.equal(await page.locator('#copy').isVisible(),false);
     assert.equal(await page.evaluate(()=>history.length),recorded);
     await page.locator('#confirm').click();
-    if(mode==='scratch'||mode==='box')await play(mode);
+    if(mode==='scratch'||mode==='number'||mode==='box')await play(mode);
     else{
       if(mode==='capsule'){await page.waitForFunction(()=>capsulePhase==='ready');await page.locator('#capsule-drop').click()}
       await page.locator('#result[open]').waitFor();
@@ -43,7 +57,7 @@ let browser;
     assert.equal(await page.evaluate(()=>history.length),recorded);
     assert.equal(await page.locator('#name').textContent(),await page.evaluate(()=>drinks[0].name));
     if(mode==='slot')assert.equal(new Set(await page.locator('.slot-reel b').allTextContents()).size,1);
-    if(mode==='scratch'){assert.equal(await page.locator('.ticket-cell').count(),15);assert.equal(await page.locator('.ticket-cell.winner').count(),1)}
+    if(mode==='number'){assert.equal(await page.locator('.ticket-cell').count(),15);assert.equal(await page.locator('.ticket-cell.winner').count(),1)}
     await close();
   }
   await page.locator('#open-odds').click();
@@ -70,6 +84,6 @@ let browser;
   await page.mouse.up();await page.locator('#result[open]').waitFor();await close();
   assert.equal(await page.locator('#spin').isDisabled(),true);
   await page.setViewportSize({width:390,height:844});
-  for(const mode of ['slot','scratch','capsule']){await page.locator('#mode-'+mode).click();assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),mode+' mobile overflow')}
-  assert.deepEqual(errors,[]);console.log('Five modes, retry continuation, server records, daily quota, pointer scratching and mobile layout passed.');
+  for(const mode of ['slot','scratch','number','capsule']){await page.locator('#mode-'+mode).click();assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),mode+' mobile overflow')}
+  assert.deepEqual(errors,[]);console.log('Six modes, retry continuation, server records, daily quota, pointer scratching and mobile layout passed.');
 })().catch(e=>{console.error(e);process.exitCode=1}).finally(async()=>{if(browser)await browser.close();server.kill()});

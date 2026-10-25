@@ -64,11 +64,11 @@ test('one lucky number matches at any of 15 positions, with one guaranteed match
 
 test('number cards wait for 90% scratched; other cards retain 40%', () => {
   const run=rules();
-  run("let scratchType='number',ratio=.5,revealed=0;const scratchRatio=()=>ratio,setScratchProgress=()=>{},revealTicket=()=>revealed++");
+  run("let mode='number',ratio=.5,revealed=0;const scratchRatio=()=>ratio,setScratchProgress=()=>{},revealTicket=()=>revealed++");
   run('checkScratch()');assert.equal(run('revealed'),0);
   run('ratio=.89;checkScratch()');assert.equal(run('revealed'),0);
   run('ratio=.9;checkScratch()');assert.equal(run('revealed'),1);
-  run("scratchType='classic';ratio=.4;checkScratch()");assert.equal(run('revealed'),2);
+  run("mode='scratch';ratio=.4;checkScratch()");assert.equal(run('revealed'),2);
 });
 test('server sampler and shake disclosure agree at 97% prizes and 3% retry', () => {
   const run=rules(Array(23).fill(13));
