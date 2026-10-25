@@ -8,7 +8,7 @@ A tiny tea-drink lucky wheel with login, SQLite persistence and a minimal admin 
 
 - **Spinning wheel**: every drink is a sector on a Canvas wheel; the result is decided by price-weighted odds.
 - **Scratch cards**: classic reveal, character matching, and a five-step number ticket with 1–5 numbered prizes per row (15 total). Only a number matching the lucky number wins; blank tickets still display prizes without a match. Number tickets reveal at 90% scratched; other cards at 40%. Touch, mouse, and one-click reveal are supported.
-- **Lucky slots**: use the lever, button, or opt-in phone motion; three matching drinks win the displayed drink. Clicking remains available if motion is unsupported or permission is denied.
+- **Lucky slots**: one lever pull, button press, or opt-in phone shake spins each reel in order. Each reel stops before the next starts; the result appears after the third stops. Three matching drinks win. Clicking remains available if motion is unsupported or permission is denied.
 - **Shared odds**: 20% blank, 3% retry, 77% drinks. Drink weight is `1 / reference price`; expensive drinks remain rarer. The complete odds are disclosed in the page and refresh when prices change. Only drink wins enter drink history.
 - **Login**: the page signs in as `user` automatically; use “切换账号” in the header to log in as `ping` or the admin.
 - **Admin panel**: add drinks, edit reference prices, delete drinks, and view every user's draw history.

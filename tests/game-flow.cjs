@@ -74,7 +74,24 @@ let browser;
   await force('win');await page.locator('#slot-lever').click();
   await page.evaluate(() => { playSlot();playSlot();setMode('wheel'); });
   assert.equal(await page.evaluate(() => mode), 'slot');
+  const winningName=await page.evaluate(()=>drinks[0].name);
+  for(let active=0;active<3;active++){
+    await page.waitForFunction(i=>{
+      const reels=[...document.querySelectorAll('.slot-reel')];
+      return reels.filter(r=>r.classList.contains('rolling')).length===1&&reels[i].classList.contains('rolling');
+    },active);
+    const stages=await page.locator('.slot-reel').evaluateAll(reels=>reels.map(reel=>({name:reel.querySelector('b').textContent,animation:getComputedStyle(reel.querySelector('b')).animationName})));
+    for(let i=0;i<3;i++){
+      assert.equal(stages[i].animation,i===active?'reel-roll':'none','only the current reel animates');
+      if(i<active)assert.equal(stages[i].name,winningName,'stopped reels retain their result');
+      if(i>active)assert.equal(stages[i].name,'等待好运','later reels have not started');
+    }
+    assert.equal(await page.locator('#slot-lever').isDisabled(),true);
+    assert.equal(await page.locator('#result').getAttribute('open'),null,'no result before the third reel stops');
+    assert.equal(await total(),recorded,'no record before the third reel stops');
+  }
   await page.locator('#result[open]').waitFor();
+  assert.equal(await page.locator('.slot-reel.rolling').count(),0);
   assert.equal(await page.locator('.slot-reel b').allTextContents().then(a => new Set(a).size), 1);
   recorded++;await page.waitForFunction(n => history.length === n, recorded);await close();
   await page.emulateMedia({ reducedMotion: 'reduce' });
