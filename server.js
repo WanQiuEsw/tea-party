@@ -42,20 +42,18 @@ function hashPassword(password, salt) {
   return crypto.scryptSync(password, salt, 32).toString('hex');
 }
 
-// 只有两个固定账号：普通用户与管理员
+// 固定账号：两个普通用户与一个管理员
 const ACCOUNTS = [
   ['user', '123456', 'user'],
+  ['ping', '123456', 'user'],
   ['admin', 'admin123', 'admin'],
 ];
+// 固定账号：每次启动同步密码，已有数据库（如旧密码）也会自动更新
 for (const [username, password, role] of ACCOUNTS) {
-  if (!db.prepare('SELECT 1 FROM users WHERE username = ?').get(username)) {
-    const salt = crypto.randomBytes(16).toString('hex');
-    db.prepare('INSERT INTO users (username, password, role) VALUES (?, ?, ?)').run(
-      username,
-      `${salt}:${hashPassword(password, salt)}`,
-      role
-    );
-  }
+  const salt = crypto.randomBytes(16).toString('hex');
+  db.prepare(
+    'INSERT INTO users (username, password, role) VALUES (?, ?, ?) ON CONFLICT(username) DO UPDATE SET password = excluded.password, role = excluded.role'
+  ).run(username, `${salt}:${hashPassword(password, salt)}`, role);
 }
 
 const SEED_DRINKS = [
@@ -182,7 +180,7 @@ const server = http.createServer(async (req, res) => {
     if (pathname === '/api/me' && req.method === 'GET') {
       return json(res, 200, { user: currentUser(req) });
     }
-    if (pathname === '/api/login' && req.method === 'POST') return login(req, res);
+    if (pathname === '/api/login' && req.method === 'POST') return await login(req, res);
     if (pathname === '/api/logout' && req.method === 'POST') return logout(req, res);
 
     const user = currentUser(req);
@@ -282,5 +280,5 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`奶茶转盘已启动：http://localhost:${PORT}`);
-  console.log('用户账号 user / 123456，管理员账号 admin / admin123');
+  console.log('用户账号 user / 123456、ping / 123456，管理员账号 admin / admin123');
 });
