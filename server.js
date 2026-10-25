@@ -4,6 +4,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const { DatabaseSync } = require('node:sqlite');
 
+const Inventory = require('./inventory.js');
 const PORT = Number(process.env.PORT) || 3000;
 const PAGE = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 // shortcut: 页面只在启动时读入内存，修改 index.html 后需重启服务
@@ -98,16 +99,21 @@ function json(res, status, data, headers = {}) {
 
 function readJson(req) {
   return new Promise((resolve, reject) => {
-    let raw = '';
+    let chunks = [], size = 0, oversized = false;
     req.on('data', (chunk) => {
-      raw += chunk;
-      if (raw.length > 10000) {
+      if (oversized) return;
+      chunks.push(chunk);
+      size += chunk.length;
+      if (size > 256000) {
         reject(new Error('请求内容过大'));
-        req.destroy();
+        oversized = true;
+        chunks = [];
       }
     });
     req.on('end', () => {
+      if (oversized) return;
       try {
+        const raw = Buffer.concat(chunks).toString('utf8');
         resolve(raw ? JSON.parse(raw) : {});
       } catch {
         reject(new Error('请求格式错误'));
@@ -162,11 +168,6 @@ function logout(req, res) {
   return json(res, 200, { ok: true });
 }
 
-function cleanPrice(value) {
-  const price = Number(value);
-  return price > 0 && price <= 999 ? Math.round(price * 10) / 10 : null;
-}
-
 const server = http.createServer(async (req, res) => {
   try {
     const pathname = new URL(req.url, 'http://localhost').pathname;
@@ -174,6 +175,10 @@ const server = http.createServer(async (req, res) => {
     if (req.method === 'GET' && (pathname === '/' || pathname === '/index.html')) {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       return res.end(PAGE);
+    }
+    if (pathname === '/inventory.js' && req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8' });
+      return res.end(fs.readFileSync(path.join(__dirname, 'inventory.js')));
     }
     if (!pathname.startsWith('/api/')) return json(res, 404, { error: '页面不存在' });
 
@@ -190,42 +195,55 @@ const server = http.createServer(async (req, res) => {
       return json(res, 200, db.prepare('SELECT id, brand, name, note, price FROM drinks ORDER BY brand, name').all());
     }
 
-    if (pathname === '/api/drinks' && req.method === 'POST') {
-      if (user.role !== 'admin') return json(res, 403, { error: '只有管理员可以管理饮品' });
+    if (pathname === '/api/drinks/import' && req.method === 'POST') {
+      if (user.role !== 'admin') return json(res, 403, { error: '只有管理员可以管理奖品' });
       const body = await readJson(req);
-      const brand = String(body.brand || '').trim().slice(0, 30);
-      const name = String(body.name || '').trim().slice(0, 40);
-      const note = String(body.note || '').trim().slice(0, 100);
-      const price = cleanPrice(body.price);
-      if (!brand || !name) return json(res, 400, { error: '请填写店铺名和奶茶名' });
-      if (price === null) return json(res, 400, { error: '参考价需在 ¥0.1—999 之间' });
-      if (db.prepare('SELECT 1 FROM drinks WHERE brand = ? AND name = ?').get(brand, name)) {
-        return json(res, 409, { error: '这款饮品已经在清单里了' });
-      }
-      if (db.prepare('SELECT COUNT(*) AS total FROM drinks').get().total >= 100) {
-        return json(res, 400, { error: '最多配置 100 款饮品' });
-      }
-      const result = db
-        .prepare('INSERT INTO drinks (brand, name, note, price) VALUES (?, ?, ?, ?)')
-        .run(brand, name, note, price);
+      if (!body || !Array.isArray(body.items) || !body.items.length || body.items.length > 100) return json(res, 400, {error: '每次请导入 1—100 条奖品'});
+      let items;
+      try { items = body.items.map((item, i) => { try { return Inventory.normalize(item); } catch (err) { throw Error('第 ' + (i + 1) + ' 条：' + err.message); } }); }
+      catch (err) { return json(res, 400, {error: err.message}); }
+      const existing = db.prepare('SELECT brand, name FROM drinks').all();
+      const keys = new Set(existing.map(d => JSON.stringify([d.brand, d.name])));
+      const fresh = items.filter(d => { const key = JSON.stringify([d.brand, d.name]); if (keys.has(key)) return false; keys.add(key); return true; });
+      if (existing.length + fresh.length > 100) return json(res, 400, {error: '清单最多配置 100 款奖品，请减少导入数量'});
+      db.exec('BEGIN');
+      try {
+        const insert = db.prepare('INSERT INTO drinks (brand, name, note, price) VALUES (?, ?, ?, ?)');
+        for (const d of fresh) insert.run(d.brand, d.name, d.note, d.price);
+        db.exec('COMMIT');
+      } catch (err) { db.exec('ROLLBACK'); throw err; }
+      return json(res, 201, {added: fresh.length, skipped: items.length - fresh.length, items: db.prepare('SELECT id, brand, name, note, price FROM drinks ORDER BY brand, name').all()});
+    }
+    if (pathname === '/api/drinks' && req.method === 'POST') {
+      if (user.role !== 'admin') return json(res, 403, { error: '只有管理员可以管理奖品' });
+      let item;
+      try { item = Inventory.normalize(await readJson(req)); }
+      catch (err) { return json(res, 400, {error: err.message}); }
+      const {brand, name, note, price} = item;
+      if (db.prepare('SELECT 1 FROM drinks WHERE brand = ? AND name = ?').get(brand, name)) return json(res, 409, {error: '该奖品已在清单中'});
+      if (db.prepare('SELECT COUNT(*) AS total FROM drinks').get().total >= 100) return json(res, 400, {error: '最多配置 100 款奖品'});
+      const result = db.prepare('INSERT INTO drinks (brand, name, note, price) VALUES (?, ?, ?, ?)').run(brand, name, note, price);
       return json(res, 201, db.prepare('SELECT id, brand, name, note, price FROM drinks WHERE id = ?').get(result.lastInsertRowid));
     }
 
     const drinkMatch = pathname.match(/^\/api\/drinks\/(\d+)$/);
     if (drinkMatch) {
-      if (user.role !== 'admin') return json(res, 403, { error: '只有管理员可以管理饮品' });
+      if (user.role !== 'admin') return json(res, 403, { error: '只有管理员可以管理奖品' });
       const id = Number(drinkMatch[1]);
       if (req.method === 'PATCH') {
         const body = await readJson(req);
-        const price = cleanPrice(body.price);
-        if (price === null) return json(res, 400, { error: '参考价需在 ¥0.1—999 之间' });
-        const result = db.prepare('UPDATE drinks SET price = ? WHERE id = ?').run(price, id);
-        if (!result.changes) return json(res, 404, { error: '这款饮品不存在' });
+        const previous = db.prepare('SELECT * FROM drinks WHERE id = ?').get(id);
+        if (!previous) return json(res, 404, {error: '该奖品不存在'});
+        let item;
+        try { item = Inventory.normalize({...previous, ...body}); }
+        catch (err) { return json(res, 400, {error: err.message}); }
+        if (db.prepare('SELECT 1 FROM drinks WHERE brand = ? AND name = ? AND id != ?').get(item.brand, item.name, id)) return json(res, 409, {error: '该奖品已在清单中'});
+        db.prepare('UPDATE drinks SET brand = ?, name = ?, note = ?, price = ? WHERE id = ?').run(item.brand, item.name, item.note, item.price, id);
         return json(res, 200, db.prepare('SELECT id, brand, name, note, price FROM drinks WHERE id = ?').get(id));
       }
       if (req.method === 'DELETE') {
         const result = db.prepare('DELETE FROM drinks WHERE id = ?').run(id);
-        if (!result.changes) return json(res, 404, { error: '这款饮品不存在' });
+        if (!result.changes) return json(res, 404, { error: '该奖品不存在' });
         return json(res, 200, { ok: true });
       }
     }
@@ -233,7 +251,7 @@ const server = http.createServer(async (req, res) => {
     if (pathname === '/api/draws' && req.method === 'POST') {
       const { drinkId } = await readJson(req);
       const drink = db.prepare('SELECT * FROM drinks WHERE id = ?').get(Number(drinkId));
-      if (!drink) return json(res, 404, { error: '这款饮品不存在' });
+      if (!drink) return json(res, 404, { error: '该奖品不存在' });
       const createdAt = new Date().toISOString();
       const result = db
         .prepare('INSERT INTO draws (user_id, drink_id, brand, name, note, price, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
@@ -273,7 +291,7 @@ const server = http.createServer(async (req, res) => {
     return json(res, 404, { error: '接口不存在' });
   } catch (err) {
     console.error(err);
-    if (!res.headersSent) json(res, 500, { error: err.message === '请求格式错误' ? err.message : '服务器内部错误' });
+    if (!res.headersSent) json(res, ['请求格式错误', '请求内容过大'].includes(err.message) ? 400 : 500, { error: ['请求格式错误', '请求内容过大'].includes(err.message) ? err.message : '服务器内部错误' });
     else res.end();
   }
 });

@@ -9,7 +9,7 @@ const { chromium } = require('playwright');
 const root = path.join(__dirname, '..');
 fs.mkdirSync(path.join(root, '.screenshots'), { recursive: true });
 const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'tea-games-'));
-for (const file of ['server.js', 'index.html']) fs.copyFileSync(path.join(root, file), path.join(temp, file));
+for (const file of ['server.js', 'index.html', 'inventory.js']) fs.copyFileSync(path.join(root, file), path.join(temp, file));
 const server = spawn(process.execPath, ['server.js'], { cwd: temp, env: { ...process.env, PORT: '3147' }, windowsHide: true, stdio: 'pipe' });
 let browser;
 (async () => {
@@ -24,6 +24,7 @@ let browser;
   await page.goto('http://127.0.0.1:3147');
   await page.locator('#app-main').waitFor({ state: 'visible' });
   await page.waitForFunction(() => drinks.length === 23);
+  await page.evaluate(() => { const original=makeNumberTicket;window.numberTicketOriginal=original;makeNumberTicket=result=>original(result,1); });
   const force = kind => page.evaluate(kind => { randomIndex = () => kind === 'win' ? 0 : layout.findIndex(s => s.drink.kind === kind); }, kind);
   const close = async () => { await page.locator('#result[open]').waitFor(); await page.locator('#close').click(); };
   const total = () => page.evaluate(async () => (await api('/api/draws')).length);
@@ -35,7 +36,7 @@ let browser;
       await page.locator('#scratch-' + type).click();
       if (kind === 'win') assert.equal(await page.locator(type === 'number' ? '.ticket-cell.winner' : '.ticket-word').count(), 1);
       if(type==='number'){
-        assert.deepEqual(await page.locator('.ticket-number-row').evaluateAll(rows=>rows.map(row=>row.children.length)),[1,2,3,4,5]);
+        assert.equal(await page.locator('.ticket-number-row').count(),15);
         assert.equal(await page.locator('.ticket-cell').count(),15);
         assert.equal(await page.locator('.ticket-cell.winner').count(),kind==='blank'?0:1);
         assert.equal(await page.locator('.ticket-cell em').count(),15);
@@ -56,6 +57,26 @@ let browser;
       } else await close();
     }
   }
+  // Multiple matches are real rewards, appear in the summary, and each save once.
+  for(const count of [2,3]){
+    await force('win');
+    await page.evaluate(count=>{makeNumberTicket=result=>numberTicketOriginal(result,count)},count);
+    await page.locator('#scratch-number').click();
+    assert.equal(await page.locator('.lucky-number').count(),count);
+    assert.equal(await page.locator('.ticket-cell.winner').count(),count);
+    await page.locator('#spin').click();await page.locator('#result[open]').waitFor();
+    assert.equal(await page.locator('#name').textContent(),'收获 '+count+' 份好运！');
+    assert.equal(await page.locator('#notes').textContent().then(s=>s.split('参考价值').length-1),count);
+    recorded+=count;await page.waitForFunction(n=>history.length===n,recorded);
+    assert.equal(await total(),recorded);await close();
+    if(count===3){
+      await page.locator('#ticket').screenshot({path:path.join(root,'.screenshots','number-ticket-multi-desktop.png')});
+      await page.setViewportSize({width:390,height:844});
+      await page.locator('#ticket').screenshot({path:path.join(root,'.screenshots','number-ticket-multi-mobile.png')});
+      await page.setViewportSize({width:1280,height:900});
+    }
+  }
+  await page.evaluate(()=>{makeNumberTicket=result=>numberTicketOriginal(result,1)});
   // Scratch using the real pointer/canvas path, not the direct reveal button.
   await force('win');await page.locator('#scratch-number').click();
   await page.locator('#scratch').scrollIntoViewIfNeeded();
@@ -109,11 +130,41 @@ let browser;
   await force('win');
   await page.evaluate(() => { const e=new Event('devicemotion');e.accelerationIncludingGravity={x:25,y:0,z:0};dispatchEvent(e);dispatchEvent(e); });
   await page.locator('#result[open]').waitFor();recorded++;await page.waitForFunction(n => history.length === n, recorded);await close();
+  // Capsule sequence stays locked until the player opens it, then records exactly once.
+  await page.locator('#mode-capsule').click();
+  assert.equal(await page.locator('.gacha-capsule i').count(),16);
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  for(const kind of ['win','blank','retry']){
+    await force(kind);
+    await page.locator('#capsule-knob').click();
+    assert.equal(await page.evaluate(()=>capsulePhase),'coin');
+    await page.evaluate(()=>{gacha();gacha();setMode('wheel')});
+    assert.equal(await page.evaluate(()=>mode),'capsule');
+    assert.equal(await page.locator('#capsule-knob').isDisabled(),true);
+    await page.waitForFunction(()=>capsulePhase==='turn');
+    assert.equal(await page.locator('#result').getAttribute('open'),null);
+    await page.waitForFunction(()=>capsulePhase==='drop');
+    await page.waitForFunction(()=>capsulePhase==='ready');
+    assert.equal(await total(),recorded,'unopened capsule does not record');
+    assert.equal(await page.locator('#result').getAttribute('open'),null);
+    if(kind==='win')await page.locator('#capsule-machine').screenshot({path:path.join(root,'.screenshots','capsule-ready.png')});
+    if(kind==='blank')await page.locator('#spin').click();
+    else {await page.locator('#capsule-drop').focus();await page.keyboard.press('Enter')}
+    assert.equal(await page.evaluate(()=>capsulePhase),'opening');
+    await page.evaluate(()=>{revealCapsule();revealCapsule();gacha()});
+    assert.equal(await page.locator('#result').getAttribute('open'),null,'opening precedes result');
+    await page.locator('#result[open]').waitFor();
+    assert.equal(await page.locator('#name').textContent(),kind==='win'?await page.evaluate(()=>drinks[0].name):kind==='blank'?'空奖':'再来一次');
+    if(kind==='win'){recorded++;await page.waitForFunction(n=>history.length===n,recorded)}
+    assert.equal(await total(),recorded,'only one winning capsule record');
+    await close();
+  }
+  await page.emulateMedia({reducedMotion:'reduce'});
   // Existing modes still produce a result and save one record each.
   for (const mode of ['wheel','capsule','box']) {
     await force('win');await page.locator('#mode-' + mode).click();
     if (mode === 'box') {await page.locator('.lucky-box').first().click();await page.locator('#box-detail').click();}
-    else await page.locator('#spin').click();
+    else {await page.locator('#spin').click();if(mode==='capsule'){await page.waitForFunction(()=>capsulePhase==='ready');await page.locator('#capsule-drop').click()}}
     await page.locator('#result[open]').waitFor();recorded++;await page.waitForFunction(n => history.length === n, recorded);await close();
   }
   await page.locator('#open-odds').click();
@@ -121,21 +172,28 @@ let browser;
   await page.locator('#odds-close').click();
   // Mobile layouts and screenshots.
   await page.setViewportSize({ width: 390, height: 844 });
-  for (const mode of ['slot','scratch']) {
+  for (const mode of ['slot','scratch','capsule']) {
     await page.locator('#mode-' + mode).click();
     if (mode === 'scratch') await page.locator('#scratch-word').click();
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), mode + ' mobile overflow');
     await page.screenshot({ path: path.join(root, '.screenshots', 'games-' + mode + '-mobile.png'), fullPage: true });
   }
+  await page.locator('#mode-scratch').click();
   for(const width of [390,320]){
     await page.setViewportSize({width,height:844});
     await force('blank');await page.locator('#scratch-number').click();
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'number ticket mobile overflow');
-    assert.equal(await page.locator('.ticket-number-row').count(),5);
+    assert.equal(await page.locator('.ticket-number-row').count(),15);
     await page.locator('#spin').click();await close();
     assert.equal(await page.locator('.ticket-cell.winner').count(),0);
     assert.equal(await page.locator('.ticket-cell').count(),15);
     await page.screenshot({path:path.join(root,'.screenshots','number-ticket-'+width+'.png'),fullPage:true});
+  }
+  for(const width of [320,390]){
+    await page.setViewportSize({width,height:844});await page.locator('#mode-capsule').click();
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'capsule mobile overflow');
+    const machine=await page.locator('#capsule-machine').boundingBox();assert.ok(machine.x>=0&&machine.x+machine.width<=width);
+    await page.locator('#capsule-machine').screenshot({path:path.join(root,'.screenshots','capsule-machine-'+width+'.png')});
   }
   // Single drink and empty menus: no accidental three-of-a-kind blank, no stale ticket.
   await page.evaluate(() => { drinks=drinks.slice(0,1);renderAll(); });
@@ -145,6 +203,35 @@ let browser;
   assert.equal(await page.locator('#slot-play').isDisabled(), true);
   await page.locator('#mode-scratch').click();assert.equal(await page.locator('#spin').isDisabled(), true);
   assert.equal(await page.evaluate(() => scratchDrink), null);
+  // General prize management: real CSV upload, preview, import, edit and downloads.
+  await page.evaluate(async()=>enterApp(await api('/api/login',{method:'POST',body:JSON.stringify({username:'admin',password:'admin123'})})));
+  await page.locator('#admin-config summary').click();
+  const csv=require('../inventory').toCSV([{brand:'',name:'无线耳机',price:1299.99,note:'蓝色，凭券领取'},{brand:'',name:'无线耳机',price:1299.99,note:'重复'}]);
+  await page.locator('#import-file').setInputFiles({name:'gifts.csv',mimeType:'text/csv',buffer:Buffer.from(csv)});
+  await page.locator('#import-preview').waitFor({state:'visible'});
+  assert.match(await page.locator('#import-summary').textContent(),/新增 1 条，重复跳过 1 条/);
+  await page.locator('#confirm-import').click();
+  await page.waitForFunction(()=>drinks.some(d=>d.name==='无线耳机'));
+  const giftRow=page.locator('#config-list tr').filter({hasText:'无线耳机'});
+  assert.equal(await giftRow.locator('.price-input').inputValue(),'1299.99');
+  await giftRow.getByRole('button',{name:'编辑',exact:true}).click();
+  await page.locator('#new-name').fill('蓝牙耳机');await page.locator('#new-note').fill('礼品备注');
+  await page.locator('#save-item').click();
+  await page.waitForFunction(()=>drinks.some(d=>d.name==='蓝牙耳机'));
+  await page.locator('#new-name').fill('礼品卡');await page.locator('#new-price').fill('100');await page.locator('#save-item').click();
+  await page.waitForFunction(()=>drinks.some(d=>d.name==='礼品卡'));
+  for(const [id,expected] of [['download-template','奖品导入模板.csv'],['export-items','奖品清单.csv']]){
+    const downloadPromise=page.waitForEvent('download');await page.locator('#'+id).click();
+    const download=await downloadPromise;assert.equal(download.suggestedFilename(),expected);
+    assert.equal(await download.failure(),null);
+  }
+  for(const width of [390,320]){
+    await page.setViewportSize({width,height:844});
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'management mobile overflow');
+  }
+  await page.screenshot({path:path.join(root,'.screenshots','prize-management-mobile.png'),fullPage:true});
+  await page.setViewportSize({width:1280,height:900});
+  await page.screenshot({path:path.join(root,'.screenshots','prize-management-desktop.png'),fullPage:true});
   assert.deepEqual(errors, []);
   console.log('PASS: wins, blanks, retry, pointer scratching, lever/keyboard/shake, duplicate-click lock, history, existing modes, odds, mobile, single/empty menus');
 })().catch(error => { console.error(error);process.exitCode=1; }).finally(async () => {

@@ -47,21 +47,26 @@ test('word tickets include exactly one winning prize; blank/retry never match', 
     }
   }
 });
-test('15 numbered prizes have unique labels; only the winning number awards a prize', () => {
+test('number tickets support 1–3 lucky numbers and multiple real prizes without false wins', () => {
   for (const size of [1, 3, 23, 100]) {
     const run=rules(Array.from({length:size},(_,i)=>7+i));
-    run(`for(let i=0;i<300;i++){
-      for(const result of [drinks[0],...SPECIAL_PRIZES]){
-        const ticket=makeNumberTicket(result),matches=ticket.cards.filter(c=>c.label===ticket.lucky);
+    run(`for(let i=0;i<100;i++){
+      for(const count of [1,2,3])for(const result of [drinks[0],...SPECIAL_PRIZES]){
+        const ticket=makeNumberTicket(result,count),matches=ticket.cards.filter(c=>ticket.lucky.includes(c.label));
+        if(ticket.lucky.length!==count||new Set(ticket.lucky).size!==count)throw Error('invalid lucky numbers');
         if(ticket.cards.length!==15||new Set(ticket.cards.map(c=>c.label)).size!==15)throw Error('invalid number pool');
         if(!ticket.cards.every(c=>c.drink&&/^\\d{2}$/.test(c.label)))throw Error('missing prize');
-        if(matches.length!==(result.kind==='blank'?0:1))throw Error('unexpected match');
-        if(matches.length&&matches[0].drink!==result)throw Error('wrong prize');
-        if(result.kind==='blank'&&!ticket.cards.every(c=>!c.drink.kind))throw Error('blank must still show drinks');
+        if(!ticket.cards.every(c=>c.winner===ticket.lucky.includes(c.label)))throw Error('incorrect winner');
+        if(result.kind==='blank'&&matches.length!==0)throw Error('blank matched');
+        if(result.kind==='retry'&&(matches.length!==1||matches[0].drink!==result))throw Error('retry duplicated');
+        if(!result.kind&&(matches.length<1||matches.length>count||!matches.some(c=>c.drink===result)||matches.some(c=>c.drink.kind)))throw Error('wrong rewards');
       }
     }`);
+    run('randomIndex=()=>0');
+    for(const count of [1,2,3])assert.equal(run(`makeNumberTicket(drinks[0],${count}).cards.filter(c=>c.winner).length`),count);
   }
 });
+
 test('number cards wait for 90% scratched; other cards retain 40%', () => {
   const run=rules();
   run("let scratchType='number',ratio=.5,revealed=0;const scratchRatio=()=>ratio,setScratchProgress=()=>{},revealTicket=()=>revealed++");
