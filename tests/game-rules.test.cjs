@@ -22,7 +22,7 @@ function rules(prices = [7.3, 12, 20]) {
     ${html.match(/const SPECIAL_PRIZES=[^\n]+/)[0]}
     const drinks=${JSON.stringify(prices.map((price, i) => ({ id: i + 1, brand: '测试', name: '饮品' + i, price })))};
     let layout=[],layoutTotal=0;const tau=Math.PI*2;const priceOf=d=>d.price;
-    ${['computeLayout','randomIndex','makeTicketCards','makeSlotSymbols'].map(source).join('\n')}
+    ${['computeLayout','randomIndex','makeTicketCards','makeNumberTicket','makeSlotSymbols','checkScratch'].map(source).join('\n')}
     computeLayout();`, context);
   return expression => vm.runInContext(expression, context);
 }
@@ -36,16 +36,39 @@ test('probabilities sum to 100%, with 20% blank, 3% retry and inverse-price drin
   assert.equal(run('counts.reduce((a,b)=>a+b,0)'), 100000);
   assert.ok(run('counts.every((n,i)=>Math.abs(n/100000-layout[i].prob)<.006)'));
 });
-test('number and word tickets include exactly one winning prize; blank/retry never match', () => {
+test('word tickets include exactly one winning prize; blank/retry never match', () => {
   for (const size of [1, 3, 23, 100]) {
     const run = rules(Array.from({ length: size }, (_, i) => 7 + i));
-    for (const type of ['number', 'word']) {
+    for (const type of ['word']) {
       run(`const cards_${type}=makeTicketCards(drinks[0],'${type}')`);
       assert.equal(run(`cards_${type}.filter(c=>c.drink===drinks[0]).length`), 1);
       assert.equal(run(`new Set(cards_${type}.map(c=>c.label)).size`), Math.min(size, 6));
       assert.equal(run(`makeTicketCards(SPECIAL_PRIZES[0],'${type}').some(c=>c.label==='88'||c.label==='空')`), false);
     }
   }
+});
+test('15 numbered prizes have unique labels; only the winning number awards a prize', () => {
+  for (const size of [1, 3, 23, 100]) {
+    const run=rules(Array.from({length:size},(_,i)=>7+i));
+    run(`for(let i=0;i<300;i++){
+      for(const result of [drinks[0],...SPECIAL_PRIZES]){
+        const ticket=makeNumberTicket(result),matches=ticket.cards.filter(c=>c.label===ticket.lucky);
+        if(ticket.cards.length!==15||new Set(ticket.cards.map(c=>c.label)).size!==15)throw Error('invalid number pool');
+        if(!ticket.cards.every(c=>c.drink&&/^\\d{2}$/.test(c.label)))throw Error('missing prize');
+        if(matches.length!==(result.kind==='blank'?0:1))throw Error('unexpected match');
+        if(matches.length&&matches[0].drink!==result)throw Error('wrong prize');
+        if(result.kind==='blank'&&!ticket.cards.every(c=>!c.drink.kind))throw Error('blank must still show drinks');
+      }
+    }`);
+  }
+});
+test('number cards wait for 90% scratched; other cards retain 40%', () => {
+  const run=rules();
+  run("let scratchType='number',ratio=.5,revealed=0;const scratchRatio=()=>ratio,setScratchProgress=()=>{},revealTicket=()=>revealed++");
+  run('checkScratch()');assert.equal(run('revealed'),0);
+  run('ratio=.89;checkScratch()');assert.equal(run('revealed'),0);
+  run('ratio=.9;checkScratch()');assert.equal(run('revealed'),1);
+  run("scratchType='word';ratio=.4;checkScratch()");assert.equal(run('revealed'),2);
 });
 test('slot win is three identical drinks; blank cannot accidentally match even with one drink', () => {
   for (const size of [1, 23]) {

@@ -34,6 +34,15 @@ let browser;
       await force(kind);
       await page.locator('#scratch-' + type).click();
       if (kind === 'win') assert.equal(await page.locator(type === 'number' ? '.ticket-cell.winner' : '.ticket-word').count(), 1);
+      if(type==='number'){
+        assert.deepEqual(await page.locator('.ticket-number-row').evaluateAll(rows=>rows.map(row=>row.children.length)),[1,2,3,4,5]);
+        assert.equal(await page.locator('.ticket-cell').count(),15);
+        assert.equal(await page.locator('.ticket-cell.winner').count(),kind==='blank'?0:1);
+        assert.equal(await page.locator('.ticket-cell em').count(),15);
+        const lucky=await page.locator('.lucky-number').textContent();
+        const numbers=await page.locator('.ticket-cell b').allTextContents();
+        assert.equal(numbers.includes(lucky),kind!=='blank');
+      }
       await page.locator('#spin').click();
       await page.locator('#result[open]').waitFor();
       assert.equal(await page.locator('#name').textContent(), kind === 'win' ? await page.evaluate(() => drinks[0].name) : kind === 'blank' ? '空奖' : '再来一次');
@@ -49,6 +58,7 @@ let browser;
   }
   // Scratch using the real pointer/canvas path, not the direct reveal button.
   await force('win');await page.locator('#scratch-number').click();
+  await page.locator('#scratch').scrollIntoViewIfNeeded();
   const rect = await page.locator('#scratch').boundingBox();
   await page.mouse.move(rect.x + 4, rect.y + 10);await page.mouse.down();
   for (let y = 12; y < rect.height; y += 18) {
@@ -99,6 +109,16 @@ let browser;
     if (mode === 'scratch') await page.locator('#scratch-word').click();
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), mode + ' mobile overflow');
     await page.screenshot({ path: path.join(root, '.screenshots', 'games-' + mode + '-mobile.png'), fullPage: true });
+  }
+  for(const width of [390,320]){
+    await page.setViewportSize({width,height:844});
+    await force('blank');await page.locator('#scratch-number').click();
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'number ticket mobile overflow');
+    assert.equal(await page.locator('.ticket-number-row').count(),5);
+    await page.locator('#spin').click();await close();
+    assert.equal(await page.locator('.ticket-cell.winner').count(),0);
+    assert.equal(await page.locator('.ticket-cell').count(),15);
+    await page.screenshot({path:path.join(root,'.screenshots','number-ticket-'+width+'.png'),fullPage:true});
   }
   // Single drink and empty menus: no accidental three-of-a-kind blank, no stale ticket.
   await page.evaluate(() => { drinks=drinks.slice(0,1);renderAll(); });
