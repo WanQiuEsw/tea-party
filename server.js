@@ -63,6 +63,10 @@ CREATE TABLE IF NOT EXISTS daily_rewards (
 );
 `);
 
+if (!db.prepare('PRAGMA table_info(draws)').all().some(column => column.name === 'tier')) {
+  db.exec('ALTER TABLE draws ADD COLUMN tier TEXT');
+}
+
 // Only today's latest legacy win becomes redeemable; historical test draws remain history.
 if (!db.prepare("SELECT 1 FROM meta WHERE key = 'daily_rewards_v1'").get()) {
   db.exec('BEGIN IMMEDIATE');
@@ -239,7 +243,7 @@ const server = http.createServer(async (req, res) => {
     if (!user) return json(res, 401, { error: '请先登录' });
 
     if (pathname === '/api/winners' && req.method === 'GET') {
-      return json(res, 200, db.prepare(`SELECT d.id, d.brand, d.name,
+      return json(res, 200, db.prepare(`SELECT d.id, d.brand, d.name, d.tier,
         CASE WHEN u.username = 'demo' THEN '体验用户' ELSE substr(u.username, 1, 1) || '**' END AS username
         FROM draws d JOIN users u ON u.id = d.user_id ORDER BY d.id DESC LIMIT 20`).all());
     }
@@ -370,8 +374,9 @@ const server = http.createServer(async (req, res) => {
         const outcome = GameRules.pick(drinks, () => crypto.randomInt(0, 2 ** 32) / 2 ** 32);
         let record = null;
         if (!outcome.kind) {
-          const result = db.prepare('INSERT INTO draws (user_id, drink_id, brand, name, note, price, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
-            .run(user.id, outcome.id, outcome.brand, outcome.name, outcome.note, outcome.price, new Date().toISOString());
+          const tier = GameRules.distribution(drinks).find(entry => entry.drink.id === outcome.id).tier.key;
+          const result = db.prepare('INSERT INTO draws (user_id, drink_id, brand, name, note, price, created_at, tier) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
+            .run(user.id, outcome.id, outcome.brand, outcome.name, outcome.note, outcome.price, new Date().toISOString(), tier);
           record = db.prepare('SELECT id, brand, name, note, price, created_at FROM draws WHERE id = ?').get(result.lastInsertRowid);
         }
         if (user.role !== 'admin' && user.username !== 'demo') db.prepare('INSERT INTO daily_rewards (user_id, day, draw_id) VALUES (?, ?, ?) ON CONFLICT(user_id, day) DO UPDATE SET draw_id = excluded.draw_id')

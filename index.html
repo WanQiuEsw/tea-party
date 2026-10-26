@@ -164,6 +164,14 @@
 .winner-group{display:flex;align-items:center;gap:32px;padding-right:32px;flex-shrink:0}
 .winner-message{white-space:nowrap;display:flex;align-items:center;gap:9px}
 .winner-message::after{content:'✦';color:#e8a2bb;margin-left:20px}.winner-message strong{color:#c74772}
+.winner-badge{padding:1px 6px;border-radius:999px;font-size:11px;font-weight:700;line-height:1.5}
+.winner-king,.winner-diamond,.winner-gold,.winner-bronze{padding:3px 10px;border:1px solid;border-radius:999px}
+.winner-king{background:linear-gradient(110deg,#fff9df,#ffe59b,#fff5cf);border-color:#deb44b;box-shadow:0 0 10px #e9b64455}.winner-king strong{color:#805500}
+.winner-diamond{background:#eef9ff;border-color:#b3d6e8}.winner-diamond strong{color:#38648b}
+.winner-gold{background:#fff5e3;border-color:#e7ca8d}.winner-gold strong{color:#8a641a}
+.winner-bronze{background:#faf1e9;border-color:#e6d2bf}.winner-bronze strong{color:#87604b}
+.winner-gold .winner-badge{background:#f6dfa1;color:#785515;border:1px solid #d4b15d}
+.winner-bronze .winner-badge{background:#eeded1;color:#70462e;border:1px solid #d0ad91}
 .winner-window:focus-visible{outline:2px solid #c74772;outline-offset:2px;border-radius:4px}
 .winner-ticker:hover .winner-track,.winner-ticker:focus-within .winner-track{animation-play-state:paused}
 @keyframes winner-scroll{to{transform:translateX(-50%)}}
@@ -324,7 +332,10 @@ async function loadWinnerTicker(){
     if(!rows.length){group.textContent='等待第一份好运，下一位也许就是你';}
     else for(let i=0;i<Math.max(6,rows.length);i++){
       const row=rows[i%rows.length],message=document.createElement('span'),prize=document.createElement('strong');
-      message.className='winner-message';message.append(row.username+' 抽到了 ☕ ');prize.textContent=[row.brand,row.name].filter(Boolean).join(' · ');message.append(prize);group.append(message);
+      message.className='winner-message';message.append(row.username+' 抽到了 ');
+      const tier=GameRules.TIERS.find(t=>t.key===row.tier);
+      if(tier){const badge=document.createElement('span');message.classList.add('winner-'+tier.key);badge.className='winner-badge tier-'+tier.key;badge.textContent=(tier.key==='king'?'♛ ':'')+tier.label;message.append(badge);}
+      prize.textContent='☕ '+[row.brand,row.name].filter(Boolean).join(' · ');message.append(prize);group.append(message);
     }
     const track=winnerTicker.querySelector('.winner-track');track.replaceChildren(group);
     if(rows.length){const copy=group.cloneNode(true);copy.setAttribute('aria-hidden','true');track.append(copy);track.style.setProperty('--winner-duration',Math.max(40,rows.length*7)+'s');}
