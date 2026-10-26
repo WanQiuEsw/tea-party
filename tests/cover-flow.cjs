@@ -1,4 +1,4 @@
-// Isolated app: the cover must leave the wheel playable in the first mobile screen.
+// Isolated app: the text-only intro must leave the wheel playable on mobile.
 const assert=require('node:assert/strict');
 const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
 const {spawn}=require('node:child_process');
@@ -12,7 +12,6 @@ const server=spawn(process.execPath,['server.js'],{cwd:temp,env:{...process.env,
 let browser;
 (async()=>{
   for(let i=0;i<80;i++){try{if((await fetch(base+'/api/me')).ok)break}catch{}await new Promise(r=>setTimeout(r,100))}
-  const art=await fetch(base+'/assets/home-cover.webp');assert.equal(art.status,200);assert.equal(art.headers.get('content-type'),'image/webp');assert.ok((await art.arrayBuffer()).byteLength<60000);
   assert.equal((await fetch(base+'/cover.css')).status,200);
   browser=await chromium.launch({headless:true,channel:process.env.TEA_BROWSER||'chrome'});
   const page=await browser.newPage({reducedMotion:'reduce'}),errors=[];
@@ -25,13 +24,11 @@ let browser;
     await page.setViewportSize({width,height});await page.evaluate(()=>scrollTo(0,0));
     const bounds=await page.evaluate(()=>{
       const box=s=>{const r=document.querySelector(s).getBoundingClientRect();return {top:r.top,bottom:r.bottom,height:r.height}};
-      const art=document.querySelector('.cover-art'),style=getComputedStyle(art);
-      return {cover:box('.intro'),wheel:box('.hub'),modes:box('.mode-switch'),overflow:document.documentElement.scrollWidth>innerWidth,fit:style.objectFit,mask:style.maskImage,ratio:art.naturalWidth/art.naturalHeight,loaded:art.naturalWidth>0};
+      return {cover:box('.intro'),wheel:box('.hub'),modes:box('.mode-switch'),overflow:document.documentElement.scrollWidth>innerWidth,images:document.querySelectorAll('.intro img').length,titleVisible:document.querySelector('.intro h1').getBoundingClientRect().height>20};
     });
     console.log(width,bounds);
     if(process.env.TEA_SCREENSHOT)await page.screenshot({path:process.env.TEA_SCREENSHOT.replace('.png','-'+width+'.png')});
-    assert.ok(bounds.loaded);assert.equal(bounds.overflow,false);assert.ok(bounds.cover.height<=(width<=850?110:160));
-    assert.equal(bounds.fit,'contain','the full image fits without cropping');assert.equal(bounds.mask,'none','image edges are not masked');assert.equal(bounds.ratio,3,'use the complete panoramic image, not an extracted illustration');
+    assert.equal(bounds.images,0,'intro illustration is removed');assert.ok(bounds.titleVisible);assert.equal(bounds.overflow,false);assert.ok(bounds.cover.height<=(width<=850?110:160));
     if(width<=850){assert.ok(bounds.modes.bottom<height,'all game choices visible');assert.ok(bounds.wheel.bottom<height,'wheel action visible without scrolling')}
   }
   await page.setViewportSize({width:390,height:844});
@@ -40,5 +37,5 @@ let browser;
   }
   await page.locator('#wheel-spin').click();await page.locator('#result').waitFor({state:'visible'});
   assert.equal(await page.locator('.intro').count(),1);assert.deepEqual(errors,[]);
-  console.log('Compact cover, mobile first-screen wheel, seven game choices and draw passed.');
+  console.log('Text-only intro, mobile first-screen wheel, seven game choices and draw passed.');
 })().catch(e=>{console.error(e);process.exitCode=1}).finally(async()=>{if(browser)await browser.close();server.kill();await new Promise(r=>server.once('exit',r));fs.rmSync(temp,{recursive:true,force:true})});

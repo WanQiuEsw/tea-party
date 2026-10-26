@@ -93,16 +93,15 @@ for (const [username, password, role] of ACCOUNTS) {
   ).run(username, `${salt}:${hashPassword(password, salt)}`, role);
 }
 
-// Import the supplied 2026-10-26 reference menu once; preserve existing history and notes.
-if (!db.prepare("SELECT 1 FROM meta WHERE key = 'catalog_20261026'").get()) {
+// Replace the previous menu once with the supplied price list; draw history stays intact.
+if (!db.prepare("SELECT 1 FROM meta WHERE key = 'catalog_replace_20261026'").get()) {
   const catalog = require('./catalog.json').map(Inventory.normalize);
   db.exec('BEGIN IMMEDIATE');
   try {
-    for (const [oldBrand, brand] of [['瑞幸', '瑞幸咖啡'], ['库迪', '库迪咖啡']])
-      db.prepare('UPDATE OR IGNORE drinks SET brand = ? WHERE brand = ?').run(brand, oldBrand);
-    const insert = db.prepare('INSERT INTO drinks (brand, name, note, price) VALUES (?, ?, ?, ?) ON CONFLICT(brand, name) DO UPDATE SET price = excluded.price');
+    db.exec('DELETE FROM user_menus; DELETE FROM user_shops; DELETE FROM drinks;');
+    const insert = db.prepare('INSERT INTO drinks (brand, name, note, price) VALUES (?, ?, ?, ?)');
     for (const d of catalog) insert.run(d.brand, d.name, d.note, d.price);
-    db.prepare("INSERT INTO meta (key, value) VALUES ('catalog_20261026', '1')").run();
+    db.prepare("INSERT INTO meta (key, value) VALUES ('catalog_replace_20261026', '1')").run();
     db.exec('COMMIT');
   } catch (err) { db.exec('ROLLBACK'); throw err; }
 }
@@ -218,7 +217,7 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       return res.end(PAGE);
     }
-    if (['/inventory.js', '/game-rules.js', '/fortune.js', '/flip.css', '/wheel.css', '/scratch.css', '/cover.css', '/assets/home-cover.webp', '/assets/scratch-cover.webp', '/assets/number-cover.webp', '/assets/flip-card-back.webp', '/assets/milk-tea-glass.webp'].includes(pathname) && req.method === 'GET') {
+    if (['/inventory.js', '/game-rules.js', '/fortune.js', '/flip.css', '/wheel.css', '/scratch.css', '/cover.css', '/assets/scratch-cover.webp', '/assets/number-cover.webp', '/assets/flip-card-back.webp', '/assets/milk-tea-glass.webp'].includes(pathname) && req.method === 'GET') {
       res.writeHead(200, { 'Content-Type': pathname.endsWith('.css') ? 'text/css; charset=utf-8' : pathname.endsWith('.webp') ? 'image/webp' : 'text/javascript; charset=utf-8' });
       return res.end(fs.readFileSync(path.join(__dirname, pathname.slice(1))));
     }

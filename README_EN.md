@@ -42,7 +42,7 @@ After logging in as admin, the admin sections appear below the wheel and odds li
 
 ## Notes
 
-- `tea.db` is created automatically on first run and imported once from the supplied 2026-10-26 reference menu (`catalog.json`: 77 brands, 924 items); clearing the list will not bring them back. Existing catalogs receive a one-time additive import, updating matching reference prices while preserving notes and draw history. Prices are supplied reference values, not live store prices.
+- `tea.db` is created automatically on first run and imported once from the supplied 2026-10-26 reference menu (`catalog.json`: 14 brands, 168 items); clearing the list will not bring them back. Existing catalogs are replaced once with docs/奶茶价格表_2026-10-26.md, clearing old prizes, notes, personal exclusions and shop selections while preserving draw history and redemption records. Prices are supplied reference values, not live store prices.
 - Sessions live in memory. After a restart `demo` signs in automatically; regular users and the admin need to log in again.
 - `index.html` is loaded at startup; restart the server after editing it.
 - Set a different port with `PORT=3001 node server.js`.
