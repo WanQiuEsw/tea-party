@@ -68,11 +68,12 @@ function hashPassword(password, salt) {
   return crypto.scryptSync(password, salt, 32).toString('hex');
 }
 
-// 固定账号：两个普通用户与一个管理员
+// 固定账号：测试账号、两个普通用户与一个管理员
 const ACCOUNTS = [
   ['user', '123456', 'user'],
   ['ping', '123456', 'user'],
   ['admin', 'admin123', 'admin'],
+  ['demo', crypto.randomBytes(24).toString('hex'), 'user'],
 ];
 // 固定账号：每次启动同步密码，已有数据库（如旧密码）也会自动更新
 for (const [username, password, role] of ACCOUNTS) {
@@ -119,7 +120,7 @@ const SESSION_TTL = 7 * 24 * 60 * 60 * 1000;
 
 function quota(user) {
   const day = GameRules.dayKey();
-  if (user.role === 'admin') return {day, unlimited: true, remaining: 1, redeemed: false, currentReward: null};
+  if (user.role === 'admin' || user.username === 'demo') return {day, unlimited: true, remaining: 1, redeemed: false, currentReward: null};
   const reward = rewardsFor(user).find(r => r.day === day);
   const redeemed = !!reward?.redeemed_at;
   return {day, unlimited: true, remaining: redeemed ? 0 : 1, redeemed, currentReward: reward && !redeemed ? reward : null};
@@ -196,6 +197,8 @@ async function login(req, res) {
   if (!crypto.timingSafeEqual(Buffer.from(stored, 'hex'), Buffer.from(candidate, 'hex'))) {
     return json(res, 401, { error: '账号或密码不正确' });
   }
+  const previousToken = tokenOf(req);
+  if (previousToken) sessions.delete(previousToken);
   res.setHeader('Set-Cookie', setSession(res, user.id));
   return json(res, 200, { id: user.id, username: user.username, role: user.role });
 }
@@ -223,6 +226,12 @@ const server = http.createServer(async (req, res) => {
 
     if (pathname === '/api/me' && req.method === 'GET') {
       return json(res, 200, { user: currentUser(req) });
+    }
+    if (pathname === '/api/demo' && req.method === 'POST') {
+      const demo = db.prepare("SELECT id, username, role FROM users WHERE username = 'demo'").get();
+      const previousToken = tokenOf(req);
+      if (previousToken) sessions.delete(previousToken);
+      return json(res, 200, demo, {'Set-Cookie': setSession(res, demo.id)});
     }
     if (pathname === '/api/login' && req.method === 'POST') return await login(req, res);
     if (pathname === '/api/logout' && req.method === 'POST') return logout(req, res);
@@ -334,7 +343,7 @@ const server = http.createServer(async (req, res) => {
             .run(user.id, outcome.id, outcome.brand, outcome.name, outcome.note, outcome.price, new Date().toISOString());
           record = db.prepare('SELECT id, brand, name, note, price, created_at FROM draws WHERE id = ?').get(result.lastInsertRowid);
         }
-        if (user.role !== 'admin') db.prepare('INSERT INTO daily_rewards (user_id, day, draw_id) VALUES (?, ?, ?) ON CONFLICT(user_id, day) DO UPDATE SET draw_id = excluded.draw_id')
+        if (user.role !== 'admin' && user.username !== 'demo') db.prepare('INSERT INTO daily_rewards (user_id, day, draw_id) VALUES (?, ?, ?) ON CONFLICT(user_id, day) DO UPDATE SET draw_id = excluded.draw_id')
           .run(user.id, allowance.day, record?.id ?? null);
         const remaining = quota(user);
         db.exec('COMMIT');
