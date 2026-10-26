@@ -1,0 +1,21 @@
+#wheel-stage{padding:12px 0 4px}
+#wheel-stage .wheel-wrap{width:min(100%,560px);padding:13px;border:2px solid #edb4c7;background:linear-gradient(135deg,#fffdf9 2%,#ffdce8 20%,#f4b4cc 48%,#fff3f7 72%,#e9a6c1);box-shadow:inset 0 2px 3px #fff,inset 0 -3px 6px #cd789958,0 8px 0 #eac5d4,0 18px 38px #a2507021;isolation:isolate}
+#wheel-stage .wheel-wrap:after{content:'';position:absolute;inset:5px;border:2px solid #fff9;border-radius:50%;box-shadow:inset 0 0 0 2px #dd97b54d;pointer-events:none;z-index:2}
+#wheel-stage .wheel-wrap:before{top:-9px;left:calc(50% - 17px);width:34px;height:45px;border:0;border-radius:14px 14px 17px 17px;clip-path:polygon(0 0,100% 0,96% 36%,50% 100%,4% 36%);background:linear-gradient(135deg,#fca6c4,#bb3f6b 70%,#9b3158);box-shadow:inset 2px 2px 3px #fff9;filter:drop-shadow(0 3px 2px #8c365c44)}
+#wheel-stage #wheel{border:1px solid #fffaf4;background:#fff8ed}
+#wheel-stage .hub{width:25%;height:25%;min-width:66px;min-height:66px;max-width:134px;max-height:134px;border:3px solid #fff9;border-radius:50%;background:radial-gradient(circle at 32% 18%,#fff9fc 0,#fbd8e5 28%,#efa8c4 70%,#dd80a8);color:#79384f;box-shadow:0 0 0 3px #dc8eac,inset 0 2px 5px #fff,0 7px 15px #a6587840;font-size:clamp(14px,2.2vw,23px);font-weight:800;line-height:1.2;z-index:3}
+#wheel-stage .hub:before{content:'';position:absolute;inset:5px;border-radius:50%;border:1px solid #fff6;pointer-events:none}
+#wheel-stage .hub:hover:not(:disabled){background:radial-gradient(circle at 32% 18%,#fff,#ffe1ee 28%,#f5b8d0 70%,#e58caf);box-shadow:0 0 0 3px #d680a3,inset 0 2px 5px #fff,0 8px 22px #a6587859}
+#wheel-stage .hub:focus-visible{outline:3px solid #7855c4;outline-offset:7px}
+#wheel-stage .hub:disabled{background:radial-gradient(circle at 30% 20%,#fff9f6,#eddae1);color:#896476;box-shadow:0 0 0 3px #dcbfcb,inset 0 2px 5px #fff,0 5px 12px #a6587820}
+#wheel-stage .hub small{font:700 clamp(8px,1vw,11px)/1.2 'Segoe UI',sans-serif;letter-spacing:2px;color:#a5496e;margin-top:5px}
+#wheel-stage .wheel-caption{margin:20px 0 0;color:#946577;font-size:12px;letter-spacing:2px}
+@media(max-width:640px){
+  #wheel-stage{padding-top:10px}
+  #wheel-stage .wheel-wrap{padding:8px;box-shadow:inset 0 2px 3px #fff,inset 0 -2px 4px #cd789958,0 6px 0 #eac5d4,0 14px 28px #a250701c}
+  #wheel-stage .wheel-wrap:after{inset:3px;border-width:1px}
+  #wheel-stage .wheel-wrap:before{width:26px;height:35px;left:calc(50% - 13px);top:-8px}
+  #wheel-stage .hub{border-width:2px;font-size:clamp(14px,4vw,20px)}
+  #wheel-stage .hub small{margin-top:3px}
+  #wheel-stage .wheel-caption{margin-top:17px;font-size:11px;letter-spacing:1px}
+}

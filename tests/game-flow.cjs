@@ -5,7 +5,7 @@ const {spawn}=require('node:child_process');
 const {DatabaseSync}=require('node:sqlite');
 const {chromium}=require('playwright');
 const root=path.join(__dirname,'..'),temp=fs.mkdtempSync(path.join(os.tmpdir(),'tea-games-'));
-for(const file of ['server.js','catalog.json','index.html','inventory.js','game-rules.js','fortune.js','flip.css','scratch.css'])fs.copyFileSync(path.join(root,file),path.join(temp,file));
+for(const file of ['server.js','catalog.json','index.html','inventory.js','game-rules.js','fortune.js','flip.css','scratch.css','wheel.css'])fs.copyFileSync(path.join(root,file),path.join(temp,file));
 fs.mkdirSync(path.join(temp,'assets'));
 for(const file of ['flip-card-back.webp','milk-tea-glass.webp','scratch-cover.webp','number-cover.webp'])fs.copyFileSync(path.join(root,'assets',file),path.join(temp,'assets',file));
 fs.appendFileSync(path.join(temp,'game-rules.js'),"\nif(typeof module!=='undefined'){let calls=0;module.exports.pick=drinks=>calls++%2===0?module.exports.RETRY:drinks[0]}\n");
