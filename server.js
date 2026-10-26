@@ -239,6 +239,12 @@ const server = http.createServer(async (req, res) => {
     const user = currentUser(req);
     if (!user) return json(res, 401, { error: '请先登录' });
 
+    if (pathname === '/api/winners' && req.method === 'GET') {
+      return json(res, 200, db.prepare(`SELECT d.id, d.brand, d.name,
+        CASE WHEN u.username = 'demo' THEN '体验用户' ELSE substr(u.username, 1, 1) || '**' END AS username
+        FROM draws d JOIN users u ON u.id = d.user_id ORDER BY d.id DESC LIMIT 20`).all());
+    }
+
     if (pathname === '/api/quota' && req.method === 'GET') return json(res, 200, quota(user));
 
     if (pathname === '/api/rewards' && req.method === 'GET') return json(res, 200, rewardsFor(user));
