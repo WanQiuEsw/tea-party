@@ -119,6 +119,7 @@ const SESSION_TTL = 7 * 24 * 60 * 60 * 1000;
 
 function quota(user) {
   const day = GameRules.dayKey();
+  if (user.role === 'admin') return {day, unlimited: true, remaining: 1, redeemed: false, currentReward: null};
   const reward = rewardsFor(user).find(r => r.day === day);
   const redeemed = !!reward?.redeemed_at;
   return {day, unlimited: true, remaining: redeemed ? 0 : 1, redeemed, currentReward: reward && !redeemed ? reward : null};
@@ -214,8 +215,8 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       return res.end(PAGE);
     }
-    if (['/inventory.js', '/game-rules.js'].includes(pathname) && req.method === 'GET') {
-      res.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8' });
+    if (['/inventory.js', '/game-rules.js', '/fortune.js', '/flip.css', '/assets/flip-card-back.webp'].includes(pathname) && req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': pathname.endsWith('.css') ? 'text/css; charset=utf-8' : pathname.endsWith('.webp') ? 'image/webp' : 'text/javascript; charset=utf-8' });
       return res.end(fs.readFileSync(path.join(__dirname, pathname.slice(1))));
     }
     if (!pathname.startsWith('/api/')) return json(res, 404, { error: '页面不存在' });
@@ -333,7 +334,7 @@ const server = http.createServer(async (req, res) => {
             .run(user.id, outcome.id, outcome.brand, outcome.name, outcome.note, outcome.price, new Date().toISOString());
           record = db.prepare('SELECT id, brand, name, note, price, created_at FROM draws WHERE id = ?').get(result.lastInsertRowid);
         }
-        db.prepare('INSERT INTO daily_rewards (user_id, day, draw_id) VALUES (?, ?, ?) ON CONFLICT(user_id, day) DO UPDATE SET draw_id = excluded.draw_id')
+        if (user.role !== 'admin') db.prepare('INSERT INTO daily_rewards (user_id, day, draw_id) VALUES (?, ?, ?) ON CONFLICT(user_id, day) DO UPDATE SET draw_id = excluded.draw_id')
           .run(user.id, allowance.day, record?.id ?? null);
         const remaining = quota(user);
         db.exec('COMMIT');

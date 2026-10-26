@@ -22,7 +22,7 @@ test('CSV and item validation reject malformed data', () => {
 
 test('admin import is atomic, skips duplicates, preserves old data and enforces permissions and capacity', async () => {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'tea-inventory-'));
-  for (const file of ['server.js','index.html','inventory.js','game-rules.js']) fs.copyFileSync(path.join(__dirname,'..',file),path.join(temp,file));
+  for (const file of ['server.js','index.html','inventory.js','game-rules.js','fortune.js']) fs.copyFileSync(path.join(__dirname,'..',file),path.join(temp,file));
   const server = spawn(process.execPath, ['server.js'], {cwd:temp, env:{...process.env,PORT:'3148'},windowsHide:true,stdio:'pipe'});
   const request = async (url, body, cookie='', method=body?'POST':'GET') => {
     const res = await fetch('http://127.0.0.1:3148'+url,{method,headers:{'Content-Type':'application/json',cookie},body:body?JSON.stringify(body):undefined});

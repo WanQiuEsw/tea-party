@@ -6,7 +6,7 @@ const {DatabaseSync}=require('node:sqlite');
 
 test('unlimited redraws retain one reward per day; confirmed replacement, persistence and exactly-once redemption',async()=>{
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'tea-rewards-'));
-  for(const file of ['server.js','index.html','inventory.js','game-rules.js'])fs.copyFileSync(path.join(__dirname,'..',file),path.join(temp,file));
+  for(const file of ['server.js','index.html','inventory.js','game-rules.js','fortune.js'])fs.copyFileSync(path.join(__dirname,'..',file),path.join(temp,file));
   const outcomeFile=path.join(temp,'outcome.txt');fs.writeFileSync(outcomeFile,'retry');
   fs.appendFileSync(path.join(temp,'game-rules.js'),"\nmodule.exports.pick=drinks=>{const value=require('fs').readFileSync(require('path').join(__dirname,'outcome.txt'),'utf8');return value==='retry'?module.exports.RETRY:drinks[Number(value)]};\n");
   const port=40000+process.pid%10000,base='http://127.0.0.1:'+port;let server;
@@ -69,12 +69,26 @@ test('unlimited redraws retain one reward per day; confirmed replacement, persis
     await stop();await start();user=await login('user');
     assert.equal((await request('/api/quota',user)).data.redeemed,true);assert.equal((await request('/api/draws',user,{})).status,429);
     assert.equal((await request('/api/draws',await login('ping'),{})).status,201,'accounts have independent rewards');
+    let admin=await login('admin');
+    result=await request('/api/draws',admin,{});assert.equal(result.status,201);
+    const adminRecord=result.data.record.id;
+    assert.equal(result.data.quota.currentReward,null,'admin draws do not create daily rewards');
+    const adminDb=new DatabaseSync(path.join(temp,'tea.db'));
+    adminDb.prepare('INSERT INTO daily_rewards (user_id,day,draw_id) SELECT user_id,?,id FROM draws WHERE id=?').run(result.data.quota.day,adminRecord);adminDb.close();
+    assert.equal((await request('/api/rewards/redeem',admin,{drawIds:[adminRecord]})).status,200);
+    assert.equal((await request('/api/quota',admin)).data.redeemed,false,'redeemed admin can still draw');
+    const adminDraws=await Promise.all(Array.from({length:5},()=>request('/api/draws',admin,{})));
+    assert.ok(adminDraws.every(r=>r.status===201&&r.data.record),'admin draws need no replacement confirmation');
+    rewards=(await request('/api/rewards',admin)).data;assert.equal(rewards.length,1);assert.equal(rewards[0].id,adminRecord);assert.ok(rewards[0].redeemed_at,'existing redemption is preserved');
+    await stop();await start();admin=await login('admin');
+    assert.equal((await request('/api/draws',admin,{})).status,201,'admin stays unlimited after restart');
+    assert.equal((await request('/api/draws',await login('user'),{})).status,429,'ordinary users remain limited');
   }finally{if(server&&server.exitCode===null)await stop()}
 });
 
 test('legacy migration keeps only today latest win and never recreates forfeited or redeemed rewards',async()=>{
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'tea-reward-migration-'));
-  for(const file of ['server.js','index.html','inventory.js','game-rules.js'])fs.copyFileSync(path.join(__dirname,'..',file),path.join(temp,file));
+  for(const file of ['server.js','index.html','inventory.js','game-rules.js','fortune.js'])fs.copyFileSync(path.join(__dirname,'..',file),path.join(temp,file));
   const db=new DatabaseSync(path.join(temp,'tea.db'));
   db.exec(`CREATE TABLE draws (id INTEGER PRIMARY KEY, user_id INTEGER, drink_id INTEGER, brand TEXT, name TEXT, note TEXT, price REAL, created_at TEXT);
     CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT);`);
