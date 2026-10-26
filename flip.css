@@ -16,9 +16,7 @@
 .flip-brand{max-width:100%;font:10px 'Microsoft YaHei',sans-serif;color:#b3637b;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .flip-name{max-width:100%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font:700 17px/1.5 'Microsoft YaHei',sans-serif;overflow-wrap:anywhere}
 .flip-price{font:11px 'Microsoft YaHei',sans-serif;color:#a47839}
-.flip-tea{position:relative;display:block;width:44px;height:53px;margin:16px 0 7px;border:3px solid #77534c;border-radius:6px 6px 14px 14px;background:linear-gradient(#f9e2b8 25%,#d5a271 25%);transform:rotate(-7deg)}
-.flip-tea:before{content:'';position:absolute;left:25px;top:-18px;width:5px;height:20px;background:#ef86a8;border:1px solid #77534c;transform:rotate(10deg)}
-.flip-tea:after{content:'•ᴗ•';position:absolute;inset:10px 0 0;font:17px/1.4 sans-serif;color:#77534c;text-align:center}
+.flip-tea{display:block;flex-shrink:0;width:64px;height:72px;margin:4px 0}
 .flip-card:after{content:attr(data-label);position:absolute;left:0;right:0;bottom:-24px;font:10px monospace;letter-spacing:2px;color:#b18c62}
 .flip-card.chosen{z-index:3;transform:translateY(-9px) scale(1.06)}
 .flip-card.chosen:after{content:'✦ 你的好运';color:#a87730;font-weight:bold}
@@ -44,6 +42,6 @@
 @keyframes flipBurst{0%{transform:scale(.5);opacity:0}30%{opacity:1}100%{transform:scale(2.1);opacity:.3}}
 @keyframes flipTwinkle{0%,100%{opacity:.2}50%{opacity:1}}
 @keyframes flipStarBurst{0%{opacity:0;transform:rotate(var(--angle)) translateY(-25px) scale(.4)}20%{opacity:1}100%{opacity:0;transform:rotate(var(--angle)) translateY(-145px) scale(1.1)}}
-@media(max-width:640px){.flip-scene{padding:22px 12px 18px}.flip-deck{gap:10px;padding:25px 2px;margin-top:15px}.flip-front{gap:4px;padding:8px 5px;border-radius:12px}.flip-back{border-radius:12px}.flip-front>small{font-size:8px;letter-spacing:0}.flip-brand{font-size:9px}.flip-name{font-size:12px}.flip-price{font-size:9px}.flip-tea{width:30px;height:36px;border-width:2px;margin:10px 0 3px}.flip-tea:before{left:17px;top:-13px;height:14px;width:4px}.flip-tea:after{inset:6px 0 0;font-size:12px}.flip-stars i{font-size:17px}.flip-scene .eyebrow{font-size:10px;letter-spacing:2px}}
-@media(max-width:360px){.flip-front>small{display:none}.flip-front{gap:3px}.flip-tea{width:24px;height:28px;margin:7px 0 2px}.flip-tea:before{left:12px}.flip-tea:after{inset:3px 0 0;font-size:10px}}
+@media(max-width:640px){.flip-scene{padding:22px 12px 18px}.flip-deck{gap:10px;padding:25px 2px;margin-top:15px}.flip-front{gap:4px;padding:8px 5px;border-radius:12px}.flip-back{border-radius:12px}.flip-front>small{font-size:8px;letter-spacing:0}.flip-brand{font-size:9px}.flip-name{font-size:12px}.flip-price{font-size:9px}.flip-tea{width:44px;height:50px;margin:2px 0}.flip-stars i{font-size:17px}.flip-scene .eyebrow{font-size:10px;letter-spacing:2px}}
+@media(max-width:360px){.flip-front>small{display:none}.flip-front{gap:3px}.flip-tea{width:36px;height:40px;margin:0}}
 @media(prefers-reduced-motion:reduce){.flip-card,.flip-inner,.flip-back:after{transition:none}.flip-card.spinning .flip-inner,.flip-card.spinning:before,.flip-card.spinning .flip-orbit,.flip-card.spinning .flip-stars i,.flip-card.revealed:before,.flip-card.revealed .flip-stars i{animation:none}.flip-orbit,.flip-stars{display:none}}

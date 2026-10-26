@@ -5,13 +5,15 @@ const {spawn}=require('node:child_process');
 
 test('passwordless demo is unlimited, non-redeemable and cannot manage prizes; account switching preserves failed logins',async()=>{
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'tea-auth-'));
-  for(const file of ['server.js','index.html','inventory.js','game-rules.js','fortune.js'])fs.copyFileSync(path.join(__dirname,'..',file),path.join(temp,file));
+  for(const file of ['server.js','catalog.json','index.html','inventory.js','game-rules.js','fortune.js'])fs.copyFileSync(path.join(__dirname,'..',file),path.join(temp,file));
   fs.appendFileSync(path.join(temp,'game-rules.js'),'\nmodule.exports.pick=drinks=>drinks[0];\n');
   const port=30000+process.pid%10000,base='http://127.0.0.1:'+port;
   const server=spawn(process.execPath,['server.js'],{cwd:temp,env:{...process.env,PORT:String(port)},windowsHide:true,stdio:'pipe'});
   const request=async(url,cookie='',body)=>{
     const res=await fetch(base+url,{method:body?'POST':'GET',headers:{cookie,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
-    return {status:res.status,data:await res.json(),cookie:res.headers.get('set-cookie')?.split(';')[0]};
+    const result={status:res.status,data:await res.json(),cookie:res.headers.get('set-cookie')?.split(';')[0]};
+    if(result.cookie&&res.ok&&(url==='/api/login'||url==='/api/demo'))await fetch(base+'/api/menu',{method:'PUT',headers:{cookie:result.cookie,'Content-Type':'application/json'},body:JSON.stringify({brand:'古茗',excludedIds:[]})});
+    return result;
   };
   try{
     let ready=false;for(let i=0;i<80;i++){try{if((await request('/api/me')).status===200){ready=true;break}}catch{}await new Promise(r=>setTimeout(r,100))}assert.ok(ready);

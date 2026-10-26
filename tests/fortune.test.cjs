@@ -75,27 +75,8 @@ test('brand changes immediately discard ineligible captions; matching is exact',
   assert.ok(Fortune.brandEntries['蜜雪冰城'].some(e => e[1] === '最近爱上一座城，叫蜜雪冰城。'));
 });
 
-test('result dialog uses the winning brand and uses generic captions for mixed rewards', () => {
-  const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm');
-  const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-  const showResult = html.split('\n').find(line => line.startsWith('function showResult('));
-  assert.ok(showResult);
-  const elements = new Map();
-  const context = vm.createContext({
-    Fortune, fortuneState: {}, Math: Object.assign(Object.create(Math), { random: () => 0.999999 }), layout: [], mode: 'wheel', drinks: [],
-    celebrate: () => 'common', priceLabel: () => '¥10',
-    $: id => { if (!elements.has(id)) elements.set(id, { showModal() {} }); return elements.get(id); }
-  });
-  vm.runInContext(showResult, context);
-  const mixue = { brand: '蜜雪冰城', name: '柠檬水', price: 10 };
-  context.showResult(mixue);
-  assert.ok(Fortune.brandEntries['蜜雪冰城'].some(e => e[1] === elements.get('share-text').textContent));
-  context.showResult(mixue, [mixue, { ...mixue, name: '奶茶' }]);
-  assert.equal(context.fortuneState.brand, '蜜雪冰城');
-  context.showResult(mixue, [mixue, { brand: '喜茶', name: '果茶' }]);
-  assert.ok(Fortune.entries.slice(0, 66).some(e => e[1] === elements.get('share-text').textContent));
-  const previous = context.fortuneState;
-  context.showResult({ kind: 'retry', name: '再来一次' });
-  assert.equal(elements.get('share-note').hidden, true);
-  assert.equal(context.fortuneState, previous, 'retry does not consume a caption');
+test('result dialog has no prize notes or social caption controls', () => {
+  const html=require('node:fs').readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8');
+  for(const id of ['notes','share-note','share-text','copy-share'])assert.ok(!html.includes('id="'+id+'"'));
+  assert.ok(!html.includes('Fortune.next'));
 });

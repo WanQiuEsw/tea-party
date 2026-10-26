@@ -6,7 +6,7 @@ const {DatabaseSync}=require('node:sqlite');
 
 test('unlimited redraws retain one reward per day; confirmed replacement, persistence and exactly-once redemption',async()=>{
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'tea-rewards-'));
-  for(const file of ['server.js','index.html','inventory.js','game-rules.js','fortune.js'])fs.copyFileSync(path.join(__dirname,'..',file),path.join(temp,file));
+  for(const file of ['server.js','catalog.json','index.html','inventory.js','game-rules.js','fortune.js'])fs.copyFileSync(path.join(__dirname,'..',file),path.join(temp,file));
   const outcomeFile=path.join(temp,'outcome.txt');fs.writeFileSync(outcomeFile,'retry');
   fs.appendFileSync(path.join(temp,'game-rules.js'),"\nmodule.exports.pick=drinks=>{const value=require('fs').readFileSync(require('path').join(__dirname,'outcome.txt'),'utf8');return value==='retry'?module.exports.RETRY:drinks[Number(value)]};\n");
   const port=40000+process.pid%10000,base='http://127.0.0.1:'+port;let server;
@@ -16,7 +16,9 @@ test('unlimited redraws retain one reward per day; confirmed replacement, persis
   };
   const request=async(url,cookie='',body)=>{
     const res=await fetch(base+url,{method:body?'POST':'GET',headers:{cookie,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
-    return {status:res.status,data:await res.json(),cookie:res.headers.get('set-cookie')?.split(';')[0]};
+    const result={status:res.status,data:await res.json(),cookie:res.headers.get('set-cookie')?.split(';')[0]};
+    if(result.cookie&&res.ok&&(url==='/api/login'||url==='/api/demo'))await fetch(base+'/api/menu',{method:'PUT',headers:{cookie:result.cookie,'Content-Type':'application/json'},body:JSON.stringify({brand:'古茗',excludedIds:[]})});
+    return result;
   };
   const login=async(username)=>(await request('/api/login','',{username,password:username==='admin'?'admin123':'123456'})).cookie;
   const stop=async()=>{const done=new Promise(r=>server.once('exit',r));server.kill();await done};
@@ -88,7 +90,7 @@ test('unlimited redraws retain one reward per day; confirmed replacement, persis
 
 test('legacy migration keeps only today latest win and never recreates forfeited or redeemed rewards',async()=>{
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'tea-reward-migration-'));
-  for(const file of ['server.js','index.html','inventory.js','game-rules.js','fortune.js'])fs.copyFileSync(path.join(__dirname,'..',file),path.join(temp,file));
+  for(const file of ['server.js','catalog.json','index.html','inventory.js','game-rules.js','fortune.js'])fs.copyFileSync(path.join(__dirname,'..',file),path.join(temp,file));
   const db=new DatabaseSync(path.join(temp,'tea.db'));
   db.exec(`CREATE TABLE draws (id INTEGER PRIMARY KEY, user_id INTEGER, drink_id INTEGER, brand TEXT, name TEXT, note TEXT, price REAL, created_at TEXT);
     CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT);`);

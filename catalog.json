@@ -1,0 +1,5546 @@
+[
+  {
+    "brand": "霸王茶姬",
+    "name": "伯牙绝弦",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "霸王茶姬",
+    "name": "花田乌龙",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "霸王茶姬",
+    "name": "黔野山月亮",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "霸王茶姬",
+    "name": "桂馥兰香",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "霸王茶姬",
+    "name": "青青糯山",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "霸王茶姬",
+    "name": "归云南·云漫普洱",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "霸王茶姬",
+    "name": "轻因·伯牙柠檬奶",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "霸王茶姬",
+    "name": "白雾红尘",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "霸王茶姬",
+    "name": "轻因·伯牙绝弦",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "霸王茶姬",
+    "name": "归云南·日照金山",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "霸王茶姬",
+    "name": "寻香山茶",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "霸王茶姬",
+    "name": "橙巧可可",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "古茗",
+    "name": "猫山王榴莲椰椰",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "古茗",
+    "name": "猫山王榴莲拿铁",
+    "note": "",
+    "price": 18.9
+  },
+  {
+    "brand": "古茗",
+    "name": "超A芝士葡萄",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "古茗",
+    "name": "桂花酒酿小丸子",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "古茗",
+    "name": "黑糖珍珠牛乳",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "古茗",
+    "name": "美式咖啡",
+    "note": "",
+    "price": 8.9
+  },
+  {
+    "brand": "古茗",
+    "name": "香草籽雪芙拿铁",
+    "note": "",
+    "price": 15.9
+  },
+  {
+    "brand": "古茗",
+    "name": "生椰拿铁",
+    "note": "",
+    "price": 13.9
+  },
+  {
+    "brand": "古茗",
+    "name": "云岭茉莉",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "古茗",
+    "name": "大叔奶茶",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "古茗",
+    "name": "茉莉奶绿",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "古茗",
+    "name": "杨枝甘露轻盈版",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "茶百道",
+    "name": "固体杨枝甘露",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "茶百道",
+    "name": "奥利奥半熟芝士球",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "茶百道",
+    "name": "黑糖珍珠奶茶Pro",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "茶百道",
+    "name": "超厚芋泥奶绿",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "茶百道",
+    "name": "奥利奥半熟芝士",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "茶百道",
+    "name": "都灵可可拿铁",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "茶百道",
+    "name": "抹茶半熟芝士球",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "茶百道",
+    "name": "超厚芋泥奶绿(芋泥加量版)",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "茶百道",
+    "name": "埃塞瑰夏美式",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "茶百道",
+    "name": "生椰拿铁",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "茶百道",
+    "name": "芒果冰奶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "茶百道",
+    "name": "豆乳玉麒麟",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "蜜雪冰城",
+    "name": "芝士奶盖四季春",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "蜜雪冰城",
+    "name": "黑糖珍珠鲜牛乳",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "蜜雪冰城",
+    "name": "冰鲜柠檬水",
+    "note": "",
+    "price": 4
+  },
+  {
+    "brand": "蜜雪冰城",
+    "name": "棒打鲜橙",
+    "note": "",
+    "price": 6
+  },
+  {
+    "brand": "蜜雪冰城",
+    "name": "茉莉绿茶",
+    "note": "",
+    "price": 4
+  },
+  {
+    "brand": "蜜雪冰城",
+    "name": "黑糖珍珠撞奶",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "蜜雪冰城",
+    "name": "葡萄冰美式",
+    "note": "",
+    "price": 6
+  },
+  {
+    "brand": "蜜雪冰城",
+    "name": "草莓啵啵",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "蜜雪冰城",
+    "name": "高山四季春茶",
+    "note": "",
+    "price": 4
+  },
+  {
+    "brand": "蜜雪冰城",
+    "name": "茉莉奶绿",
+    "note": "",
+    "price": 6
+  },
+  {
+    "brand": "蜜雪冰城",
+    "name": "蜜桃四季春",
+    "note": "",
+    "price": 7
+  },
+  {
+    "brand": "蜜雪冰城",
+    "name": "柠檬红茶",
+    "note": "",
+    "price": 5
+  },
+  {
+    "brand": "瑞幸咖啡",
+    "name": "全冰黑巧美式",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "瑞幸咖啡",
+    "name": "小黄油美式",
+    "note": "",
+    "price": 32
+  },
+  {
+    "brand": "瑞幸咖啡",
+    "name": "茉莉花香拿铁",
+    "note": "",
+    "price": 32
+  },
+  {
+    "brand": "瑞幸咖啡",
+    "name": "咸芝士·豆乳鸳鸯拿铁",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "瑞幸咖啡",
+    "name": "全冰小黄油美式",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "瑞幸咖啡",
+    "name": "小黄油拿铁（原创）",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "瑞幸咖啡",
+    "name": "苹果C美式",
+    "note": "",
+    "price": 32
+  },
+  {
+    "brand": "瑞幸咖啡",
+    "name": "拿铁",
+    "note": "",
+    "price": 29
+  },
+  {
+    "brand": "瑞幸咖啡",
+    "name": "生椰拿铁（首创）",
+    "note": "",
+    "price": 32
+  },
+  {
+    "brand": "瑞幸咖啡",
+    "name": "陨石拿铁",
+    "note": "",
+    "price": 32
+  },
+  {
+    "brand": "瑞幸咖啡",
+    "name": "橙C美式(首创)",
+    "note": "",
+    "price": 32
+  },
+  {
+    "brand": "瑞幸咖啡",
+    "name": "丝绒拿铁",
+    "note": "",
+    "price": 32
+  },
+  {
+    "brand": "库迪咖啡",
+    "name": "超神南瓜燕麦拿铁",
+    "note": "",
+    "price": 29
+  },
+  {
+    "brand": "库迪咖啡",
+    "name": "精萃澳白",
+    "note": "",
+    "price": 24
+  },
+  {
+    "brand": "库迪咖啡",
+    "name": "锡兰金杯鸳鸯拿铁",
+    "note": "",
+    "price": 29
+  },
+  {
+    "brand": "库迪咖啡",
+    "name": "铂金精品美式(加浓)",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "库迪咖啡",
+    "name": "超神南瓜燕麦奶",
+    "note": "",
+    "price": 26
+  },
+  {
+    "brand": "库迪咖啡",
+    "name": "经典拿铁",
+    "note": "",
+    "price": 24
+  },
+  {
+    "brand": "库迪咖啡",
+    "name": "芝此青绿",
+    "note": "",
+    "price": 30
+  },
+  {
+    "brand": "库迪咖啡",
+    "name": "生椰拿铁",
+    "note": "",
+    "price": 27
+  },
+  {
+    "brand": "库迪咖啡",
+    "name": "潘帕斯蓝椰拿铁",
+    "note": "",
+    "price": 30
+  },
+  {
+    "brand": "库迪咖啡",
+    "name": "海盐焦糖陨石拿铁",
+    "note": "",
+    "price": 32
+  },
+  {
+    "brand": "库迪咖啡",
+    "name": "百香芒芒双响炮",
+    "note": "",
+    "price": 26
+  },
+  {
+    "brand": "库迪咖啡",
+    "name": "月下金桂拿铁",
+    "note": "",
+    "price": 29
+  },
+  {
+    "brand": "煲珠公",
+    "name": "老红糖珍珠奶茶（首创）",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "煲珠公",
+    "name": "米盖芒芒冰",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "煲珠公",
+    "name": "塔希提柠檬茶",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "煲珠公",
+    "name": "麻木薯薯（开创者）",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "煲珠公",
+    "name": "木薯牛奶（开创者）",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "煲珠公",
+    "name": "旭梦干杯同款",
+    "note": "",
+    "price": 19.9
+  },
+  {
+    "brand": "煲珠公",
+    "name": "老红糖珍珠奶茶-大杯",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "煲珠公",
+    "name": "芒芒塔希提柠茶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "煲珠公",
+    "name": "塔希提柠檬水",
+    "note": "",
+    "price": 7
+  },
+  {
+    "brand": "煲珠公",
+    "name": "芭乐柠香冰茶",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "煲珠公",
+    "name": "米盖芭乐牛乳",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "煲珠公",
+    "name": "芭乐糯香酸奶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "沪上阿姨",
+    "name": "糖烤板栗黑糖波波",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "沪上阿姨",
+    "name": "固体杨枝甘露",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "沪上阿姨",
+    "name": "杨枝甘露经典版",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "沪上阿姨",
+    "name": "千目抹茶波波",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "沪上阿姨",
+    "name": "热浅浅清茉（茉莉针王轻乳茶）",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "沪上阿姨",
+    "name": "小黄油美式",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "沪上阿姨",
+    "name": "法式香草籽芝士拿铁",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "沪上阿姨",
+    "name": "厚布蕾波波牛乳茶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "沪上阿姨",
+    "name": "QQ美莓奶茶",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "沪上阿姨",
+    "name": "手作黑糖波波牛乳茶",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "沪上阿姨",
+    "name": "血糯米奶茶",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "沪上阿姨",
+    "name": "桃桃蜜柚",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "喜茶",
+    "name": "芒椰糯米饭",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "喜茶",
+    "name": "烤黑糖波波牛乳茶",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "喜茶",
+    "name": "烤黑糖波波牛乳(首创)",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "喜茶",
+    "name": "咸酪厚抹",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "喜茶",
+    "name": "苦巧·咸酪碎银子",
+    "note": "",
+    "price": 25
+  },
+  {
+    "brand": "喜茶",
+    "name": "三倍厚抹",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "喜茶",
+    "name": "芒芒甘露(首创)",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "喜茶",
+    "name": "轻芝多肉葡萄(首创)",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "喜茶",
+    "name": "咸酪碎银子",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "喜茶",
+    "name": "清爽芭乐提(红芭乐)",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "喜茶",
+    "name": "酷黑莓桑(首创)",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "喜茶",
+    "name": "满杯红柚(首创)",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "奈雪的茶",
+    "name": "烤布蕾红苹果",
+    "note": "",
+    "price": 23
+  },
+  {
+    "brand": "奈雪的茶",
+    "name": "霸气柠檬油柑(首创)",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "奈雪的茶",
+    "name": "奈雪3倍超C小橙瓶",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "奈雪的茶",
+    "name": "法式可可草莓摩卡",
+    "note": "",
+    "price": 26
+  },
+  {
+    "brand": "奈雪的茶",
+    "name": "手熬黑糖珍珠鲜牛奶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "奈雪的茶",
+    "name": "熔岩法式可可慕斯",
+    "note": "",
+    "price": 23
+  },
+  {
+    "brand": "奈雪的茶",
+    "name": "霸气杨枝甘露",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "奈雪的茶",
+    "name": "霸气橙子",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "奈雪的茶",
+    "name": "初雪云酪泰橘(有顶)",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "奈雪的茶",
+    "name": "草莓法式可可",
+    "note": "",
+    "price": 23
+  },
+  {
+    "brand": "奈雪的茶",
+    "name": "霸气小红杏桃桃",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "奈雪的茶",
+    "name": "初雪柠酪泰橘(有顶)",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "一点点",
+    "name": "藏青盐咸奶绿",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "一点点",
+    "name": "QQ美莓奶茶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "一点点",
+    "name": "红茶玛奇朵",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "一点点",
+    "name": "苹果茉莉绿",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "一点点",
+    "name": "A2牛乳红茶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "一点点",
+    "name": "可可芭蕾",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "一点点",
+    "name": "波霸奶茶",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "一点点",
+    "name": "抹茶",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "一点点",
+    "name": "养乐多绿",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "一点点",
+    "name": "阿华田",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "一点点",
+    "name": "四季奶青",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "一点点",
+    "name": "甘蔗马蹄青",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "益禾堂",
+    "name": "熔岩可可",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "益禾堂",
+    "name": "薄荷柠檬水",
+    "note": "",
+    "price": 5
+  },
+  {
+    "brand": "益禾堂",
+    "name": "薄巧熔岩可可",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "益禾堂",
+    "name": "泰奶鸳鸯拿铁",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "益禾堂",
+    "name": "板栗啵啵奶绿",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "益禾堂",
+    "name": "泰奶杨枝甘露",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "益禾堂",
+    "name": "甄选泰奶",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "益禾堂",
+    "name": "益杯烧仙草",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "益禾堂",
+    "name": "浓抹布蕾千层",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "益禾堂",
+    "name": "云朵翠峰茉莉",
+    "note": "",
+    "price": 5
+  },
+  {
+    "brand": "益禾堂",
+    "name": "杨枝甘露",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "益禾堂",
+    "name": "益禾烤奶（首创）",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "书亦烧仙草",
+    "name": "芋泥布蕾珍珠",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "书亦烧仙草",
+    "name": "书亦烧仙草",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "书亦烧仙草",
+    "name": "一桶水果茶",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "书亦烧仙草",
+    "name": "大大大块西瓜杯",
+    "note": "",
+    "price": 6
+  },
+  {
+    "brand": "书亦烧仙草",
+    "name": "一桶大脆啵啵百香凤梨",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "书亦烧仙草",
+    "name": "牛魔王黑砖奶茶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "书亦烧仙草",
+    "name": "一桶大牛魔王黑砖奶茶",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "书亦烧仙草",
+    "name": "焦糖布蕾珍珠奶茶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "书亦烧仙草",
+    "name": "仙草珍珠奶茶",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "书亦烧仙草",
+    "name": "一桶大爆有料烧仙草",
+    "note": "",
+    "price": 23
+  },
+  {
+    "brand": "书亦烧仙草",
+    "name": "粉梦芭乐冰奶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "书亦烧仙草",
+    "name": "粉芭乐柠檬茶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "茶颜悦色",
+    "name": "幽兰拿铁",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "茶颜悦色",
+    "name": "天天在向阳",
+    "note": "",
+    "price": 13.9
+  },
+  {
+    "brand": "茶颜悦色",
+    "name": "蔓越阑珊",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "茶颜悦色",
+    "name": "抹茶菩提2.0",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "茶颜悦色",
+    "name": "声声乌龙",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "茶颜悦色",
+    "name": "素颜锡兰",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "茶颜悦色",
+    "name": "桂花弄",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "茶颜悦色",
+    "name": "天酿好个秋·拿铁",
+    "note": "",
+    "price": 18.9
+  },
+  {
+    "brand": "茶颜悦色",
+    "name": "天酿好个秋·美式",
+    "note": "",
+    "price": 14.9
+  },
+  {
+    "brand": "茶颜悦色",
+    "name": "白雪戏少年·果乳茶",
+    "note": "",
+    "price": 17.9
+  },
+  {
+    "brand": "茶颜悦色",
+    "name": "麻瓜的黄油世界/晚间免费升杯",
+    "note": "",
+    "price": 14.9
+  },
+  {
+    "brand": "茶颜悦色",
+    "name": "橘子落日/晚间免费升杯",
+    "note": "",
+    "price": 15.9
+  },
+  {
+    "brand": "CoCo都可",
+    "name": "双倍鲜芋奶绿",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "CoCo都可",
+    "name": "鲜百香双响炮",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "CoCo都可",
+    "name": "奶茶吨吨桶",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "CoCo都可",
+    "name": "鲜芋牛奶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "CoCo都可",
+    "name": "珍珠奶茶",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "CoCo都可",
+    "name": "CoCo奶茶",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "CoCo都可",
+    "name": "莓莓双响炮",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "CoCo都可",
+    "name": "雪域鲜芋青稞牛奶",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "CoCo都可",
+    "name": "奶茶三兄弟",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "CoCo都可",
+    "name": "牛乳拿铁",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "CoCo都可",
+    "name": "现煮红豆沙木薯碗",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "CoCo都可",
+    "name": "黑糖珍珠奶茶",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "茉莉奶白",
+    "name": "茉莉奶白",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "茉莉奶白",
+    "name": "开心果茉莉椰",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "茉莉奶白",
+    "name": "白兰",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "茉莉奶白",
+    "name": "抹茶白兰",
+    "note": "",
+    "price": 23
+  },
+  {
+    "brand": "茉莉奶白",
+    "name": "针王苹果",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "茉莉奶白",
+    "name": "栀子奶白",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "茉莉奶白",
+    "name": "茉莉奶油芭乐",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "茉莉奶白",
+    "name": "针王葡萄",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "茉莉奶白",
+    "name": "茉莉椰冰茶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "茉莉奶白",
+    "name": "抹茶茉莉咸酪乳",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "茉莉奶白",
+    "name": "茉莉奶白（大杯）",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "茉莉奶白",
+    "name": "一朵茉莉花",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "甜啦啦",
+    "name": "清风茉白鲜奶茶",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "甜啦啦",
+    "name": "超厚芋泥大满贯",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "甜啦啦",
+    "name": "黑糖珍珠奶茶",
+    "note": "",
+    "price": 6
+  },
+  {
+    "brand": "甜啦啦",
+    "name": "杨枝甘露",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "甜啦啦",
+    "name": "一桶水果茶",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "甜啦啦",
+    "name": "芝芝红山楂",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "甜啦啦",
+    "name": "红山楂气泡",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "甜啦啦",
+    "name": "红山楂草莓",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "甜啦啦",
+    "name": "黑糖珍珠港奶",
+    "note": "",
+    "price": 5
+  },
+  {
+    "brand": "甜啦啦",
+    "name": "黄油太妃风味拿铁",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "甜啦啦",
+    "name": "花香茉莉酪酪（不用）",
+    "note": "",
+    "price": 6
+  },
+  {
+    "brand": "甜啦啦",
+    "name": "“芋”你一起出游",
+    "note": "",
+    "price": 23
+  },
+  {
+    "brand": "柠季",
+    "name": "百香柠檬冰奶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "柠季",
+    "name": "鸭屎香柠檬茶【招牌】",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "柠季",
+    "name": "茉莉手打柠檬茶 【招牌】",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "柠季",
+    "name": "特浓手打柠檬茶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "柠季",
+    "name": "传统手打柠檬茶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "柠季",
+    "name": "抹茶双柚柠檬茶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "柠季",
+    "name": "碧螺春手打香柠",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "柠季",
+    "name": "超大杯枇杷雪梨柠檬茶",
+    "note": "",
+    "price": 29
+  },
+  {
+    "brand": "柠季",
+    "name": "雪梨云朵柠檬奶",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "柠季",
+    "name": "清润雪梨枇杷冰奶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "柠季",
+    "name": "枇杷雪梨柠檬茶",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "柠季",
+    "name": "芝士奶盖铁观音乌龙茶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "林里LINLEE",
+    "name": "清新手打柠檬茶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "林里LINLEE",
+    "name": "港式丝袜奶茶（不含柠）",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "林里LINLEE",
+    "name": "黄桃凤梨冰柠茶",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "林里LINLEE",
+    "name": "单丛鸭屎香手打柠檬茶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "林里LINLEE",
+    "name": "林里招牌手打柠檬茶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "林里LINLEE",
+    "name": "泰绿手打柠檬茶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "林里LINLEE",
+    "name": "热红心苹果轻乳茶（不含柠）",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "林里LINLEE",
+    "name": "红心苹果轻乳茶（不含柠）",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "林里LINLEE",
+    "name": "抹茶椰青水（不含柠）",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "林里LINLEE",
+    "name": "热柚见浓抹奶（不含柠）",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "林里LINLEE",
+    "name": "柚见浓抹奶（不含柠）",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "林里LINLEE",
+    "name": "热港式丝袜奶茶（不含柠）",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "爷爷不泡茶",
+    "name": "兰香青柠「首创」",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "爷爷不泡茶",
+    "name": "利川红干酪",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "爷爷不泡茶",
+    "name": "手捣桃桃",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "爷爷不泡茶",
+    "name": "香椰芒果冰奶",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "爷爷不泡茶",
+    "name": "空山栀子",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "爷爷不泡茶",
+    "name": "利川红白巧柠檬",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "爷爷不泡茶",
+    "name": "荔枝白糯米奶冰",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "爷爷不泡茶",
+    "name": "荔枝冰酿「首创」",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "爷爷不泡茶",
+    "name": "武汉茉莉",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "爷爷不泡茶",
+    "name": "炭焙·四季奶青",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "爷爷不泡茶",
+    "name": "海盐柠檬奶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "爷爷不泡茶",
+    "name": "塞外玫瑰烤奶",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "茶瀑布",
+    "name": "冰蓝海盐冰奶",
+    "note": "",
+    "price": 7.9
+  },
+  {
+    "brand": "茶瀑布",
+    "name": "青苹果酸奶",
+    "note": "",
+    "price": 10.9
+  },
+  {
+    "brand": "茶瀑布",
+    "name": "QQ莓莓冰奶",
+    "note": "",
+    "price": 9.9
+  },
+  {
+    "brand": "茶瀑布",
+    "name": "咸法酪厚抹",
+    "note": "",
+    "price": 10.9
+  },
+  {
+    "brand": "茶瀑布",
+    "name": "黑糖珍珠牛奶茶",
+    "note": "",
+    "price": 8.9
+  },
+  {
+    "brand": "茶瀑布",
+    "name": "手打柠檬红茶",
+    "note": "",
+    "price": 9.9
+  },
+  {
+    "brand": "茶瀑布",
+    "name": "抹茶茉莉冰奶",
+    "note": "",
+    "price": 7.9
+  },
+  {
+    "brand": "茶瀑布",
+    "name": "大大杯百香双重奏",
+    "note": "",
+    "price": 10.9
+  },
+  {
+    "brand": "茶瀑布",
+    "name": "咸法酪小珍珠",
+    "note": "",
+    "price": 9.9
+  },
+  {
+    "brand": "茶瀑布",
+    "name": "青提茉莉冰奶",
+    "note": "",
+    "price": 8.9
+  },
+  {
+    "brand": "茶瀑布",
+    "name": "绿豆牛乳冰奶(原创)",
+    "note": "",
+    "price": 8.9
+  },
+  {
+    "brand": "茶瀑布",
+    "name": "荔枝冰奶",
+    "note": "",
+    "price": 9.9
+  },
+  {
+    "brand": "吾饮良品",
+    "name": "桃桃芒芒奶",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "吾饮良品",
+    "name": "汉口茉莉奶绿",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "吾饮良品",
+    "name": "暴打柠檬",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "吾饮良品",
+    "name": "招牌芋圆奶茶",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "吾饮良品",
+    "name": "杨枝甘露",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "吾饮良品",
+    "name": "多肉葡萄冰茶",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "吾饮良品",
+    "name": "浓醇可可牛乳",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "吾饮良品",
+    "name": "丝滑可可特调",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "吾饮良品",
+    "name": "非遗红糖珍珠可可奶",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "吾饮良品",
+    "name": "藏地·青稞咸酪乳",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "吾饮良品",
+    "name": "橙C美式（每杯现磨）",
+    "note": "",
+    "price": 13.9
+  },
+  {
+    "brand": "吾饮良品",
+    "name": "桂花米酿拿铁（每杯现磨）",
+    "note": "",
+    "price": 13.9
+  },
+  {
+    "brand": "茉酸奶",
+    "name": "原创牛油果酸奶奶昔",
+    "note": "",
+    "price": 23
+  },
+  {
+    "brand": "茉酸奶",
+    "name": "巴旦木牛油果酸奶奶昔",
+    "note": "",
+    "price": 27
+  },
+  {
+    "brand": "茉酸奶",
+    "name": "奥利奥酸奶奶昔",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "茉酸奶",
+    "name": "黑加仑葡萄干酸奶奶昔",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "茉酸奶",
+    "name": "香草牛乳热可可",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "茉酸奶",
+    "name": "榛子可可奶昔",
+    "note": "",
+    "price": 25
+  },
+  {
+    "brand": "茉酸奶",
+    "name": "冰酪蜜桃·酸奶脆墩墩",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "茉酸奶",
+    "name": "流心秋柿酸奶奶昔",
+    "note": "",
+    "price": 24
+  },
+  {
+    "brand": "茉酸奶",
+    "name": "焦糖伯爵·酸奶脆墩墩",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "茉酸奶",
+    "name": "脏脏咸奶油泰奶",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "茉酸奶",
+    "name": "酸奶云顶·芭乐茉莉冰奶",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "茉酸奶",
+    "name": "酸奶云顶·葡萄茉莉冰奶",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "阿水大杯茶",
+    "name": "超级优格寒天",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "阿水大杯茶",
+    "name": "超级薄荷奶绿",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "阿水大杯茶",
+    "name": "超级布蕾大满贯",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "阿水大杯茶",
+    "name": "珍珠奶茶",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "阿水大杯茶",
+    "name": "茉香奶绿",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "阿水大杯茶",
+    "name": "超多木薯炖奶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "阿水大杯茶",
+    "name": "木薯布蕾炖奶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "阿水大杯茶",
+    "name": "粉粉树莓酸奶",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "阿水大杯茶",
+    "name": "超级青桔气泡咖",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "阿水大杯茶",
+    "name": "超级冰美式",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "阿水大杯茶",
+    "name": "超级冰茉莉",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "阿水大杯茶",
+    "name": "超级花野红茶",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "冰淳茶饮",
+    "name": "金钻凤梨冰茶",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "冰淳茶饮",
+    "name": "招牌手捣柠檬茶",
+    "note": "",
+    "price": 7
+  },
+  {
+    "brand": "冰淳茶饮",
+    "name": "冰鲜柠檬水",
+    "note": "",
+    "price": 5
+  },
+  {
+    "brand": "冰淳茶饮",
+    "name": "杨枝甘露(升级版)",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "冰淳茶饮",
+    "name": "双芋茉香奶茶",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "冰淳茶饮",
+    "name": "芋泥芋圆奶茶",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "冰淳茶饮",
+    "name": "热橙柚",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "冰淳茶饮",
+    "name": "芋圆奶茶",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "冰淳茶饮",
+    "name": "羽衣甘蓝轻体杯",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "冰淳茶饮",
+    "name": "苹果青提茉莉",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "冰淳茶饮",
+    "name": "苹果鲜奶茶",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "冰淳茶饮",
+    "name": "苹果茉香奶茶",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "茶主张",
+    "name": "雪域青稞金桂",
+    "note": "",
+    "price": 7
+  },
+  {
+    "brand": "茶主张",
+    "name": "糯香奶霸",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "茶主张",
+    "name": "葡萄美式",
+    "note": "",
+    "price": 6.6
+  },
+  {
+    "brand": "茶主张",
+    "name": "柠柚美式",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "茶主张",
+    "name": "橙c美式2.0",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "茶主张",
+    "name": "芒芒生椰拿铁",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "茶主张",
+    "name": "百香气泡美式",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "茶主张",
+    "name": "番茄蛋花汤",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "茶主张",
+    "name": "金桔菠萝绿",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "茶主张",
+    "name": "菠萝乳酸菌",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "茶主张",
+    "name": "菠萝生椰拿铁",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "茶主张",
+    "name": "幸运盲盒",
+    "note": "",
+    "price": 9.9
+  },
+  {
+    "brand": "冰雪时光",
+    "name": "冰鲜柠檬水",
+    "note": "",
+    "price": 4
+  },
+  {
+    "brand": "冰雪时光",
+    "name": "芭乐冰柠茶",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "冰雪时光",
+    "name": "粉芭乐冰奶",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "冰雪时光",
+    "name": "抹茶芋泥牛乳",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "冰雪时光",
+    "name": "仙提冰冰乐",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "冰雪时光",
+    "name": "羽衣甘蓝柠檬茶",
+    "note": "",
+    "price": 6.9
+  },
+  {
+    "brand": "冰雪时光",
+    "name": "芋见茉莉牛乳",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "冰雪时光",
+    "name": "芋见珍珠牛乳",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "冰雪时光",
+    "name": "山楂莓莓",
+    "note": "",
+    "price": 6
+  },
+  {
+    "brand": "冰雪时光",
+    "name": "山楂桃桃",
+    "note": "",
+    "price": 6
+  },
+  {
+    "brand": "冰雪时光",
+    "name": "满杯青提茉莉",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "冰雪时光",
+    "name": "满杯青提冰冰乐",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "700CC",
+    "name": "芒芒神鲜甘露(杨枝甘露Pro版)",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "700CC",
+    "name": "山樱桃·鲜葡萄",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "700CC",
+    "name": "东北蔓越莓 (手摇版)",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "700CC",
+    "name": "大碴子奶茶",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "700CC",
+    "name": "羽衣甘蓝轻体果蔬养乐多",
+    "note": "",
+    "price": 14.9
+  },
+  {
+    "brand": "700CC",
+    "name": "羽衣甘蓝轻体果蔬瓶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "700CC",
+    "name": "茶特调·苹果茉莉香",
+    "note": "",
+    "price": 13.9
+  },
+  {
+    "brand": "700CC",
+    "name": "苹果金凤梨",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "700CC",
+    "name": "南果梨微醺特调",
+    "note": "",
+    "price": 14.9
+  },
+  {
+    "brand": "700CC",
+    "name": "桃梨",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "700CC",
+    "name": "多肉桃桃乌龙吨吨桶",
+    "note": "",
+    "price": 23
+  },
+  {
+    "brand": "700CC",
+    "name": "多肉桃桃乌龙",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "东方墨兰",
+    "name": "兰印澄塘·焕新版",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "东方墨兰",
+    "name": "玉生青提",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "东方墨兰",
+    "name": "嚼嚼黑糖珍鲜奶",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "东方墨兰",
+    "name": "嚼嚼抹茶黑乌龙",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "东方墨兰",
+    "name": "夕岚",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "东方墨兰",
+    "name": "青闲青苹果柠檬奶",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "东方墨兰",
+    "name": "瑶池蜜桃",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "东方墨兰",
+    "name": "青闲冰奶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "东方墨兰",
+    "name": "百花青柚",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "东方墨兰",
+    "name": "金香满堂",
+    "note": "",
+    "price": 23
+  },
+  {
+    "brand": "东方墨兰",
+    "name": "玉露金黄",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "东方墨兰",
+    "name": "富桂酒酿龙眼椰",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "梁小糖",
+    "name": "雪茉龙吟",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "梁小糖",
+    "name": "广西青芒柠檬桶",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "梁小糖",
+    "name": "生椰拿铁",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "梁小糖",
+    "name": "金奖茉莉拿铁",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "梁小糖",
+    "name": "海盐青芒",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "梁小糖",
+    "name": "蜜桃鲜茶",
+    "note": "",
+    "price": 6
+  },
+  {
+    "brand": "梁小糖",
+    "name": "超厚芋泥奶茶",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "梁小糖",
+    "name": "芋泥芋圆奶绿",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "梁小糖",
+    "name": "酒酿芋泥小丸子",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "梁小糖",
+    "name": "生椰龙眼冰奶",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "梁小糖",
+    "name": "鸭屎香柠檬茶（超大杯）",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "梁小糖",
+    "name": "茉莉柠檬茶（超大杯）",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "蜜城之恋",
+    "name": "百香果双响炮",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "蜜城之恋",
+    "name": "杨枝甘露",
+    "note": "",
+    "price": 9.9
+  },
+  {
+    "brand": "蜜城之恋",
+    "name": "珍珠奶茶",
+    "note": "",
+    "price": 7
+  },
+  {
+    "brand": "蜜城之恋",
+    "name": "西红柿鸡蛋汤（首创）",
+    "note": "",
+    "price": 8.8
+  },
+  {
+    "brand": "蜜城之恋",
+    "name": "紫菜鸡蛋汤（首创）",
+    "note": "",
+    "price": 8.8
+  },
+  {
+    "brand": "蜜城之恋",
+    "name": "菠菜鸡蛋汤（首创）",
+    "note": "",
+    "price": 8.8
+  },
+  {
+    "brand": "蜜城之恋",
+    "name": "没有西红柿的鸡蛋汤（首创）",
+    "note": "",
+    "price": 8.8
+  },
+  {
+    "brand": "蜜城之恋",
+    "name": "百香芒果·VC瓶",
+    "note": "",
+    "price": 9.9
+  },
+  {
+    "brand": "蜜城之恋",
+    "name": "羽衣甘蓝·小绿瓶",
+    "note": "",
+    "price": 9.9
+  },
+  {
+    "brand": "蜜城之恋",
+    "name": "胡萝卜·果蔬瓶",
+    "note": "",
+    "price": 9.9
+  },
+  {
+    "brand": "蜜城之恋",
+    "name": "荷包蛋水蜜桃糯米酸奶",
+    "note": "",
+    "price": 9.9
+  },
+  {
+    "brand": "蜜城之恋",
+    "name": "紫菜鸡蛋汤",
+    "note": "",
+    "price": 8.8
+  },
+  {
+    "brand": "兵立王",
+    "name": "黑糖波波奶绿",
+    "note": "",
+    "price": 7.9
+  },
+  {
+    "brand": "兵立王",
+    "name": "成都冰酿",
+    "note": "",
+    "price": 7.9
+  },
+  {
+    "brand": "兵立王",
+    "name": "兵王烤奶",
+    "note": "",
+    "price": 6.9
+  },
+  {
+    "brand": "兵立王",
+    "name": "生椰拿铁",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "兵立王",
+    "name": "超长火箭杯·黑糖小方",
+    "note": "",
+    "price": 9.9
+  },
+  {
+    "brand": "兵立王",
+    "name": "超长火箭杯·黑糖小方烤奶",
+    "note": "",
+    "price": 9.9
+  },
+  {
+    "brand": "兵立王",
+    "name": "超长杯·杨枝甘露班长",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "兵立王",
+    "name": "黑糖小方",
+    "note": "",
+    "price": 8.9
+  },
+  {
+    "brand": "兵立王",
+    "name": "黑糖小方烤奶",
+    "note": "",
+    "price": 8.9
+  },
+  {
+    "brand": "兵立王",
+    "name": "超长杯·超厚芋泥班长",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "兵立王",
+    "name": "薄荷奶绿吨吨桶",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "兵立王",
+    "name": "草莓杨枝甘露吨吨桶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "幸运咖",
+    "name": "大圣桶葡萄美式",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "幸运咖",
+    "name": "可可牛奶",
+    "note": "",
+    "price": 7
+  },
+  {
+    "brand": "幸运咖",
+    "name": "大杯冰美式",
+    "note": "",
+    "price": 7
+  },
+  {
+    "brand": "幸运咖",
+    "name": "手捣冰柠咖",
+    "note": "",
+    "price": 5
+  },
+  {
+    "brand": "幸运咖",
+    "name": "摇摇冰椰美式",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "幸运咖",
+    "name": "经典美式",
+    "note": "",
+    "price": 5.9
+  },
+  {
+    "brand": "幸运咖",
+    "name": "椰椰拿铁",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "幸运咖",
+    "name": "铁观音拿铁",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "幸运咖",
+    "name": "招牌冰拿铁",
+    "note": "",
+    "price": 7
+  },
+  {
+    "brand": "幸运咖",
+    "name": "岭南荔枝幸运冰",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "幸运咖",
+    "name": "杨梅吐气幸运冰",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "幸运咖",
+    "name": "福云抹茶维也纳",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "一只酸奶牛",
+    "name": "生椰白糯米酸奶",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "一只酸奶牛",
+    "name": "原味白糯米酸奶",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "一只酸奶牛",
+    "name": "原味酸奶紫米露",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "一只酸奶牛",
+    "name": "醒醒米酸·苹果柚乌龙茶",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "一只酸奶牛",
+    "name": "醒醒米酸·爆汁葡萄乌龙茶",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "一只酸奶牛",
+    "name": "黑金布蕾",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "一只酸奶牛",
+    "name": "奶金布蕾",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "一只酸奶牛",
+    "name": "奶霜慕斯布蕾",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "一只酸奶牛",
+    "name": "可可布蕾",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "一只酸奶牛",
+    "name": "【达人专享】奶金布蕾",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "一只酸奶牛",
+    "name": "【达人专享】黑金布蕾",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "一只酸奶牛",
+    "name": "米酿雪梨银耳冰摇酸奶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "KOI",
+    "name": "水晶粉角桂蜜金乌龙",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "KOI",
+    "name": "布蕾咸芝士奶绿",
+    "note": "",
+    "price": 23
+  },
+  {
+    "brand": "KOI",
+    "name": "黄金珍奶",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "KOI",
+    "name": "烤糖粉粿冬瓜金乌龙",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "KOI",
+    "name": "碳乌龙奶茶",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "KOI",
+    "name": "伯爵奶茶",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "KOI",
+    "name": "波霸奶茶",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "KOI",
+    "name": "桂蜜乳酪金乌龙奶茶",
+    "note": "",
+    "price": 23
+  },
+  {
+    "brand": "KOI",
+    "name": "桂蜜乳酪碳乌龙奶茶",
+    "note": "",
+    "price": 29
+  },
+  {
+    "brand": "KOI",
+    "name": "粉角桂蜜碳乌龙奶茶",
+    "note": "",
+    "price": 26
+  },
+  {
+    "brand": "KOI",
+    "name": "粉角桂蜜金乌龙奶茶",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "KOI",
+    "name": "水晶粉角桂蜜碳乌龙",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "京戏茶府",
+    "name": "超厚芋泥海石花",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "京戏茶府",
+    "name": "现熬▪黑糖珍珠",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "京戏茶府",
+    "name": "超厚芋泥芋圆",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "京戏茶府",
+    "name": "超厚芋泥黑糖珍珠",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "京戏茶府",
+    "name": "海石花绿豆沙牛乳",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "京戏茶府",
+    "name": "黑糖珍珠可可",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "京戏茶府",
+    "name": "奇兰鲜奶茶",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "京戏茶府",
+    "name": "超厚芋泥波波奶茶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "京戏茶府",
+    "name": "青提冰椰椰",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "京戏茶府",
+    "name": "招牌奶酪奶茶",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "京戏茶府",
+    "name": "传统奶茶（自选小料）",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "京戏茶府",
+    "name": "阿达子乌龙奶茶",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "邮局咖啡",
+    "name": "长安荔枝冰柠茶",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "邮局咖啡",
+    "name": "泰山山泉拿铁",
+    "note": "",
+    "price": 25
+  },
+  {
+    "brand": "邮局咖啡",
+    "name": "生椰拿铁",
+    "note": "",
+    "price": 40
+  },
+  {
+    "brand": "邮局咖啡",
+    "name": "椰青冰萃美式",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "邮局咖啡",
+    "name": "金桂龙井水牛乳",
+    "note": "",
+    "price": 25
+  },
+  {
+    "brand": "邮局咖啡",
+    "name": "金桂清椰美式",
+    "note": "",
+    "price": 25
+  },
+  {
+    "brand": "邮局咖啡",
+    "name": "金桂水牛奶拿铁",
+    "note": "",
+    "price": 30
+  },
+  {
+    "brand": "邮局咖啡",
+    "name": "生椰抹茶厚乳",
+    "note": "",
+    "price": 25
+  },
+  {
+    "brand": "邮局咖啡",
+    "name": "生椰抹茶拿铁",
+    "note": "",
+    "price": 30
+  },
+  {
+    "brand": "邮局咖啡",
+    "name": "脆李美式",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "邮局咖啡",
+    "name": "开心拿铁",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "邮局咖啡",
+    "name": "开心奶盖",
+    "note": "",
+    "price": 25
+  },
+  {
+    "brand": "放牛斑",
+    "name": "芋泥奶绿",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "放牛斑",
+    "name": "老红糖珍珠鲜奶茶",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "放牛斑",
+    "name": "波霸元气乌龙奶",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "放牛斑",
+    "name": "薄荷可可",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "放牛斑",
+    "name": "黄金鞑靼鲜奶茶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "放牛斑",
+    "name": "黄金鞑靼奶茶",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "放牛斑",
+    "name": "话梅芭乐",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "放牛斑",
+    "name": "鲜柠芭乐",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "放牛斑",
+    "name": "黑糖珍珠咸乳酪奶茶",
+    "note": "",
+    "price": 6.9
+  },
+  {
+    "brand": "放牛斑",
+    "name": "藿藿香香柠檬茶",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "放牛斑",
+    "name": "话梅杨桃青",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "放牛斑",
+    "name": "茉香金芒甘露",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "快乐番薯",
+    "name": "招牌薯圆奶茶",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "快乐番薯",
+    "name": "老红糖珍珠奶茶",
+    "note": "",
+    "price": 5.9
+  },
+  {
+    "brand": "快乐番薯",
+    "name": "阳光青提冰奶",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "快乐番薯",
+    "name": "多肉阳光青提",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "快乐番薯",
+    "name": "超长杯青提香水柠",
+    "note": "",
+    "price": 8.9
+  },
+  {
+    "brand": "快乐番薯",
+    "name": "抹茶琥珀珍奶",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "快乐番薯",
+    "name": "抹茶香柠冰奶",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "快乐番薯",
+    "name": "葡萄芝士胶原冻",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "快乐番薯",
+    "name": "鸭屎香单从",
+    "note": "",
+    "price": 5
+  },
+  {
+    "brand": "快乐番薯",
+    "name": "幽兰奶绿",
+    "note": "",
+    "price": 6
+  },
+  {
+    "brand": "快乐番薯",
+    "name": "葡萄椰果冰(M杯)",
+    "note": "",
+    "price": 5.9
+  },
+  {
+    "brand": "快乐番薯",
+    "name": "抹茶粉芭乐",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "茶巢",
+    "name": "珍珠布丁烤奶-M",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "茶巢",
+    "name": "巢大桶鲜果茶-T",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "茶巢",
+    "name": "巢大桶柠檬茶-T",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "茶巢",
+    "name": "鲜打巢香柠",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "茶巢",
+    "name": "芋泥奇兰珍珠-L",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "茶巢",
+    "name": "白芽奇兰-L",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "茶巢",
+    "name": "奇兰乌龙奶盖-L",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "茶巢",
+    "name": "茉莉绿茶奶盖-L",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "茶巢",
+    "name": "奇兰乌龙-L",
+    "note": "",
+    "price": 7
+  },
+  {
+    "brand": "茶巢",
+    "name": "芋泥奇兰珍珠-M",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "茶巢",
+    "name": "白芽奇兰-M",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "茶巢",
+    "name": "春雨龙井-L",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "通鲜果汁",
+    "name": "【招牌】粒粒橙汁",
+    "note": "",
+    "price": 19.9
+  },
+  {
+    "brand": "通鲜果汁",
+    "name": "【招牌】鲜剥大口橙",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "通鲜果汁",
+    "name": "麒麟西瓜汁",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "通鲜果汁",
+    "name": "宝石小红瓶",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "通鲜果汁",
+    "name": "粒粒橙汁·特调",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "通鲜果汁",
+    "name": "津津油柑·特调",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "通鲜果汁",
+    "name": "油柑·津津回甘",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "通鲜果汁",
+    "name": "清清杨桃·特调",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "通鲜果汁",
+    "name": "轻盈水润青瓜",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "通鲜果汁",
+    "name": "花香蓝莓卡士",
+    "note": "",
+    "price": 25
+  },
+  {
+    "brand": "通鲜果汁",
+    "name": "台农芒果汁",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "通鲜果汁",
+    "name": "柠香苦瓜清",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "老塞咖啡",
+    "name": "老塞奶茶（标准杯）",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "老塞咖啡",
+    "name": "梅子绿茶（标准杯）",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "老塞咖啡",
+    "name": "蓝莓绿茶（标准杯）",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "老塞咖啡",
+    "name": "百香绿茶（标准杯）",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "老塞咖啡",
+    "name": "蜂蜜绿茶（标准杯）",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "老塞咖啡",
+    "name": "布朗尼可可奶茶",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "老塞咖啡",
+    "name": "青柑金桔果茶",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "老塞咖啡",
+    "name": "青柑金桔美式",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "老塞咖啡",
+    "name": "咖椰奶酥",
+    "note": "",
+    "price": 14.8
+  },
+  {
+    "brand": "老塞咖啡",
+    "name": "咖椰黄油",
+    "note": "",
+    "price": 14.8
+  },
+  {
+    "brand": "老塞咖啡",
+    "name": "咖椰焦糖",
+    "note": "",
+    "price": 14.8
+  },
+  {
+    "brand": "老塞咖啡",
+    "name": "太妃香草燕麦拿铁（标准杯）",
+    "note": "",
+    "price": 24
+  },
+  {
+    "brand": "三四芽",
+    "name": "【首创】超上瘾鲜椰印尼红肉菠萝蜜",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "三四芽",
+    "name": "栀子茉莉轻乳",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "三四芽",
+    "name": "解腻杨桃油柑冰",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "三四芽",
+    "name": "慢磨杨桃甘蔗春茶",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "三四芽",
+    "name": "茉莉冷萃茶",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "三四芽",
+    "name": "红袍冷萃茶",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "三四芽",
+    "name": "木姜子柠檬茶",
+    "note": "",
+    "price": 12.9
+  },
+  {
+    "brand": "三四芽",
+    "name": "青提糯米香柠檬茶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "三四芽",
+    "name": "茉莉青提拧檬茶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "三四芽",
+    "name": "一口暴富葡萄气泡柠檬",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "三四芽",
+    "name": "紫气东来桑椹葡萄冰萃茉",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "三四芽",
+    "name": "四季奶青",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "猿乐山",
+    "name": "潮汕柠檬橄榄",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "猿乐山",
+    "name": "开心果米浆水牛乳",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "猿乐山",
+    "name": "芒果牛油果",
+    "note": "",
+    "price": 26
+  },
+  {
+    "brand": "猿乐山",
+    "name": "黑糖超浓抹茶",
+    "note": "",
+    "price": 24
+  },
+  {
+    "brand": "猿乐山",
+    "name": "超浓抹茶gelato",
+    "note": "",
+    "price": 27
+  },
+  {
+    "brand": "猿乐山",
+    "name": "手剥龙眼冰",
+    "note": "",
+    "price": 24
+  },
+  {
+    "brand": "猿乐山",
+    "name": "紫苏水蜜桃",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "猿乐山",
+    "name": "青杨桃橄榄",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "猿乐山",
+    "name": "青杨桃苏打",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "猿乐山",
+    "name": "草莓冰柠茶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "猿乐山",
+    "name": "橄榄轻气泡",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "猿乐山",
+    "name": "话梅茉莉春毫",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "SEVENBUS",
+    "name": "原创豆乳奶茶",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "SEVENBUS",
+    "name": "招牌丝袜奶茶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "SEVENBUS",
+    "name": "轻柠芭乐双响炮",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "SEVENBUS",
+    "name": "玉露白桃奶茶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "SEVENBUS",
+    "name": "超超超超高水果茶",
+    "note": "",
+    "price": 26
+  },
+  {
+    "brand": "SEVENBUS",
+    "name": "草莓炸弹柠茶",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "SEVENBUS",
+    "name": "港式冰打橙茶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "SEVENBUS",
+    "name": "港式奶茶雪融",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "SEVENBUS",
+    "name": "生椰丝袜奶茶",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "SEVENBUS",
+    "name": "港式柚子冰茶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "SEVENBUS",
+    "name": "生乳奶酪奶茶",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "SEVENBUS",
+    "name": "杨枝生乳奶酪",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "BACKTEA",
+    "name": "浓香锡兰红茶",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "BACKTEA",
+    "name": "清新白毫绿茶",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "BACKTEA",
+    "name": "高山四季青",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "BACKTEA",
+    "name": "炭焙乌龙绿茶",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "BACKTEA",
+    "name": "桂花毛尖",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "BACKTEA",
+    "name": "手作冬瓜茶",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "BACKTEA",
+    "name": "手作仙草甘茶",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "BACKTEA",
+    "name": "桂花厚乳((奶茶)",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "BACKTEA",
+    "name": "红豆恋鲜奶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "BACKTEA",
+    "name": "地瓜恋鲜奶",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "BACKTEA",
+    "name": "芋头恋鮮奶",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "BACKTEA",
+    "name": "芋头鲜奶绿",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "CUIDA",
+    "name": "珍珠红茶鲜奶茶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "CUIDA",
+    "name": "黑糖鲜奶",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "CUIDA",
+    "name": "草莓奶酪奶绿（原创）",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "CUIDA",
+    "name": "可可碎碎冰（原创）",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "CUIDA",
+    "name": "芝芝波霸红茶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "CUIDA",
+    "name": "芝芝茗茶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "CUIDA",
+    "name": "韵香大红袍",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "CUIDA",
+    "name": "百香果超芒",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "CUIDA",
+    "name": "白桃乌龙茶",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "CUIDA",
+    "name": "椰椰碎碎冰",
+    "note": "",
+    "price": 23
+  },
+  {
+    "brand": "CUIDA",
+    "name": "芋圆奶茶",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "CUIDA",
+    "name": "凤梨青茶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "茶山派",
+    "name": "蜜桃铁观音",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "茶山派",
+    "name": "芋泥满杯",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "茶山派",
+    "name": "桃花仙",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "茶山派",
+    "name": "空野新竹",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "茶山派",
+    "name": "武夷三诀",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "茶山派",
+    "name": "石榴日本柚特调（首创）",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "茶山派",
+    "name": "石榴日本柚特调",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "茶山派",
+    "name": "小台芒柠檬冰茶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "茶山派",
+    "name": "小台芒茉莉冰沙",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "茶山派",
+    "name": "闽南佳荔",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "茶山派",
+    "name": "武夷烟火",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "茶山派",
+    "name": "远山木梨",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "茶普吉",
+    "name": "岩乳红章",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "茶普吉",
+    "name": "红糖美人",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "茶普吉",
+    "name": "紫妍白韵（紫娟白茶）",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "茶普吉",
+    "name": "紫雾生香（紫娟生普）",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "茶普吉",
+    "name": "小种映红（小种红茶）",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "茶普吉",
+    "name": "清江云藤（恩施藤茶）",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "茶普吉",
+    "name": "叁见",
+    "note": "",
+    "price": 25
+  },
+  {
+    "brand": "茶普吉",
+    "name": "丹白含香（白牡丹）",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "茶普吉",
+    "name": "崇安丹岩（正岩肉桂）",
+    "note": "",
+    "price": 49
+  },
+  {
+    "brand": "茶普吉",
+    "name": "咖普云渡",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "茶普吉",
+    "name": "参见",
+    "note": "",
+    "price": 25
+  },
+  {
+    "brand": "茶普吉",
+    "name": "单叙",
+    "note": "",
+    "price": 9.9
+  },
+  {
+    "brand": "八婆婆烧仙草",
+    "name": "牛奶烧仙草",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "八婆婆烧仙草",
+    "name": "奶茶烧仙草",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "八婆婆烧仙草",
+    "name": "蜂蜜烧仙草",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "八婆婆烧仙草",
+    "name": "荔浦芋蜂蜜烧仙草",
+    "note": "",
+    "price": 13.9
+  },
+  {
+    "brand": "八婆婆烧仙草",
+    "name": "荔浦芋牛奶烧仙草",
+    "note": "",
+    "price": 13.9
+  },
+  {
+    "brand": "八婆婆烧仙草",
+    "name": "荔浦芋海石花牛奶烧仙草",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "八婆婆烧仙草",
+    "name": "荔浦芋奶茶烧仙草",
+    "note": "",
+    "price": 13.9
+  },
+  {
+    "brand": "八婆婆烧仙草",
+    "name": "荔浦芋茉莉豆浆烧仙草",
+    "note": "",
+    "price": 13.9
+  },
+  {
+    "brand": "八婆婆烧仙草",
+    "name": "蜂蜜烧仙草大杯",
+    "note": "",
+    "price": 10.5
+  },
+  {
+    "brand": "八婆婆烧仙草",
+    "name": "奶茶烧仙草大杯",
+    "note": "",
+    "price": 10.5
+  },
+  {
+    "brand": "八婆婆烧仙草",
+    "name": "黑糖珍珠奶茶烧仙草",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "八婆婆烧仙草",
+    "name": "芋圆牛乳烧仙草",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "菟竹集",
+    "name": "茉莉抹茶",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "菟竹集",
+    "name": "牛油果椰",
+    "note": "",
+    "price": 23
+  },
+  {
+    "brand": "菟竹集",
+    "name": "黄精牛油果奶昔",
+    "note": "",
+    "price": 33
+  },
+  {
+    "brand": "菟竹集",
+    "name": "黄精生椰拿铁",
+    "note": "",
+    "price": 28
+  },
+  {
+    "brand": "菟竹集",
+    "name": "菟竹肉桂",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "菟竹集",
+    "name": "黄精普洱",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "菟竹集",
+    "name": "茉莉绿茶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "菟竹集",
+    "name": "超浓抹茶",
+    "note": "",
+    "price": 29
+  },
+  {
+    "brand": "菟竹集",
+    "name": "美式咖啡",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "菟竹集",
+    "name": "生椰拿铁",
+    "note": "",
+    "price": 19.8
+  },
+  {
+    "brand": "菟竹集",
+    "name": "拿铁咖啡",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "菟竹集",
+    "name": "牛油果甘露",
+    "note": "",
+    "price": 23
+  },
+  {
+    "brand": "一树一叶",
+    "name": "闽南红芭乐芒果冰茶",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "一树一叶",
+    "name": "福建茉莉野山楂（原创）",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "一树一叶",
+    "name": "闽南红芭乐草莓冰茶（原创）",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "一树一叶",
+    "name": "黑糖粉圆生酪抹茶（原创）",
+    "note": "",
+    "price": 24
+  },
+  {
+    "brand": "一树一叶",
+    "name": "芋泥冬瓜乌龙",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "一树一叶",
+    "name": "话梅小番茄",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "一树一叶",
+    "name": "黑糖粉馃芋头冰（原创）",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "一树一叶",
+    "name": "闽南红芭乐抹茶",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "一树一叶",
+    "name": "青芒茉莉小青柑",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "一树一叶",
+    "name": "青芒青柑马蹄冰",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "一树一叶",
+    "name": "山楂草莓奶芙",
+    "note": "",
+    "price": 24
+  },
+  {
+    "brand": "一树一叶",
+    "name": "山楂草莓（无奶芙版）",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "BASAO Tea",
+    "name": "蜜香红乌龙 · 手冲茶",
+    "note": "",
+    "price": 78
+  },
+  {
+    "brand": "BASAO Tea",
+    "name": "红乌龙康普茶",
+    "note": "",
+    "price": 36
+  },
+  {
+    "brand": "BASAO Tea",
+    "name": "醇香黑乌龙 · 手冲茶",
+    "note": "",
+    "price": 78
+  },
+  {
+    "brand": "BASAO Tea",
+    "name": "杉林溪青乌龙 · 手冲茶",
+    "note": "",
+    "price": 78
+  },
+  {
+    "brand": "BASAO Tea",
+    "name": "BASAO黑乌龙康普茶气泡饮（单罐）",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "BASAO Tea",
+    "name": "BASAO红乌龙康普茶气泡饮（单罐）",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "BASAO Tea",
+    "name": "锡兰肉桂焦糖茶拿铁",
+    "note": "",
+    "price": 45
+  },
+  {
+    "brand": "BASAO Tea",
+    "name": "黑乌龙茶拿铁",
+    "note": "",
+    "price": 40
+  },
+  {
+    "brand": "BASAO Tea",
+    "name": "日式抹茶拿铁",
+    "note": "",
+    "price": 40
+  },
+  {
+    "brand": "BASAO Tea",
+    "name": "日式焙茶拿铁",
+    "note": "",
+    "price": 40
+  },
+  {
+    "brand": "BASAO Tea",
+    "name": "盐津脆桃铁观音",
+    "note": "",
+    "price": 42
+  },
+  {
+    "brand": "BASAO Tea",
+    "name": "清椰冰茶",
+    "note": "",
+    "price": 35
+  },
+  {
+    "brand": "广芳园",
+    "name": "招牌杨枝甘露",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "广芳园",
+    "name": "王炸水果茶",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "广芳园",
+    "name": "冻柠茶（大）",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "广芳园",
+    "name": "丝袜奶茶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "广芳园",
+    "name": "超柠鸭屎香（中）",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "广芳园",
+    "name": "超柠鸭屎香（大）",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "广芳园",
+    "name": "鸭屎香轻乳茶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "广芳园",
+    "name": "桃桃冰美式",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "广芳园",
+    "name": "芒芒葡萄甘露",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "广芳园",
+    "name": "葡萄鲜奶啵啵冻",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "广芳园",
+    "name": "莓莓鲜奶啵啵冻",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "广芳园",
+    "name": "芋泥波波茶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "茶满方庭",
+    "name": "芋泥奶冻碎碎冰",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "茶满方庭",
+    "name": "青序",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "茶满方庭",
+    "name": "凤梨柠香碎碎冰",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "茶满方庭",
+    "name": "本味闽南·墨染观音（边搅边喝）",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "茶满方庭",
+    "name": "闽南观音奶茶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "茶满方庭",
+    "name": "墨染碎碎冰",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "茶满方庭",
+    "name": "墨染佳人（边搅边喝）",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "茶满方庭",
+    "name": "橘柚茉莉奶盖",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "茶满方庭",
+    "name": "橘柚茉莉冰茶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "茶满方庭",
+    "name": "橄榄冰柚",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "茶满方庭",
+    "name": "青柚话梅冰茶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "茶满方庭",
+    "name": "茶满丨墨染兰庭（边搅边喝）",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "茶姑上山",
+    "name": "古法手作黑糖珍珠",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "茶姑上山",
+    "name": "芋泥粉粿冰沙",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "茶姑上山",
+    "name": "浮李",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "茶姑上山",
+    "name": "白月光荔枝粉粿",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "茶姑上山",
+    "name": "墨云可可普洱",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "茶姑上山",
+    "name": "茉莉可可",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "茶姑上山",
+    "name": "树杏黑巧云",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "茶姑上山",
+    "name": "山岩可可草莓",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "茶姑上山",
+    "name": "山里糯糯普洱",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "茶姑上山",
+    "name": "山顶茉莉",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "茶姑上山",
+    "name": "黑糖珍珠碎碎冰",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "茶姑上山",
+    "name": "奶油桃子",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "红瓶茶楼",
+    "name": "衣锦红袍·武夷山大红袍雪顶",
+    "note": "",
+    "price": 25
+  },
+  {
+    "brand": "红瓶茶楼",
+    "name": "福州姑娘·茉莉苹果橄榄果茶",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "红瓶茶楼",
+    "name": "红韵丹霞·大红袍鲜奶茶",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "红瓶茶楼",
+    "name": "茉莉玉芽·鲜奶茶",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "红瓶茶楼",
+    "name": "岩韵大红袍·纯茶",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "红瓶茶楼",
+    "name": "平平安安·苹果果茶",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "红瓶茶楼",
+    "name": "奇香黄皮茉莉",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "红瓶茶楼",
+    "name": "红韵·大红袍鲜奶茶",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "红瓶茶楼",
+    "name": "蓝眼泪·椰子奶盖",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "红瓶茶楼",
+    "name": "茉绿·茉莉橄榄油柑",
+    "note": "",
+    "price": 17.9
+  },
+  {
+    "brand": "红瓶茶楼",
+    "name": "心想事橙",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "红瓶茶楼",
+    "name": "爆柠莓果茉莉冰茶",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "唐沫茶兮",
+    "name": "余甘",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "唐沫茶兮",
+    "name": "青味",
+    "note": "",
+    "price": 23
+  },
+  {
+    "brand": "唐沫茶兮",
+    "name": "木梨馥",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "唐沫茶兮",
+    "name": "沫绿生香",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "唐沫茶兮",
+    "name": "幽幽乌龙",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "唐沫茶兮",
+    "name": "碧凝霜雪",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "唐沫茶兮",
+    "name": "抹茶柚子",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "唐沫茶兮",
+    "name": "冬瓜乌龙",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "唐沫茶兮",
+    "name": "罗勒酸角",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "唐沫茶兮",
+    "name": "冬枣白兰",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "唐沫茶兮",
+    "name": "山林",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "唐沫茶兮",
+    "name": "菠萝蜜",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "某有茶",
+    "name": "奇兰珍珠牛乳冰",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "某有茶",
+    "name": "焙醇黑金琥珀奶",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "某有茶",
+    "name": "杨桃凤梨春",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "某有茶",
+    "name": "金凤梨果酪",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "某有茶",
+    "name": "山竹青提鲜打冰",
+    "note": "",
+    "price": 23
+  },
+  {
+    "brand": "某有茶",
+    "name": "清柚乌龙酪乳",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "某有茶",
+    "name": "黄皮茉莉",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "某有茶",
+    "name": "青芒青提鲜打冰",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "某有茶",
+    "name": "茉莉香葡萄",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "某有茶",
+    "name": "柚子抹茶鲜打冰",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "某有茶",
+    "name": "黑糖珍珠奶茶",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "某有茶",
+    "name": "布蕾珍珠奶茶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "毓家茶铺",
+    "name": "毓家土橄榄【福建特产】",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "毓家茶铺",
+    "name": "毓家三味茶【一茶三香】",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "毓家茶铺",
+    "name": "武夷金肉桂【闽北特色】",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "毓家茶铺",
+    "name": "油柑杨桃清【不含茶】",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "毓家茶铺",
+    "name": "山野猕猴桃【好真实】",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "毓家茶铺",
+    "name": "山野猕猴桃",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "毓家茶铺",
+    "name": "青提小青柑【天然果香】",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "毓家茶铺",
+    "name": "大山黄皮果【农户果园直达】",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "毓家茶铺",
+    "name": "花香鲜乳茶【2.0升级款】",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "毓家茶铺",
+    "name": "東方茉莉白",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "毓家茶铺",
+    "name": "鸭屎香鲜乳",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "毓家茶铺",
+    "name": "福州茉莉.柠",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "TEA'SDAY 时下有茶",
+    "name": "橄榄油甘青茉莉",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "TEA'SDAY 时下有茶",
+    "name": "首创｜闽南芭乐开心冰昔",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "TEA'SDAY 时下有茶",
+    "name": "开心牡丹大红袍",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "TEA'SDAY 时下有茶",
+    "name": "闽南芭乐茉莉冰茶",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "TEA'SDAY 时下有茶",
+    "name": "武夷红茶牡丹",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "TEA'SDAY 时下有茶",
+    "name": "漳平奇兰乌龙",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "TEA'SDAY 时下有茶",
+    "name": "福鼎陈皮白茶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "TEA'SDAY 时下有茶",
+    "name": "橄榄油柑青茉莉",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "TEA'SDAY 时下有茶",
+    "name": "武夷肉桂岩茶",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "TEA'SDAY 时下有茶",
+    "name": "【能量海盐】海苔观音冰奶",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "TEA'SDAY 时下有茶",
+    "name": "闽南龙眼茉莉绿",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "TEA'SDAY 时下有茶",
+    "name": "摩卡薯丸碎碎冰",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "壶见",
+    "name": "壶见铁观音牛乳茶",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "壶见",
+    "name": "呷天下",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "壶见",
+    "name": "山野柑橘柚",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "壶见",
+    "name": "石花杨桃清（原创）",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "壶见",
+    "name": "石花杨桃清",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "壶见",
+    "name": "呷欢喜",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "壶见",
+    "name": "奇兰功夫白",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "壶见",
+    "name": "石花水果佛跳墙（原创）",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "壶见",
+    "name": "自选牛乳茶大满贯",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "壶见",
+    "name": "铁观音功夫白",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "壶见",
+    "name": "自选奶茶大满贯",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "壶见",
+    "name": "茉莉葡萄杏子冰茶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "莓超疯",
+    "name": "青芒与油柑",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "莓超疯",
+    "name": "超疯真奶茶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "莓超疯",
+    "name": "白栀子青番茄",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "莓超疯",
+    "name": "青提与小青柑",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "莓超疯",
+    "name": "栀子与黄桃",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "莓超疯",
+    "name": "超疯黑糖珍珠奶茶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "莓超疯",
+    "name": "青柚话梅清橄榄",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "莓超疯",
+    "name": "青芒苹果青柑",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "莓超疯",
+    "name": "青芒青柑马蹄冰",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "莓超疯",
+    "name": "黑糖粉圆生酪抹茶",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "莓超疯",
+    "name": "抹茶芝士芭乐",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "莓超疯",
+    "name": "苹果杏子冰茶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "苏米诺",
+    "name": "春天见·糯米酸奶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "苏米诺",
+    "name": "羽衣甘蓝糯米酸奶",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "苏米诺",
+    "name": "粉雾芭乐糯米酸奶",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "苏米诺",
+    "name": "米酿鲜奶",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "苏米诺",
+    "name": "苏记米酿",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "苏米诺",
+    "name": "酒酿 · 冰茶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "苏米诺",
+    "name": "杏子 · 冰茶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "苏米诺",
+    "name": "杏子 · 糯米酸奶",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "苏米诺",
+    "name": "港式无骨肉6块",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "苏米诺",
+    "name": "地瓜条",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "苏米诺",
+    "name": "酒酿 · 冰奶",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "苏米诺",
+    "name": "老盐 · 青芒",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "风鲤治茶",
+    "name": "烟雨桃花奶芙",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "风鲤治茶",
+    "name": "闽南冬瓜青茶",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "风鲤治茶",
+    "name": "青提冰柠茶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "风鲤治茶",
+    "name": "雪芽茉莉",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "风鲤治茶",
+    "name": "雪芽茉莉柠檬茶",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "风鲤治茶",
+    "name": "超爆鸭屎香柠檬茶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "风鲤治茶",
+    "name": "春江水暖",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "风鲤治茶",
+    "name": "恬恬幽兰奶芙",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "风鲤治茶",
+    "name": "闽南铁观音奶芙",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "风鲤治茶",
+    "name": "烟雨桃花（奶油版）",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "风鲤治茶",
+    "name": "抹茶茉莉",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "风鲤治茶",
+    "name": "丛林草莓（泉州首创）",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "苍洱茶间",
+    "name": "春芒云露（芒果法酪）",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "苍洱茶间",
+    "name": "洱海月（茉香绿茶）",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "苍洱茶间",
+    "name": "苍山雪（清晨茉莉）",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "苍洱茶间",
+    "name": "青染墨柠（茉香绿茶）",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "苍洱茶间",
+    "name": "浮柠锡兰（锡兰红茶）",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "苍洱茶间",
+    "name": "叶榆城",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "苍洱茶间",
+    "name": "八月桂（桂花乌龙-鲜奶茶）",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "苍洱茶间",
+    "name": "漫山红（锡兰红茶）",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "苍洱茶间",
+    "name": "桃桃乌龙（白桃乌龙-鲜奶茶）",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "苍洱茶间",
+    "name": "韵醉佳荔（荔枝乌龙-鲜奶茶）",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "苍洱茶间",
+    "name": "柠香清瑶（柠檬水）",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "苍洱茶间",
+    "name": "一抹茶青（兰香绿茶-鲜奶茶）",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "宇宙治茶",
+    "name": "武夷·小种柠檬茶",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "宇宙治茶",
+    "name": "木薯黑糖阿达子",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "宇宙治茶",
+    "name": "牛油果糯糯冰浆",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "宇宙治茶",
+    "name": "闽南阿达子（原创）",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "宇宙治茶",
+    "name": "阿嫲芝士豆花酪（原创）",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "宇宙治茶",
+    "name": "闽南烧仙草（奶茶/甘露版）",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "宇宙治茶",
+    "name": "石磨黑芝麻冰",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "宇宙治茶",
+    "name": "闽南烧仙草（奶茶版）",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "宇宙治茶",
+    "name": "闽南烧仙草 （甘露版）",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "宇宙治茶",
+    "name": "闽南烧仙草（水牛奶版）",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "宇宙治茶",
+    "name": "手熬黑糖珍珠鲜奶茶",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "宇宙治茶",
+    "name": "山野凤梨话梅冰",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "茵菲乐",
+    "name": "奶盖红茶",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "茵菲乐",
+    "name": "椰椰泡的香茶",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "茵菲乐",
+    "name": "奶盖忆兰香",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "茵菲乐",
+    "name": "番茄梅",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "茵菲乐",
+    "name": "忆兰香奶茶",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "茵菲乐",
+    "name": "奶盖乌龙",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "茵菲乐",
+    "name": "柠檬爱玉",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "茵菲乐",
+    "name": "杨桃青茶",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "茵菲乐",
+    "name": "一芯青茶",
+    "note": "",
+    "price": 6
+  },
+  {
+    "brand": "茵菲乐",
+    "name": "柠檬小紫苏",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "茵菲乐",
+    "name": "冬瓜红茶",
+    "note": "",
+    "price": 7
+  },
+  {
+    "brand": "茵菲乐",
+    "name": "忆兰香",
+    "note": "",
+    "price": 6
+  },
+  {
+    "brand": "萃春疯",
+    "name": "黄皮冰酸乳",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "萃春疯",
+    "name": "老漳·芭乐爽",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "萃春疯",
+    "name": "春疯奶茶",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "萃春疯",
+    "name": "柚花香芋冰奶",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "萃春疯",
+    "name": "紫山药香芋冰奶",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "萃春疯",
+    "name": "香芋薄荷冰奶",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "萃春疯",
+    "name": "芋泥珍奶2019",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "萃春疯",
+    "name": "黄皮咸柠七",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "萃春疯",
+    "name": "咸柠杨桃清",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "萃春疯",
+    "name": "咸柠芭乐爽",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "萃春疯",
+    "name": "椰萃薄荷冰奶",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "萃春疯",
+    "name": "薄荷奶绿",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "隆泰泰",
+    "name": "古法·经典泰奶",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "隆泰泰",
+    "name": "冷榨·泰红苹果柚",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "隆泰泰",
+    "name": "野萃·黄皮苹果汁",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "隆泰泰",
+    "name": "鲜萃·蜂巢柠檬柚",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "隆泰泰",
+    "name": "青萃·黄皮苹果绿",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "隆泰泰",
+    "name": "冷榨·青青苹果柚",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "隆泰泰",
+    "name": "夺魁·黄金比例泰绿",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "隆泰泰",
+    "name": "手榨·塔希提香柠泰绿",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "隆泰泰",
+    "name": "泰鲜·曼谷有黄皮",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "隆泰泰",
+    "name": "手调·青苹果柠檬奶",
+    "note": "",
+    "price": 22
+  },
+  {
+    "brand": "隆泰泰",
+    "name": "鲜榨·马来青苹果汁",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "隆泰泰",
+    "name": "鲜榨·黄皮罗望茶",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "车与柠",
+    "name": "鸭屎很香柠檬茶(冷)",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "车与柠",
+    "name": "特浓渣男柠檬茶（冷)",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "车与柠",
+    "name": "港式丝袜奶茶",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "车与柠",
+    "name": "港式鸳鸯奶茶",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "车与柠",
+    "name": "港式冻柠茶",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "车与柠",
+    "name": "老盐黄皮果",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "车与柠",
+    "name": "咸梅双倍柠檬水(冷)",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "车与柠",
+    "name": "老红糖珍珠奶茶",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "车与柠",
+    "name": "橄榄柠檬茶",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "车与柠",
+    "name": "金桔柠檬",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "车与柠",
+    "name": "美式",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "车与柠",
+    "name": "海底椰柠檬茶(冷)",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "一然手作",
+    "name": "黑糖抹茶咸法酪",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "一然手作",
+    "name": "现熬·芋泥血糯米烧仙草",
+    "note": "",
+    "price": 21
+  },
+  {
+    "brand": "一然手作",
+    "name": "草熬·一然仙草蜜",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "一然手作",
+    "name": "慢熬·黑糖珍珠",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "一然手作",
+    "name": "老椰清补凉",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "一然手作",
+    "name": "古早马蹄甜汤",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "一然手作",
+    "name": "闽南粉果甜汤",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "一然手作",
+    "name": "木薯桃胶炖奶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "一然手作",
+    "name": "现蒸·血糯米",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "一然手作",
+    "name": "草熬·仙草蜜",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "一然手作",
+    "name": "黑糖珍珠抹茶咸法酪",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "一然手作",
+    "name": "鲜橙茉莉",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "摇美味",
+    "name": "招牌芋圆烧仙草",
+    "note": "",
+    "price": 9.6
+  },
+  {
+    "brand": "摇美味",
+    "name": "招牌柠檬红茶（霸王杯）",
+    "note": "",
+    "price": 20
+  },
+  {
+    "brand": "摇美味",
+    "name": "观音韵轻乳茶（中杯）",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "摇美味",
+    "name": "草莓糯米冰奶（中杯）",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "摇美味",
+    "name": "黑糖芋泥珍奶（中杯）",
+    "note": "",
+    "price": 14.4
+  },
+  {
+    "brand": "摇美味",
+    "name": "奇兰乌龙（霸王杯）",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "摇美味",
+    "name": "奇兰柠檬茶（大杯）",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "摇美味",
+    "name": "奇兰苹果杏（大杯）",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "摇美味",
+    "name": "奇兰苹果杏（中杯）",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "摇美味",
+    "name": "奇兰乌龙（大杯）",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "摇美味",
+    "name": "阳光维C橙（霸王杯）",
+    "note": "",
+    "price": 24
+  },
+  {
+    "brand": "摇美味",
+    "name": "橙C茉莉（中杯）",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "碎碎念茶",
+    "name": "草莓鲜牛乳",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "碎碎念茶",
+    "name": "碎碎冰西瓜芝士",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "碎碎念茶",
+    "name": "碎碎冻奶茶",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "碎碎念茶",
+    "name": "招牌青山粉黛",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "碎碎念茶",
+    "name": "姜枣奶（小黄姜）（热）",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "碎碎念茶",
+    "name": "新疆枣奶（热）",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "碎碎念茶",
+    "name": "奇兰乌龙(纯奶茶)",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "碎碎念茶",
+    "name": "好事花生鲜牛乳",
+    "note": "",
+    "price": 19
+  },
+  {
+    "brand": "碎碎念茶",
+    "name": "白桃乌龙(纯茶)",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "碎碎念茶",
+    "name": "碎碎念的柠檬茶",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "碎碎念茶",
+    "name": "碎碎冰麒麟瓜",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "碎碎念茶",
+    "name": "橙C美式",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "乐多滋",
+    "name": "仙草珍珠碎碎冰",
+    "note": "",
+    "price": 13
+  },
+  {
+    "brand": "乐多滋",
+    "name": "蜜香小种·蜂窝焦糖",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "乐多滋",
+    "name": "仙草·蜂窝焦糖",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "乐多滋",
+    "name": "山药桂花白",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "乐多滋",
+    "name": "山药芋泥白",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "乐多滋",
+    "name": "莲子大满贯",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "乐多滋",
+    "name": "茉莉小青柑",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "乐多滋",
+    "name": "百香小青柑",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "乐多滋",
+    "name": "碧海蓝天",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "乐多滋",
+    "name": "檀香榄话梅苏打",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "乐多滋",
+    "name": "檀香榄甘蔗冰茶",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "乐多滋",
+    "name": "青桔百香果",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "钦茶KinTea",
+    "name": "桐木关·妃子笑",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "钦茶KinTea",
+    "name": "妃子笑红茶gelato",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "钦茶KinTea",
+    "name": "红心蜜柚乌龙",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "钦茶KinTea",
+    "name": "桂妃米酿",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "钦茶KinTea",
+    "name": "老红糖珍珠奶茶",
+    "note": "",
+    "price": 14
+  },
+  {
+    "brand": "钦茶KinTea",
+    "name": "开心果芝士大红袍",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "钦茶KinTea",
+    "name": "好柿发生·云朵果奶",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "钦茶KinTea",
+    "name": "莓有烦恼·云朵果奶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "钦茶KinTea",
+    "name": "青云直上·云朵果奶",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "钦茶KinTea",
+    "name": "天心碧玉双拼Gelato",
+    "note": "",
+    "price": 17
+  },
+  {
+    "brand": "钦茶KinTea",
+    "name": "碧玉开心果Gelato",
+    "note": "",
+    "price": 18
+  },
+  {
+    "brand": "钦茶KinTea",
+    "name": "天心岩大红袍Gelato",
+    "note": "",
+    "price": 16
+  },
+  {
+    "brand": "珍点手作",
+    "name": "芋泥黑糖珍珠奶茶",
+    "note": "",
+    "price": 12
+  },
+  {
+    "brand": "珍点手作",
+    "name": "珍点奶茶",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "珍点手作",
+    "name": "杨枝甘露",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "珍点手作",
+    "name": "鲜橙茉莉冰茶",
+    "note": "",
+    "price": 7
+  },
+  {
+    "brand": "珍点手作",
+    "name": "鲜橙百香冰茶",
+    "note": "",
+    "price": 8
+  },
+  {
+    "brand": "珍点手作",
+    "name": "奇兰柠檬茶",
+    "note": "",
+    "price": 11
+  },
+  {
+    "brand": "珍点手作",
+    "name": "金边奇兰",
+    "note": "",
+    "price": 6
+  },
+  {
+    "brand": "珍点手作",
+    "name": "美式咖啡",
+    "note": "",
+    "price": 5.9
+  },
+  {
+    "brand": "珍点手作",
+    "name": "草莓奶芙",
+    "note": "",
+    "price": 15
+  },
+  {
+    "brand": "珍点手作",
+    "name": "双拼奶茶",
+    "note": "",
+    "price": 10
+  },
+  {
+    "brand": "珍点手作",
+    "name": "马蹄爆爆珠奶茶",
+    "note": "",
+    "price": 9
+  },
+  {
+    "brand": "珍点手作",
+    "name": "抹茶双芋",
+    "note": "",
+    "price": 13
+  }
+]

@@ -22,7 +22,7 @@ test('CSV and item validation reject malformed data', () => {
 
 test('admin import is atomic, skips duplicates, preserves old data and enforces permissions and capacity', async () => {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'tea-inventory-'));
-  for (const file of ['server.js','index.html','inventory.js','game-rules.js','fortune.js']) fs.copyFileSync(path.join(__dirname,'..',file),path.join(temp,file));
+  for (const file of ['server.js','catalog.json','index.html','inventory.js','game-rules.js','fortune.js']) fs.copyFileSync(path.join(__dirname,'..',file),path.join(temp,file));
   const server = spawn(process.execPath, ['server.js'], {cwd:temp, env:{...process.env,PORT:'3148'},windowsHide:true,stdio:'pipe'});
   const request = async (url, body, cookie='', method=body?'POST':'GET') => {
     const res = await fetch('http://127.0.0.1:3148'+url,{method,headers:{'Content-Type':'application/json',cookie},body:body?JSON.stringify(body):undefined});
@@ -35,7 +35,7 @@ test('admin import is atomic, skips duplicates, preserves old data and enforces 
     assert.equal((await request('/api/drinks/import',{items:[]},user)).status,403);
     const admin = (await request('/api/login',{username:'admin',password:'admin123'})).cookie;
     const before = (await request('/api/drinks',null,admin)).data;
-    assert.equal(before.length,23);
+    assert.equal(before.length,require('../catalog.json').length);
     const gift = {name:'耳机',price:1299.99,note:'一年保修'};
     let res = await request('/api/drinks/import',{items:[gift,{name:'坏数据',price:0}]},admin);
     assert.equal(res.status,400);
@@ -52,8 +52,10 @@ test('admin import is atomic, skips duplicates, preserves old data and enforces 
     assert.equal(res.status,201);
     assert.equal(saved.note,'一年保修');
     assert.equal((await request('/api/drinks',null,admin)).data.find(d=>d.id===saved.id).note,'凭券领取');
-    res=await request('/api/drinks/import',{items:Array.from({length:76},(_,i)=>({name:'礼物'+i,price:10}))},admin);
+    const {DatabaseSync}=require('node:sqlite');const db=new DatabaseSync(path.join(temp,'tea.db'));const insert=db.prepare('INSERT INTO drinks (brand,name,price) VALUES (?,?,?)');
+    for(let i=before.length+2;i<5000;i++)insert.run('容量测试','礼物'+i,10);db.close();
+    res=await request('/api/drinks/import',{items:[{name:'超过容量',price:10}]},admin);
     assert.equal(res.status,400);
-    assert.equal((await request('/api/drinks',null,admin)).data.length,25);
+    assert.equal((await request('/api/drinks',null,admin)).data.length,5000);
   } finally { server.kill(); }
 });

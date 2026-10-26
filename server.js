@@ -37,6 +37,16 @@ CREATE TABLE IF NOT EXISTS draws (
   price REAL,
   created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS user_menus (
+  user_id INTEGER NOT NULL,
+  brand TEXT NOT NULL,
+  excluded_ids TEXT NOT NULL DEFAULT '[]',
+  PRIMARY KEY (user_id, brand)
+);
+CREATE TABLE IF NOT EXISTS user_shops (
+  user_id INTEGER PRIMARY KEY,
+  brand TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT);
 CREATE TABLE IF NOT EXISTS daily_draws (
   user_id INTEGER NOT NULL,
@@ -83,36 +93,26 @@ for (const [username, password, role] of ACCOUNTS) {
   ).run(username, `${salt}:${hashPassword(password, salt)}`, role);
 }
 
-const SEED_DRINKS = [
-  ['一点点', '蔓越莓奶绿', '少冰、三分糖、不加小料', 13],
-  ['一点点', '四季奶青', '少冰、三分糖、加蜜豆（红豆）', 12],
-  ['古茗', '百香果重奏', '五分糖、去珍珠', 12],
-  ['古茗', '桃桃乌龙茶', '五分糖、少冰', 13],
-  ['古茗', '抹茶四季冰', '正常糖、少甜', 14],
-  ['古茗', '生椰拿铁', '少冰、不额外加糖', 9.4],
-  ['古茗', '鲜奶拿铁', '', 9.9],
-  ['爷爷不泡茶', '白兰玉露', '五分糖、少冰', 16.5],
-  ['爷爷不泡茶', '水蜜桃系列', '-', 14],
-  ['林柠', '原谅手打柠檬茶', '标准冰、五分糖', 16],
-  ['喜茶', '清爽芭乐提', '-', 17],
-  ['霸王茶姬', '花田乌龙', '少冰、微糖', 14],
-  ['库迪', '抹茶拿铁', '全脂牛奶 不额外加糖', 9.9],
-  ['煲珠公', '水牛奶红糖珍珠', '少冰、三分糖', 15],
-  ['茉莉奶白', '茉莉奶油芭乐', '少冰、三分糖', 20],
-  ['茶百道', '美式咖啡', '少冰、不加糖、标准浓度', 7.3],
-  ['茶百道', '开心果香椰美式', '少冰、七分糖、标准浓度', 12.9],
-  ['茶百道', '香草冰淇淋拿铁', '少冰、五分糖（或者不额外加糖）', 11.4],
-  ['沪上阿姨', '仙仙玫瑰青提', '', 9],
-  ['瑞幸', '冰吸生椰拿铁', '少冰、不另外加糖', 14],
-  ['瑞幸', '生椰拿铁', '少冰、不另外加糖', 15],
-  ['瑞幸', '泰奶鸳鸯拿铁', '少冰、不另外加糖', 14],
-  ['益禾堂', '芋泥波波奶绿', '少冰（热），三分糖，珍珠换芋泥', 8.75],
-];
-// 只播种一次，管理员清空清单后不会在重启时复活
-if (!db.prepare("SELECT 1 FROM meta WHERE key = 'seeded'").get()) {
-  const insert = db.prepare('INSERT INTO drinks (brand, name, note, price) VALUES (?, ?, ?, ?)');
-  for (const drink of SEED_DRINKS) insert.run(...drink);
-  db.prepare("INSERT INTO meta (key, value) VALUES ('seeded', '1')").run();
+// Import the supplied 2026-10-26 reference menu once; preserve existing history and notes.
+if (!db.prepare("SELECT 1 FROM meta WHERE key = 'catalog_20261026'").get()) {
+  const catalog = require('./catalog.json').map(Inventory.normalize);
+  db.exec('BEGIN IMMEDIATE');
+  try {
+    for (const [oldBrand, brand] of [['瑞幸', '瑞幸咖啡'], ['库迪', '库迪咖啡']])
+      db.prepare('UPDATE OR IGNORE drinks SET brand = ? WHERE brand = ?').run(brand, oldBrand);
+    const insert = db.prepare('INSERT INTO drinks (brand, name, note, price) VALUES (?, ?, ?, ?) ON CONFLICT(brand, name) DO UPDATE SET price = excluded.price');
+    for (const d of catalog) insert.run(d.brand, d.name, d.note, d.price);
+    db.prepare("INSERT INTO meta (key, value) VALUES ('catalog_20261026', '1')").run();
+    db.exec('COMMIT');
+  } catch (err) { db.exec('ROLLBACK'); throw err; }
+}
+
+function menuFor(user) {
+  return {
+    brand: db.prepare('SELECT brand FROM user_shops WHERE user_id = ?').get(user.id)?.brand ?? null,
+    menus: db.prepare('SELECT brand, excluded_ids FROM user_menus WHERE user_id = ?').all(user.id)
+      .map(row => ({brand: row.brand, excludedIds: JSON.parse(row.excluded_ids)}))
+  };
 }
 
 const sessions = new Map();
@@ -218,7 +218,7 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       return res.end(PAGE);
     }
-    if (['/inventory.js', '/game-rules.js', '/fortune.js', '/flip.css', '/assets/flip-card-back.webp'].includes(pathname) && req.method === 'GET') {
+    if (['/inventory.js', '/game-rules.js', '/fortune.js', '/flip.css', '/assets/flip-card-back.webp', '/assets/milk-tea-glass.webp'].includes(pathname) && req.method === 'GET') {
       res.writeHead(200, { 'Content-Type': pathname.endsWith('.css') ? 'text/css; charset=utf-8' : pathname.endsWith('.webp') ? 'image/webp' : 'text/javascript; charset=utf-8' });
       return res.end(fs.readFileSync(path.join(__dirname, pathname.slice(1))));
     }
@@ -264,6 +264,26 @@ const server = http.createServer(async (req, res) => {
       } catch (err) { db.exec('ROLLBACK'); throw err; }
     }
 
+    if (pathname === '/api/menu' && req.method === 'GET') return json(res, 200, menuFor(user));
+    if (pathname === '/api/menu' && req.method === 'PUT') {
+      const body = await readJson(req);
+      if (!body || typeof body.brand !== 'string' || !Array.isArray(body.excludedIds)
+          || body.excludedIds.length > 5000 || new Set(body.excludedIds).size !== body.excludedIds.length
+          || !body.excludedIds.every(id => Number.isSafeInteger(id) && id > 0))
+        return json(res, 400, {error: '清单格式错误'});
+      const items = db.prepare('SELECT id FROM drinks WHERE brand = ?').all(body.brand);
+      const ids = new Set(items.map(d => d.id));
+      if (!items.length || !body.excludedIds.every(id => ids.has(id)))
+        return json(res, 400, {error: '店铺或饮品已变化，请刷新后重试'});
+      db.exec('BEGIN IMMEDIATE');
+      try {
+        db.prepare('INSERT INTO user_shops (user_id, brand) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET brand = excluded.brand').run(user.id, body.brand);
+        db.prepare('INSERT INTO user_menus (user_id, brand, excluded_ids) VALUES (?, ?, ?) ON CONFLICT(user_id, brand) DO UPDATE SET excluded_ids = excluded.excluded_ids').run(user.id, body.brand, JSON.stringify(body.excludedIds));
+        db.exec('COMMIT');
+      } catch (err) { db.exec('ROLLBACK'); throw err; }
+      return json(res, 200, menuFor(user));
+    }
+
     if (pathname === '/api/drinks' && req.method === 'GET') {
       return json(res, 200, db.prepare('SELECT id, brand, name, note, price FROM drinks ORDER BY brand, name').all());
     }
@@ -278,7 +298,7 @@ const server = http.createServer(async (req, res) => {
       const existing = db.prepare('SELECT brand, name FROM drinks').all();
       const keys = new Set(existing.map(d => JSON.stringify([d.brand, d.name])));
       const fresh = items.filter(d => { const key = JSON.stringify([d.brand, d.name]); if (keys.has(key)) return false; keys.add(key); return true; });
-      if (existing.length + fresh.length > 100) return json(res, 400, {error: '清单最多配置 100 款奖品，请减少导入数量'});
+      if (existing.length + fresh.length > 5000) return json(res, 400, {error: '清单最多配置 5000 款奖品，请减少导入数量'});
       db.exec('BEGIN');
       try {
         const insert = db.prepare('INSERT INTO drinks (brand, name, note, price) VALUES (?, ?, ?, ?)');
@@ -294,7 +314,7 @@ const server = http.createServer(async (req, res) => {
       catch (err) { return json(res, 400, {error: err.message}); }
       const {brand, name, note, price} = item;
       if (db.prepare('SELECT 1 FROM drinks WHERE brand = ? AND name = ?').get(brand, name)) return json(res, 409, {error: '该奖品已在清单中'});
-      if (db.prepare('SELECT COUNT(*) AS total FROM drinks').get().total >= 100) return json(res, 400, {error: '最多配置 100 款奖品'});
+      if (db.prepare('SELECT COUNT(*) AS total FROM drinks').get().total >= 5000) return json(res, 400, {error: '最多配置 5000 款奖品'});
       const result = db.prepare('INSERT INTO drinks (brand, name, note, price) VALUES (?, ?, ?, ?)').run(brand, name, note, price);
       return json(res, 201, db.prepare('SELECT id, brand, name, note, price FROM drinks WHERE id = ?').get(result.lastInsertRowid));
     }
@@ -322,7 +342,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (pathname === '/api/draws' && req.method === 'POST') {
-      const {replaceDrawId} = await readJson(req) || {};
+      const {replaceDrawId, drinkIds} = await readJson(req) || {};
       db.exec('BEGIN IMMEDIATE');
       try {
         const allowance = quota(user);
@@ -334,8 +354,14 @@ const server = http.createServer(async (req, res) => {
           db.exec('ROLLBACK');
           return json(res, 409, {error:'当前奖励已变化，请确认是否放弃当前奖励后再抽', quota: allowance});
         }
-        const drinks = db.prepare('SELECT * FROM drinks ORDER BY brand, name').all();
-        if (!drinks.length) { db.exec('ROLLBACK'); return json(res, 400, {error:'清单为空，请先添加奖品'}); }
+        const brand = db.prepare('SELECT brand FROM user_shops WHERE user_id = ?').get(user.id)?.brand;
+        if (brand === undefined) { db.exec('ROLLBACK'); return json(res, 400, {error:'请先选择店铺'}); }
+        const excluded = new Set(JSON.parse(db.prepare('SELECT excluded_ids FROM user_menus WHERE user_id = ? AND brand = ?').get(user.id, brand)?.excluded_ids ?? '[]'));
+        const drinks = db.prepare('SELECT * FROM drinks WHERE brand = ? ORDER BY brand, name').all(brand).filter(d => !excluded.has(d.id));
+        if (!drinks.length) { db.exec('ROLLBACK'); return json(res, 400, {error:'当前店铺没有参与抽取的饮品，请恢复部分饮品'}); }
+        if (drinkIds !== undefined && (!Array.isArray(drinkIds) || JSON.stringify(drinkIds) !== JSON.stringify(drinks.map(d => d.id)))) {
+          db.exec('ROLLBACK'); return json(res, 409, {error:'个人清单已在其他页面修改，请刷新后再抽'});
+        }
         const outcome = GameRules.pick(drinks, () => crypto.randomInt(0, 2 ** 32) / 2 ** 32);
         let record = null;
         if (!outcome.kind) {
