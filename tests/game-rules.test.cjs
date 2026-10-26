@@ -19,7 +19,7 @@ function source(name) {
 function rules(prices = [7.3, 12, 20]) {
   let seed = 17;
   const context = vm.createContext({ GameRules, crypto: { getRandomValues(a) { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; a[0] = seed; } } });
-  vm.runInContext(`${html.match(/const PRICE_POWER=[^\n]+/)[0]}
+  vm.runInContext(`
     ${html.match(/const SPECIAL_PRIZES=[^\n]+/)[0]}
     const drinks=${JSON.stringify(prices.map((price, i) => ({ id: i + 1, brand: '测试', name: '饮品' + i, price })))};
     let layout=[],layoutTotal=0;const tau=Math.PI*2;const priceOf=d=>d.price;
@@ -27,12 +27,12 @@ function rules(prices = [7.3, 12, 20]) {
     computeLayout();`, context);
   return expression => vm.runInContext(expression, context);
 }
-test('probabilities sum to 100%, with no blanks, 3% retry and inverse-price prizes', () => {
+test('probabilities sum to 100%, with no blanks, 3% retry and rank-weighted prizes', () => {
   const run = rules();
   assert.ok(Math.abs(run('layout.reduce((s,x)=>s+x.prob,0)') - 1) < 1e-12);
   assert.equal(run('layout.some(x=>x.drink.kind==="blank")'), false);
   assert.equal(run('layout.find(x=>x.drink.kind==="retry").prob'), .03);
-  assert.ok(Math.abs(run('layout[0].prob/layout[2].prob') - 20 / 7.3) < 1e-12);
+  assert.ok(Math.abs(run('layout[0].prob/layout[2].prob') - 20 / 7.3 * (.5/.15)) < 1e-12);
   run('const counts=Array(layout.length).fill(0);for(let i=0;i<100000;i++)counts[randomIndex()]++');
   assert.equal(run('counts.reduce((a,b)=>a+b,0)'), 100000);
   assert.ok(run('counts.every((n,i)=>Math.abs(n/100000-layout[i].prob)<.006)'));
@@ -81,7 +81,8 @@ test('server sampler and shake disclosure agree at 97% prizes and 3% retry', () 
     if(result.kind){assert.equal(result.kind,'retry');retries++}else counts[result.id]++;
   }
   assert.equal(retries,3000);
-  assert.ok(counts.every(n=>Math.abs(n/100000-.97/23)<.00002));
+  const expected=GameRules.distribution(drinks);
+  assert.ok(counts.every((n,i)=>Math.abs(n/100000-expected[i].prob)<.00002));
 });
 test('day resets at midnight in Beijing regardless of host timezone',()=>{
   assert.equal(GameRules.dayKey(new Date('2026-10-25T15:59:59.999Z')),'2026-10-25');
@@ -92,4 +93,24 @@ test('empty menu has no drawable outcomes', () => {
   const run = rules([]);
   assert.equal(run('layout.length'), 0);
   assert.equal(run('layoutTotal'), 0);
+});
+
+test('four tiers have stable ranks, strict rarity order and matching client/server probabilities',()=>{
+  for(const prices of [Array(12).fill(20),[40,35,30,25,20,18,16,15,12,10,8,6],[20],[20,20,20],[]]){
+    const drinks=prices.map((price,id)=>({id,price})),entries=GameRules.distribution(drinks),run=rules(prices);
+    assert.equal(entries.filter(e=>e.tier.key==='king').length,Math.min(1,prices.length));
+    entries.forEach((e,i)=>{
+      assert.equal(e.prob,run('layout['+i+'].prob'));
+      assert.equal(e.tier.key,e.rank===1?'king':e.rank<=4?'diamond':e.rank<=8?'gold':'bronze');
+    });
+    const ranked=[...entries].sort((a,b)=>a.rank-b.rank);
+    for(let i=1;i<ranked.length;i++){
+      assert.ok(ranked[i].prob>=ranked[i-1].prob);
+      assert.ok(ranked[i].prob>ranked[0].prob,'king is uniquely rarest');
+    }
+    assert.deepEqual(GameRules.distribution([...drinks].reverse()).map(e=>[e.drink.id,e.rank]).sort((a,b)=>a[0]-b[0]),entries.map(e=>[e.drink.id,e.rank]));
+  }
+  assert.equal(GameRules.pick([],()=>0),undefined);
+  const menu=[{id:1,price:30},{id:2,price:20},{id:3,price:10}];
+  assert.equal(GameRules.distribution(menu.slice(1))[0].tier.key,'king','excluded items do not retain rank');
 });

@@ -5,9 +5,9 @@ const {spawn}=require('node:child_process');
 const {DatabaseSync}=require('node:sqlite');
 const {chromium}=require('playwright');
 const root=path.join(__dirname,'..'),temp=fs.mkdtempSync(path.join(os.tmpdir(),'tea-games-'));
-for(const file of ['server.js','catalog.json','index.html','inventory.js','game-rules.js','fortune.js','flip.css'])fs.copyFileSync(path.join(root,file),path.join(temp,file));
+for(const file of ['server.js','catalog.json','index.html','inventory.js','game-rules.js','fortune.js','flip.css','scratch.css'])fs.copyFileSync(path.join(root,file),path.join(temp,file));
 fs.mkdirSync(path.join(temp,'assets'));
-for(const file of ['flip-card-back.webp','milk-tea-glass.webp'])fs.copyFileSync(path.join(root,'assets',file),path.join(temp,'assets',file));
+for(const file of ['flip-card-back.webp','milk-tea-glass.webp','scratch-cover.webp','number-cover.webp'])fs.copyFileSync(path.join(root,'assets',file),path.join(temp,'assets',file));
 fs.appendFileSync(path.join(temp,'game-rules.js'),"\nif(typeof module!=='undefined'){let calls=0;module.exports.pick=drinks=>calls++%2===0?module.exports.RETRY:drinks[0]}\n");
 const port=32000+process.pid%20000,baseUrl='http://127.0.0.1:'+port;
 const server=spawn(process.execPath,['server.js'],{cwd:temp,env:{...process.env,PORT:String(port)},windowsHide:true,stdio:'pipe'});
@@ -60,17 +60,39 @@ let browser;
   assert.ok(hubRect.y>=0&&hubRect.y+hubRect.height<=844,'mobile center button visible without scrolling');
   assert.equal(await hub.isEnabled(),true);
   await page.locator('#open-odds').click();
-  assert.equal(await page.locator('.rare-prize').count(),await page.evaluate(()=>layout.filter(s=>!s.special&&s.price>=16).length));
-  assert.equal(await page.locator('.rare-prize .odds-name small').first().textContent().then(t=>t.includes('钻石')),true);
-  assert.equal(await page.locator('.odds-tier').evaluateAll(sections=>sections.filter(s=>!s.querySelector('.tier-diamond')).every(s=>!s.querySelector('.rare-prize'))),true);
+  assert.equal(await page.locator('.rare-prize').count(),await page.evaluate(()=>layout.filter(s=>['king','diamond'].includes(s.tier?.key)).length));
+  assert.equal(await page.locator('.rare-prize .odds-name small').first().textContent().then(t=>t.includes('王者')),true);
+  assert.equal(await page.locator('.odds-tier').evaluateAll(sections=>sections.filter(s=>!s.querySelector('.tier-diamond,.tier-king')).every(s=>!s.querySelector('.rare-prize'))),true);
   assert.equal(await page.locator('.rare-prize').first().evaluate(el=>getComputedStyle(el,'::after').animationName),'none');
   if(process.env.TEA_SCREENSHOT)await page.locator('#odds').screenshot({path:process.env.TEA_SCREENSHOT.replace('.png','-odds.png')});
   await page.locator('#odds-close').click();
   await page.evaluate(()=>{const saved=allDrinks;allDrinks=[];renderAll();window.emptyHubDisabled=$('wheel-spin').disabled;allDrinks=saved;renderAll()});
   assert.equal(await page.evaluate(()=>window.emptyHubDisabled),true);
-  assert.equal(await page.evaluate(()=>celebrate(2,{price:20})), 'legendary','reduced motion retains rarity');
+  assert.equal(await page.evaluate(()=>celebrate(2,layout.find(s=>s.tier?.key==='king').drink)), 'king','reduced motion retains rarity');
+  for(const tier of ['king','diamond','gold','bronze']){
+    await page.evaluate(key=>showResult(layout.find(s=>s.tier?.key===key).drink),tier);
+    assert.equal(await page.locator('#result').getAttribute('class'),'tier-'+tier);
+    assert.match(await page.locator('#result-tier').textContent(),new RegExp({king:'王者',diamond:'钻石',gold:'黄金',bronze:'青铜'}[tier]));
+    if(process.env.TEA_SCREENSHOT)await page.screenshot({path:process.env.TEA_SCREENSHOT.replace('.png','-'+tier+'.png')});
+    await page.locator('#close').click();
+  }
   await page.evaluate(()=>scrollTo(0,0));
   if(process.env.TEA_SCREENSHOT)await page.screenshot({path:process.env.TEA_SCREENSHOT,fullPage:true});
+  await page.locator('#mode-capsule').click();
+  for(const width of [320,390,768,1280]){
+    await page.setViewportSize({width,height:900});
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'capsule fits '+width);
+    const sizes=await page.evaluate(()=>{
+      const globe=document.querySelector('.capsule-globe').getBoundingClientRect();
+      return {globe:globe.width,icons:[...document.querySelectorAll('.gacha-capsule')].map(el=>el.offsetWidth),knob:document.querySelector('#capsule-knob').offsetWidth};
+    });
+    assert.equal(sizes.icons.length,9);
+    assert.ok(sizes.icons.every(size=>size>=58&&size<=sizes.globe/3),'capsule icons scale with display at '+width);
+    assert.ok(sizes.knob>=44,'touch target at '+width);
+    if(process.env.TEA_SCREENSHOT)await page.locator('#capsule-stage').screenshot({path:process.env.TEA_SCREENSHOT.replace('.png','-capsule-'+width+'.png')});
+  }
+  await page.setViewportSize({width:390,height:844});
+  await page.locator('#mode-wheel').click();
   let wheelRequests=0;
   await page.route('**/api/draws',async route=>{if(route.request().method()==='POST'){wheelRequests++;await new Promise(r=>setTimeout(r,300))}await route.continue()}, {times:1});
   let recorded=0;
@@ -78,6 +100,7 @@ let browser;
   let rememberRedraw=false;
   const approveReminder=async()=>{await page.locator('#replace-reward[open]').waitFor();if(rememberRedraw)await page.locator('#skip-redraw-reminder').check();await page.locator('#replace-continue').click()};
   const play=async(mode)=>{
+    if(mode==='capsule')await page.emulateMedia({reducedMotion:'no-preference'});
     let needsReminder=await page.evaluate(()=>!!drawQuota.currentReward&&localStorage.getItem('tea_skip_redraw_'+currentUserId)!=='1');
     if(mode==='number'){
       // Reproduce the reported 50 -> another number bug using a fixed preview.
@@ -88,6 +111,12 @@ let browser;
       await page.mouse.move(rect.x+rect.width/2,rect.y+rect.height/2);await page.mouse.down();
       if(needsReminder){await page.mouse.up();await approveReminder();needsReminder=false}
       await page.waitForFunction(()=>scratchStarted&&!requestingDraw);await page.mouse.up();
+      const scratched=await page.evaluate(()=>scratchRatio());
+      assert.ok(scratched>0,'cover is actually erasable');
+      await page.setViewportSize({width:320,height:844});
+      await page.waitForFunction(()=>Math.abs(foil.width-Math.round($('ticket-body').getBoundingClientRect().width*Math.min(devicePixelRatio||1,2)))<=2);
+      assert.ok(Math.abs(await page.evaluate(()=>scratchRatio())-scratched)<.025,'resizing preserves the scratched area');
+      await page.setViewportSize({width:390,height:844});
       assert.deepEqual(await snapshot(),before,'scratching must preserve every number and the ticket ID');
       await page.evaluate(()=>setMode('scratch'));assert.equal(await page.evaluate(()=>mode),'number','an unfinished ticket must not be discarded');
       const expected=await page.evaluate(()=>scratchDrink.name);
@@ -106,9 +135,21 @@ let browser;
         }
       }else await page.locator('#spin').click();
       if(needsReminder)await approveReminder();
-      if(mode==='capsule'){await page.waitForFunction(()=>capsulePhase==='ready');await page.locator('#capsule-drop').click()}
+      if(mode==='capsule'){
+        await page.waitForFunction(()=>capsulePhase==='ready');
+        for(const width of [320,1280]){
+          await page.setViewportSize({width,height:900});
+          const drop=await page.locator('#capsule-drop').boundingBox(),tray=await page.locator('#capsule-out').boundingBox();
+          assert.ok(drop.width>=44&&drop.height>=44,'capsule opens by touch');
+          assert.ok(drop.x>=tray.x&&drop.x+drop.width<=tray.x+tray.width&&drop.y>=tray.y&&drop.y+drop.height<=tray.y+tray.height,'ready capsule stays in tray at '+width);
+          if(process.env.TEA_SCREENSHOT)await page.locator('#capsule-stage').screenshot({path:process.env.TEA_SCREENSHOT.replace('.png','-capsule-ready-'+width+'.png')});
+        }
+        await page.setViewportSize({width:390,height:844});
+        await page.locator('#capsule-drop').click();
+      }
     }
     await page.locator('#result[open]').waitFor();
+    if(mode==='capsule')await page.emulateMedia({reducedMotion:'reduce'});
   };
   for(const mode of ['wheel','scratch','number','capsule','box','slot','flip']){
     await page.locator('#mode-'+mode).click();
@@ -261,5 +302,17 @@ let browser;
   for(const width of [390,1280]){await page.setViewportSize({width,height:844});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'reward list fits '+width+'px')}
   await page.setViewportSize({width:390,height:844});
   for(const mode of ['slot','scratch','number','capsule','flip']){await page.locator('#mode-'+mode).click();assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),mode+' mobile overflow')}
+  for(const mode of ['scratch','number']){
+    await page.locator('#mode-'+mode).click();
+    await page.waitForFunction(key=>ticketArt[key].complete&&ticketArt[key].naturalWidth>0,mode);
+    for(const width of [320,390,768,1280]){
+      await page.setViewportSize({width,height:900});
+      await page.waitForFunction(()=>Math.abs(foil.width-Math.round($('ticket-body').getBoundingClientRect().width*Math.min(devicePixelRatio||1,2)))<=2);
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),mode+' fits '+width+'px');
+      const box=await page.locator('#ticket').boundingBox();
+      assert.ok(box.x>=0&&box.x+box.width<=width,mode+' ticket stays on screen');
+      if(process.env.TEA_SCREENSHOT)await page.locator('#scratch-stage').screenshot({path:process.env.TEA_SCREENSHOT.replace('.png','-'+mode+'-cover-'+width+'.png')});
+    }
+  }
   assert.deepEqual(errors,[]);console.log('Seven modes, golden flip timing and input locks, personal menus, clean results and admin draws after redemption, retry continuation, server records, redraw confirmation, redemption, pointer scratching and mobile layout passed.');
 })().catch(e=>{console.error(e);process.exitCode=1}).finally(async()=>{if(browser)await browser.close();server.kill()});
