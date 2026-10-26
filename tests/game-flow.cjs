@@ -2,6 +2,7 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
 const {spawn}=require('node:child_process');
+const {DatabaseSync}=require('node:sqlite');
 const {chromium}=require('playwright');
 const root=path.join(__dirname,'..'),temp=fs.mkdtempSync(path.join(os.tmpdir(),'tea-games-'));
 for(const file of ['server.js','index.html','inventory.js','game-rules.js'])fs.copyFileSync(path.join(root,file),path.join(temp,file));
@@ -19,6 +20,7 @@ let browser;
   page.on('request',req=>{if(req.method()==='POST'&&new URL(req.url()).pathname==='/api/draws')drawRequests++});
   await page.goto(baseUrl);await page.locator('#app-main').waitFor({state:'visible'});
   await page.evaluate(async()=>enterApp(await api('/api/login',{method:'POST',body:JSON.stringify({username:'admin',password:'admin123'})})));
+  assert.equal(await page.locator('#my-rewards').isVisible(),false,'admin must not see My Rewards');
   assert.equal(await page.locator('.mode-switch button').count(),6);
   assert.equal(await page.locator('#scratch-number').count(),0);
   await page.evaluate(()=>scrollTo(0,0));
@@ -99,6 +101,7 @@ let browser;
   await page.locator('#odds-close').click();
   // A pending prize permits redraw, but cancellation preserves it and makes no POST.
   await page.evaluate(async()=>enterApp(await api('/api/login',{method:'POST',body:JSON.stringify({username:'user',password:'123456'})})));
+  assert.equal(await page.locator('#my-rewards').isVisible(),true,'regular users see My Rewards');
   await play('slot');assert.equal(await page.locator('#name').textContent(),'再来一次');
   await page.locator('#confirm').click();await page.locator('#result[open]').waitFor();await close();
   assert.equal(await page.locator('#slot-play').isEnabled(),true);
@@ -120,12 +123,37 @@ let browser;
   await play('wheel');assert.equal(await page.locator('#replace-reward').isVisible(),false,'saved choice suppresses reminders after reload');
   assert.equal(await page.locator('#name').textContent(),'再来一次');
   await page.locator('#confirm').click();await page.locator('#result[open]').waitFor();await close();
-  acceptConfirm=false;await page.locator('#redeem-all').click();
+  // Five dated rewards persist; exchange one old prize without touching the others.
+  const db=new DatabaseSync(path.join(temp,'tea.db'));
+  const userId=await page.evaluate(()=>currentUserId);
+  for(let days=1;days<=4;days++){
+    const record=db.prepare("INSERT INTO draws (user_id,drink_id,brand,name,note,price,created_at) SELECT user_id,drink_id,brand,name,note,price,strftime('%Y-%m-%dT%H:%M:%fZ',created_at,?) FROM draws WHERE id=?").run('-'+days+' days',await page.evaluate(()=>drawQuota.currentReward.id));
+    db.prepare("INSERT INTO daily_rewards (user_id,day,draw_id) VALUES (?,date(?,?),?)").run(userId,await page.evaluate(()=>drawQuota.day),'-'+days+' days',Number(record.lastInsertRowid));
+  }
+  db.close();
+  await page.reload();await page.waitForFunction(()=>rewardList.length===5);
+  const todayReward=await page.evaluate(()=>drawQuota.currentReward.id);
+  const selected=page.locator('.redeem-reward').nth(2);
+  const selectedId=Number(await selected.getAttribute('data-draw-id'));
+  acceptConfirm=false;await selected.click();
+  assert.equal(await page.locator('.redeem-reward').count(),5,'cancel preserves all prizes');
+  acceptConfirm=true;
+  const redeemRequest=page.waitForRequest(req=>req.method()==='POST'&&new URL(req.url()).pathname==='/api/rewards/redeem');
+  await selected.click();
+  assert.deepEqual((await redeemRequest).postDataJSON(),{drawIds:[selectedId]});
+  await page.waitForFunction(()=>rewardList.filter(r=>r.redeemed_at).length===1&&!redeeming);
+  assert.equal(await page.locator('.redeem-reward').count(),4);
+  assert.equal(await page.evaluate(()=>drawQuota.currentReward.id),todayReward);
+  assert.equal(await page.locator('#spin').isEnabled(),true,'old reward redemption permits today draws');
+  await page.reload();await page.waitForFunction(()=>rewardList.length===5);
+  assert.equal(await page.locator('.redeem-reward').count(),4,'individual redemption persists after reload');
+  const todayButton=page.locator('.redeem-reward[data-draw-id="'+todayReward+'"]');
+  acceptConfirm=false;await todayButton.click();
   assert.equal(await page.evaluate(()=>drawQuota.redeemed),false);
-  acceptConfirm=true;await page.locator('#redeem-all').click();await page.waitForFunction(()=>drawQuota.redeemed);
-  assert.equal(await page.locator('#pending-rewards .reward-empty').count(),1);
-  assert.equal(await page.locator('#redeemed-rewards li:not(.reward-empty)').count(),1);
-  assert.equal(await page.locator('#redeem-all').isDisabled(),true);
+  acceptConfirm=true;await todayButton.click();await page.waitForFunction(()=>drawQuota.redeemed&&!redeeming);
+  assert.equal(await page.locator('#pending-rewards li:not(.reward-empty)').count(),3);
+  assert.equal(await page.locator('#redeemed-rewards li:not(.reward-empty)').count(),2);
+  assert.equal(await page.locator('.redeem-reward').count(),3);
   await page.locator('#mode-wheel').click();assert.equal(await page.locator('#spin').isDisabled(),true);assert.equal(await hub.isDisabled(),true);
   await page.reload();await page.locator('#app-main').waitFor({state:'visible'});
   assert.equal(await page.locator('#spin').isDisabled(),true);
@@ -134,15 +162,16 @@ let browser;
   assert.equal(await page.evaluate(()=>localStorage.getItem('tea_skip_redraw_'+currentUserId)),null,'another account has its own reminder setting');
   rememberRedraw=false;await page.locator('#mode-scratch').click();await play('scratch');await page.locator('#confirm').click();
   await page.evaluate(()=>startScratch());
-  assert.equal(await page.locator('#redeem-all').isDisabled(),true);
+  assert.equal(await page.locator('.redeem-reward').isDisabled(),true);
   assert.equal(await page.locator('#spin').isDisabled(),false);
   await page.locator('#scratch').scrollIntoViewIfNeeded();const rect=await page.locator('#scratch').boundingBox();
   await page.mouse.move(rect.x+4,rect.y+10);await page.mouse.down();
   for(let y=12;y<rect.height;y+=14){await page.mouse.move(rect.x+5,rect.y+y);await page.mouse.move(rect.x+rect.width-5,rect.y+y,{steps:6})}
   await page.mouse.up();await page.locator('#result[open]').waitFor();await close();
   assert.equal(await page.locator('#spin').isEnabled(),true);
-  assert.equal(await page.locator('#redeem-all').isEnabled(),true);
+  assert.equal(await page.locator('.redeem-reward').isEnabled(),true);
   if(process.env.TEA_SCREENSHOT)await page.locator('.rewards-section').screenshot({path:process.env.TEA_SCREENSHOT.replace('.png','-rewards.png')});
+  for(const width of [390,1280]){await page.setViewportSize({width,height:844});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'reward list fits '+width+'px')}
   await page.setViewportSize({width:390,height:844});
   for(const mode of ['slot','scratch','number','capsule']){await page.locator('#mode-'+mode).click();assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),mode+' mobile overflow')}
   assert.deepEqual(errors,[]);console.log('Six modes, retry continuation, server records, redraw confirmation, redemption, pointer scratching and mobile layout passed.');
