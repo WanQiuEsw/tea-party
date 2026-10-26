@@ -1,4 +1,4 @@
-// Isolated app: the text-only intro must leave the wheel playable on mobile.
+// Isolated app: removing the intro must leave the wheel playable on mobile.
 const assert=require('node:assert/strict');
 const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
 const {spawn}=require('node:child_process');
@@ -24,11 +24,11 @@ let browser;
     await page.setViewportSize({width,height});await page.evaluate(()=>scrollTo(0,0));
     const bounds=await page.evaluate(()=>{
       const box=s=>{const r=document.querySelector(s).getBoundingClientRect();return {top:r.top,bottom:r.bottom,height:r.height}};
-      return {cover:box('.intro'),wheel:box('.hub'),modes:box('.mode-switch'),overflow:document.documentElement.scrollWidth>innerWidth,images:document.querySelectorAll('.intro img').length,titleVisible:document.querySelector('.intro h1').getBoundingClientRect().height>20};
+      return {wheel:box('.hub'),modes:box('.mode-switch'),overflow:document.documentElement.scrollWidth>innerWidth};
     });
     console.log(width,bounds);
     if(process.env.TEA_SCREENSHOT)await page.screenshot({path:process.env.TEA_SCREENSHOT.replace('.png','-'+width+'.png')});
-    assert.equal(bounds.images,0,'intro illustration is removed');assert.ok(bounds.titleVisible);assert.equal(bounds.overflow,false);assert.ok(bounds.cover.height<=(width<=850?110:160));
+    assert.equal(await page.locator('.intro').count(),0,'homepage banner is removed');assert.equal(bounds.overflow,false);
     if(width<=850){assert.ok(bounds.modes.bottom<height,'all game choices visible');assert.ok(bounds.wheel.bottom<height,'wheel action visible without scrolling')}
   }
   await page.setViewportSize({width:390,height:844});
@@ -36,6 +36,6 @@ let browser;
     await page.locator('#mode-'+mode).click();assert.equal(await page.locator('#mode-'+mode).getAttribute('aria-pressed'),'true');
   }
   await page.locator('#wheel-spin').click();await page.locator('#result').waitFor({state:'visible'});
-  assert.equal(await page.locator('.intro').count(),1);assert.deepEqual(errors,[]);
-  console.log('Text-only intro, mobile first-screen wheel, seven game choices and draw passed.');
+  assert.equal(await page.locator('.intro').count(),0);assert.deepEqual(errors,[]);
+  console.log('Removed intro, mobile first-screen wheel, seven game choices and draw passed.');
 })().catch(e=>{console.error(e);process.exitCode=1}).finally(async()=>{if(browser)await browser.close();server.kill();await new Promise(r=>server.once('exit',r));fs.rmSync(temp,{recursive:true,force:true})});
