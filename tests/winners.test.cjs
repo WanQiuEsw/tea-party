@@ -7,7 +7,7 @@ const {DatabaseSync}=require('node:sqlite');
 test('winner feed requires login, limits results and masks names; ticker handles empty, scrolling and mobile',async()=>{
   const root=process.env.TEA_TEST_ROOT||path.join(__dirname,'..');
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'tea-winners-'));
-  for(const file of ['server.js','catalog.json','index.html','inventory.js','game-rules.js','fortune.js','flip.css','scratch.css','wheel.css'])fs.copyFileSync(path.join(root,file),path.join(temp,file));
+  for(const file of ['server.js','catalog.json','index.html','inventory.js','game-rules.js','fortune.js','flip.css','scratch.css','wheel.css','cover.css'])fs.copyFileSync(path.join(root,file),path.join(temp,file));
   fs.cpSync(path.join(root,'assets'),path.join(temp,'assets'),{recursive:true});
   const port=41000+process.pid%10000,base='http://127.0.0.1:'+port;
   const server=spawn(process.execPath,['server.js'],{cwd:temp,env:{...process.env,PORT:String(port)},windowsHide:true,stdio:'pipe'});

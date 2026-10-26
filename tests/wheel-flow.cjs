@@ -4,7 +4,7 @@ const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
 const {spawn}=require('node:child_process');
 const {chromium}=require('playwright');
 const root=path.join(__dirname,'..'),temp=fs.mkdtempSync(path.join(os.tmpdir(),'tea-wheel-'));
-for(const file of ['server.js','catalog.json','index.html','inventory.js','game-rules.js','fortune.js','flip.css','scratch.css','wheel.css'])fs.copyFileSync(path.join(root,file),path.join(temp,file));
+for(const file of ['server.js','catalog.json','index.html','inventory.js','game-rules.js','fortune.js','flip.css','scratch.css','wheel.css','cover.css'])fs.copyFileSync(path.join(root,file),path.join(temp,file));
 fs.cpSync(path.join(root,'assets'),path.join(temp,'assets'),{recursive:true});
 const port=32000+process.pid%20000,base='http://127.0.0.1:'+port;
 const server=spawn(process.execPath,['server.js'],{cwd:temp,env:{...process.env,PORT:String(port)},windowsHide:true,stdio:'pipe'});
