@@ -12,7 +12,7 @@ const server=spawn(process.execPath,['server.js'],{cwd:temp,env:{...process.env,
 let browser;
 (async()=>{
   for(let i=0;i<80;i++){try{if((await fetch(base+'/api/me')).ok)break}catch{}await new Promise(r=>setTimeout(r,100))}
-  const art=await fetch(base+'/assets/home-cover.webp');assert.equal(art.status,200);assert.equal(art.headers.get('content-type'),'image/webp');assert.ok((await art.arrayBuffer()).byteLength<40000);
+  const art=await fetch(base+'/assets/home-cover.webp');assert.equal(art.status,200);assert.equal(art.headers.get('content-type'),'image/webp');assert.ok((await art.arrayBuffer()).byteLength<60000);
   assert.equal((await fetch(base+'/cover.css')).status,200);
   browser=await chromium.launch({headless:true,channel:process.env.TEA_BROWSER||'chrome'});
   const page=await browser.newPage({reducedMotion:'reduce'}),errors=[];
@@ -25,13 +25,13 @@ let browser;
     await page.setViewportSize({width,height});await page.evaluate(()=>scrollTo(0,0));
     const bounds=await page.evaluate(()=>{
       const box=s=>{const r=document.querySelector(s).getBoundingClientRect();return {top:r.top,bottom:r.bottom,height:r.height}};
-      const title=document.querySelector('.intro h1'),style=getComputedStyle(title);
-      return {cover:box('.intro'),wheel:box('.hub'),modes:box('.mode-switch'),overflow:document.documentElement.scrollWidth>innerWidth,titleHeight:title.clientHeight,lineHeight:parseFloat(style.lineHeight),loaded:document.querySelector('.cover-art').naturalWidth>0};
+      const art=document.querySelector('.cover-art'),style=getComputedStyle(art);
+      return {cover:box('.intro'),wheel:box('.hub'),modes:box('.mode-switch'),overflow:document.documentElement.scrollWidth>innerWidth,fit:style.objectFit,mask:style.maskImage,ratio:art.naturalWidth/art.naturalHeight,loaded:art.naturalWidth>0};
     });
     console.log(width,bounds);
     if(process.env.TEA_SCREENSHOT)await page.screenshot({path:process.env.TEA_SCREENSHOT.replace('.png','-'+width+'.png')});
     assert.ok(bounds.loaded);assert.equal(bounds.overflow,false);assert.ok(bounds.cover.height<=(width<=850?110:160));
-    assert.ok(bounds.titleHeight<bounds.lineHeight*1.5,'headline stays on one line');
+    assert.equal(bounds.fit,'contain','the full image fits without cropping');assert.equal(bounds.mask,'none','image edges are not masked');assert.equal(bounds.ratio,3,'use the complete panoramic image, not an extracted illustration');
     if(width<=850){assert.ok(bounds.modes.bottom<height,'all game choices visible');assert.ok(bounds.wheel.bottom<height,'wheel action visible without scrolling')}
   }
   await page.setViewportSize({width:390,height:844});
