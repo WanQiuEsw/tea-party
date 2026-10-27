@@ -20,6 +20,19 @@ let browser;
   await page.locator('.shop-option').first().click();await page.locator('#save-menu').click();
   await page.waitForFunction(()=>drinks.length&&!menuSaving);
   const probabilities=await page.evaluate(()=>layout.map(s=>({prob:s.prob,start:s.start,span:s.span})));
+  assert.equal(await page.evaluate(()=>{
+    const savedAngle=angle,fillText=ctx.fillText,frames=[];
+    ctx.fillText=function(...args){const {a,b}=this.getTransform();frames.at(-1).push([a,b]);return fillText.apply(this,args)};
+    try{
+      for(const s of layout){
+        const boundary=6*tau-s.start-s.span/2;
+        for(const offset of [-.001,.001]){angle=boundary+offset;frames.push([]);draw()}
+        const [before,after]=frames.slice(-2);
+        if(before.some(([a,b],i)=>a*after[i][0]+b*after[i][1]<.99))return false;
+      }
+      return true;
+    }finally{ctx.fillText=fillText;angle=savedAngle;draw()}
+  }),true,'labels rotate continuously across the top/bottom boundary after multiple turns');
   for(const width of [320,390,768,1280]){
     await page.setViewportSize({width,height:900});
     await page.evaluate(()=>draw());

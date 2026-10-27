@@ -264,11 +264,14 @@ function renderCustomMenu(){
   $('personal-menu-title').textContent='跨品牌 · 自定义清单';$('menu-tools').hidden=false;
   $('menu-message').textContent=items.length+' 款已选 · 可跨品牌添加，或一键全选。超过 '+WHEEL_LIMIT+' 款时暂时隐藏转盘，其他玩法照常使用。';
   const brandItems=allDrinks.filter(d=>d.brand===draftBrand);
+  $('select-brand').hidden=draftBrand===null;
+  $('select-all-drinks').hidden=draftBrand!==null;
   $('select-brand').disabled=draftBrand===null||brandItems.every(d=>draftIncluded.has(d.id));
   $('select-all-drinks').disabled=draftIncluded.size===allDrinks.length;
-  $('clear-list').disabled=!draftIncluded.size;
+  $('clear-list').textContent=draftBrand===null?'清空已选':'清空当前品牌已选';
+  $('clear-list').disabled=draftBrand===null?!draftIncluded.size:!brandItems.some(d=>draftIncluded.has(d.id));
   $('included-count').textContent=items.length;$('available-count').textContent=available.length;
-  $('save-menu').disabled=!items.length||!$('list-name').value.trim();$('delete-list').hidden=draftListId===null;
+  $('save-menu').disabled=!items.length;$('delete-list').hidden=draftListId===null;
   for(const tab of ['included','available'])$('show-'+tab).setAttribute('aria-pressed',String(menuTab===tab));
   const query=$('drink-search').value.trim().toLocaleLowerCase();
   const visible=(menuTab==='included'?items:available).filter(d=>(menuTab==='included'||draftBrand===null||d.brand===draftBrand)&&(d.brand+' '+d.name).toLocaleLowerCase().includes(query));
@@ -283,10 +286,14 @@ function renderCustomMenu(){
 $('new-list').onclick=()=>openShopMenu(true);
 $('select-brand').onclick=()=>{allDrinks.filter(d=>d.brand===draftBrand).forEach(d=>draftIncluded.add(d.id));menuTab='included';renderPersonalMenu()};
 $('select-all-drinks').onclick=()=>{draftIncluded=new Set(allDrinks.map(d=>d.id));draftBrand=null;menuTab='included';$('drink-search').value='';renderShopResults();renderPersonalMenu()};
-$('clear-list').onclick=()=>{draftIncluded.clear();renderPersonalMenu()};
-$('list-name').oninput=()=>{if(draftListId!==undefined)$('save-menu').disabled=!draftIncluded.size||!$('list-name').value.trim()};
+$('clear-list').onclick=()=>{if(draftBrand===null)draftIncluded.clear();else allDrinks.filter(d=>d.brand===draftBrand).forEach(d=>draftIncluded.delete(d.id));renderPersonalMenu()};
 async function saveCustomList(){
-  if(menuSaving||!draftIncluded.size||!$('list-name').value.trim())return;
+  if(menuSaving||!draftIncluded.size)return;
+  if(!$('list-name').value.trim()){
+    let number=1,name;
+    do{name='奶茶自定义清单'+String(number++).padStart(2,'0')}while(customLists.some(list=>list.name===name));
+    $('list-name').value=name;
+  }
   menuSaving=true;updateSpinButton();const controls=[...$('personal-menu').querySelectorAll('button,input')];controls.forEach(c=>c.disabled=true);
   try{
     const saved=await api('/api/lists'+(draftListId===null?'':'/'+draftListId),{method:draftListId===null?'POST':'PUT',body:JSON.stringify({name:$('list-name').value,drinkIds:[...draftIncluded]})});
@@ -461,7 +468,7 @@ function draw(){
       let label=sl.drink.name;
       while(label.length>1&&ctx.measureText(label).width>420)label=label.slice(0,-1);
       if(label!==sl.drink.name)label=label.slice(0,-1)+'…';
-      if(Math.cos(mid)<0){ctx.rotate(Math.PI);ctx.textAlign='left';ctx.fillText(label,-625,0)}
+      if(Math.cos(sl.start+sl.span/2-Math.PI/2)<0){ctx.rotate(Math.PI);ctx.textAlign='left';ctx.fillText(label,-625,0)}
       else{ctx.textAlign='right';ctx.fillText(label,625,0)}
     }
     ctx.restore();
