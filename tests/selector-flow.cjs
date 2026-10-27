@@ -15,14 +15,16 @@ const server=spawn(process.execPath,['server.js'],{cwd:temp,env:{...process.env,
   await page.locator('#source-tea').click();assert.equal(await page.locator('#custom-entry').isVisible(),false);
   await page.locator('#shop-select').click();await page.locator('#shop-results .shop-option').first().click();await page.locator('#save-menu').click();await page.waitForFunction(()=>drinks.length>0&&!menuSaving);const teaBrand=await page.evaluate(()=>selectedBrand);
   await page.locator('#source-custom').click();assert.equal(await page.evaluate(()=>drinks.length),0,'tea options never leak into empty custom mode');
-  await page.locator('#custom-options').fill('咖啡\n奶茶\n咖啡\n');await page.locator('#use-custom-options').click();await page.waitForFunction(()=>drinks.length===2&&!customDirty);
+  await page.locator('#edit-custom-options').click();await page.locator('#custom-options').fill('咖啡\n奶茶\n咖啡\n');await page.locator('#use-custom-options').click();await page.waitForFunction(()=>drinks.length===2&&!customDirty);
   assert.equal(await page.evaluate(()=>customLists.length),1);assert.equal(posts.length,0,'lists never leave the browser');
   await page.locator('#source-tea').click();assert.equal(await page.evaluate(()=>selectedBrand),teaBrand);assert.ok(await page.evaluate(()=>drinks.every(d=>!d.custom)));
   await page.reload();await ready();assert.equal(await page.locator('#source-tea').getAttribute('aria-pressed'),'true');
   await page.locator('#source-custom').click();assert.deepEqual(await page.evaluate(()=>drinks.map(d=>d.name)),['咖啡','奶茶']);
   await page.reload();await ready();assert.equal(await page.locator('#custom-options').inputValue(),'咖啡\n奶茶');
-  await page.locator('#custom-options').fill('咖啡\n奶茶\n散步');assert.equal(await page.locator('#spin').isDisabled(),true);await page.locator('#use-custom-options').click();assert.equal(await page.evaluate(()=>drinks.length),3);
-  await page.locator('#custom-options').fill('咖啡\n奶茶');await page.locator('#use-custom-options').click();assert.equal(await page.evaluate(()=>localState.options.length),2);
+  await page.locator('#edit-custom-options').click();await page.locator('#custom-options').fill('咖啡\n奶茶\n散步');assert.equal(await page.locator('#spin').isDisabled(),true);await page.locator('#use-custom-options').click();assert.equal(await page.evaluate(()=>drinks.length),3);
+  await page.locator('#edit-custom-options').click();await page.locator('#custom-options').fill('咖啡\n奶茶');await page.locator('#use-custom-options').click();assert.equal(await page.evaluate(()=>localState.options.length),2);
+  assert.equal(await page.locator('#custom-options-dialog').isVisible(),false);assert.match(await page.locator('#custom-summary').textContent(),/2 个选项/);
+  await page.locator('#edit-custom-options').click();await page.locator('#custom-options').fill('未保存');await page.keyboard.press('Escape');await page.waitForFunction(()=>!customDirty);assert.equal(await page.locator('#spin').isDisabled(),false);assert.equal(await page.locator('#custom-options').inputValue(),'咖啡\n奶茶');assert.equal(await page.locator('#edit-custom-options').evaluate(el=>el===document.activeElement),true);
   await page.locator('[name=reveal-speed][value=quick]').check();
   for(const m of ['wheel','scratch','number','capsule','box','slot','flip']){
     await page.locator('#mode-picker summary').click();await page.locator('#mode-'+m).click();
@@ -37,7 +39,7 @@ const server=spawn(process.execPath,['server.js'],{cwd:temp,env:{...process.env,
   await page.locator('#current-result').click();await page.locator('#confirm').click();assert.equal(posts.length,7,'review does not count');
   await page.reload();await ready();assert.equal(await page.evaluate(()=>history.length),7);assert.equal(await page.locator('#current-result').isVisible(),true);
   const other=await browser.newPage();await other.goto(base);await other.waitForFunction(()=>appReady);assert.equal(await other.evaluate(()=>customLists.length),0);await other.close();
-  for(const width of [320,390,768,1280]){await page.setViewportSize({width,height:900});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.locator('#source-tea').click();assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.locator('#source-custom').click()}
+  for(const width of [320,390,768,1280]){await page.setViewportSize({width,height:900});await page.locator('#edit-custom-options').click();assert.ok(await page.locator('#custom-options-dialog').evaluate(el=>el.scrollWidth<=el.clientWidth&&el.getBoundingClientRect().bottom<=innerHeight));await page.keyboard.press('Escape');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.locator('#source-tea').click();assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.locator('#source-custom').click()}
   await page.setViewportSize({width:390,height:900});
   if(process.env.TEA_SCREENSHOT_DIR){await page.screenshot({path:path.join(process.env.TEA_SCREENSHOT_DIR,'selector-simple-custom.png'),fullPage:true});await page.locator('#source-tea').click();await page.screenshot({path:path.join(process.env.TEA_SCREENSHOT_DIR,'selector-tea.png'),fullPage:true});await page.locator('#source-custom').click()}
   // A scratch request is not a completed choice until the foil is revealed.
@@ -53,8 +55,8 @@ const server=spawn(process.execPath,['server.js'],{cwd:temp,env:{...process.env,
   await page.locator('#add-prize').click();await page.locator('#edit-name').fill('测试公共选项');await page.locator('#save-edit').click();await page.locator('#prize-editor').waitFor({state:'hidden'});assert.match(await page.locator('#save-state').textContent(),/已保存/);
   await page.locator('#logout').click();await page.waitForFunction(()=>appReady&&!adminMode);assert.equal(await page.evaluate(()=>drinks.length),2);
   // Blocked storage preserves input and the previously saved choice.
-  await page.evaluate(()=>{Storage.prototype.setItem=function(){throw Error('blocked')}});await page.locator('#custom-options').fill('散步\n看电影');await page.locator('#use-custom-options').click();assert.match(await page.locator('#custom-entry-error').textContent(),/本地存储/);assert.equal(await page.locator('#custom-options').inputValue(),'散步\n看电影');assert.equal(await page.evaluate(()=>drinks[0].name),'咖啡');
-  await page.reload();await ready();await page.locator('#custom-options').fill('  \n');await page.locator('#use-custom-options').click();assert.match(await page.locator('#custom-entry-error').textContent(),/每行/);assert.equal(await page.locator('#spin').isDisabled(),true);
+  await page.evaluate(()=>{Storage.prototype.setItem=function(){throw Error('blocked')}});await page.locator('#edit-custom-options').click();await page.locator('#custom-options').fill('散步\n看电影');await page.locator('#use-custom-options').click();assert.match(await page.locator('#custom-entry-error').textContent(),/本地存储/);assert.equal(await page.locator('#custom-options').inputValue(),'散步\n看电影');assert.equal(await page.evaluate(()=>drinks[0].name),'咖啡');
+  await page.reload();await ready();await page.locator('#edit-custom-options').click();await page.locator('#custom-options').fill('  \n');await page.locator('#use-custom-options').click();assert.match(await page.locator('#custom-entry-error').textContent(),/每行/);assert.equal(await page.locator('#spin').isDisabled(),true);
   await page.locator('#custom-options').fill('字'.repeat(41));await page.locator('#use-custom-options').click();assert.match(await page.locator('#custom-entry-error').textContent(),/40/);
   await page.reload();await ready();assert.equal(await page.locator('#custom-options').inputValue(),'咖啡\n奶茶');
   // Existing local lists from the previous release remain available.
