@@ -132,7 +132,39 @@
 
 
 .cup,.reel-cup,.mini-tea,.box-body,.flip-tea{background:transparent url('/assets/milk-tea-glass.webp') center/contain no-repeat}
-.shop-picker{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:20px 0;padding:14px 18px;border:1px solid #eed7de;border-radius:18px;background:#fffdf9}.shop-picker label{font-weight:700}.shop-picker select{min-height:44px;max-width:100%;min-width:160px;border:1px solid #dfc9cd;border-radius:10px;padding:0 12px;background:#fff;color:inherit;font:inherit}.shop-picker small{color:#896476}.personal-menu{max-height:85vh;overflow:auto;text-align:left;max-width:560px}.personal-menu h2{margin-top:0}.personal-menu .menu-item{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:8px 0}.personal-menu .menu-item.excluded{background:#f4efef;color:#947b87}.personal-menu footer{position:sticky;bottom:-30px;background:#fffaf3;padding:16px 0;display:flex;gap:10px;flex-wrap:wrap}.menu-exclude{min-height:44px;min-width:70px;border:1px solid #dfc9cd;border-radius:10px;background:#fff0f5;color:#805169;cursor:pointer}.menu-price{display:block;color:#896476;font-size:12px}#menu-message{font-size:13px;color:#896476}@media(max-width:640px){.shop-picker{padding:10px;gap:8px}.shop-picker small{flex-basis:100%}.personal-menu{padding:20px}.personal-menu footer{bottom:-20px}}
+/* Light rose controls: shared actions and personal drink menu. */
+.config-button,.menu-exclude{min-height:44px;border:1px solid #e5cfd8;border-radius:10px;background:#fff;color:#48414b;padding:9px 16px;font:inherit;font-size:14px;line-height:1.5;cursor:pointer;transition:background .15s,border-color .15s,color .15s}
+.config-button:hover:not(:disabled),.menu-exclude:hover:not(:disabled){background:#fff1f6;border-color:#c78ca3;color:#a63e63}
+.config-button:disabled,.menu-exclude:disabled{opacity:.45;cursor:not-allowed}
+.config-button.danger{background:#fff8fa;border-color:#edcdd8;color:#a63e63}
+.shop-picker{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:20px 0;padding:18px 22px;border:1px solid #ead4de;border-radius:16px;background:#fffcfd;color:#313139}
+.shop-picker label{font-weight:700}
+.shop-picker select{appearance:none;height:44px;max-width:100%;min-width:180px;border:1px solid #e5d5df;border-radius:10px;padding:0 40px 0 14px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235b5460' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center;color:inherit;font:inherit;cursor:pointer}
+.shop-picker select:hover:not(:disabled){border-color:#c78ca3}
+.shop-picker select:disabled{opacity:.5;cursor:not-allowed}
+.shop-picker small{color:#706975;font-size:13px}
+#edit-menu{display:inline-flex;align-items:center;justify-content:center;gap:9px;background:#fff4f8;border-color:#ce8ca5;color:#a63e63;font-weight:600}
+#edit-menu::before{content:'';width:17px;height:17px;flex-shrink:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23a63e63' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m16 3 5 5M3 21l5-1L21 7a2.1 2.1 0 0 0-4-4L4 16z'/%3E%3C/svg%3E") center/contain no-repeat}
+#edit-menu:hover:not(:disabled){background:#fbe5ee;border-color:#b94e72}
+.personal-menu{max-height:85vh;overflow:auto;text-align:left;max-width:640px;padding:28px;border:1px solid #e5cfd8;border-radius:18px;background:#fffdfe;color:#313139;box-shadow:0 18px 64px #54304424}
+.personal-menu::backdrop{background:#352b3f55;backdrop-filter:blur(5px)}
+.personal-menu h2{margin:0 0 12px;font-size:22px;line-height:1.5}
+#menu-message{margin:0 0 18px;padding-bottom:18px;border-bottom:1px solid #eee5eb;font-size:13px;color:#706975}
+.personal-menu .menu-item{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:0;padding:16px 0;border:0;border-bottom:1px solid #eee5eb;border-radius:0;background:transparent}
+.personal-menu .menu-item>span{min-width:0;overflow-wrap:anywhere}
+.personal-menu .menu-item b{font-weight:600;font-size:15px}
+.personal-menu .menu-item.excluded{background:transparent;color:#8b818c}
+.personal-menu .menu-item.excluded b{text-decoration:line-through;text-decoration-color:#c7b5c0}
+.menu-price{display:block;margin-top:3px;color:#817684;font-size:12px}
+.menu-exclude{flex-shrink:0;min-width:86px;background:#fff;color:#a63e63;border-color:#e7bccc}
+.menu-exclude[aria-pressed="true"]{background:#fff4f8;border-color:#dcc6d2;color:#775b70}
+.personal-menu footer{position:sticky;bottom:-28px;margin-top:20px;padding:18px 0 4px;border-top:1px solid #eee5eb;background:#fffdfe;display:flex;gap:10px;flex-wrap:wrap}
+#restore-menu{margin-right:auto;background:transparent;border-color:transparent;color:#806578}
+#cancel-menu{border-color:#bdb3c2}
+#save-menu,#save-item,#confirm-import{background:#b94e72;border-color:#b94e72;color:#fff;font-weight:600}
+#save-menu:hover:not(:disabled),#save-item:hover:not(:disabled),#confirm-import:hover:not(:disabled){background:#a63e63;border-color:#a63e63;color:#fff}
+.shop-picker select:focus-visible,.config-button:focus-visible,.menu-exclude:focus-visible{outline:3px solid #b94e72;outline-offset:3px}
+@media(max-width:640px){.shop-picker{padding:16px;gap:10px}.shop-picker label{flex-basis:100%}.shop-picker select{flex:1;min-width:0}.shop-picker small{flex-basis:100%}.personal-menu{padding:20px}.personal-menu footer{bottom:-20px;padding:14px 0 0;gap:8px}.personal-menu footer .config-button{padding:9px 12px}}
 
 /* Four rank tiers share the server's probability rules. */
 .tier-king{background:linear-gradient(120deg,#ffedb0,#e9b644);color:#704606;border:1px solid #d6a23b}
