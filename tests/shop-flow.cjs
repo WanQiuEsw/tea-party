@@ -61,7 +61,7 @@ let browser;
     if(size!==1){await page.locator('#edit-menu').click();if(size===12)await page.locator('#restore-menu').click();else{await page.locator('#show-available').click();await page.locator('.menu-exclude').first().click()}await save()}
     await page.reload();await page.waitForFunction(n=>drinks.length===n&&drawQuota!==null,size);
     for(const mode of ['flip','box','capsule','number','scratch','wheel','slot']){
-      await page.locator('#mode-'+mode).click();
+      await page.locator('#mode-picker').evaluate(el=>el.open=true);await page.locator('#mode-'+mode).click();
       if(mode==='flip')assert.equal(await page.locator('.flip-card').count(),Math.min(3,size));
       if(mode==='box')assert.equal(await page.locator('.lucky-box').count(),Math.min(9,size));
       if(mode==='capsule')assert.equal(await page.locator('.gacha-capsule').count(),Math.min(12,size));

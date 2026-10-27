@@ -24,7 +24,7 @@ let browser;
     await page.setViewportSize({width,height});await page.evaluate(()=>scrollTo(0,0));
     const bounds=await page.evaluate(()=>{
       const box=s=>{const r=document.querySelector(s).getBoundingClientRect();return {top:r.top,bottom:r.bottom,height:r.height}};
-      return {wheel:box('.hub'),modes:box('.mode-switch'),overflow:document.documentElement.scrollWidth>innerWidth};
+      return {wheel:box('.hub'),modes:box('.mode-toolbar'),overflow:document.documentElement.scrollWidth>innerWidth};
     });
     console.log(width,bounds);
     if(process.env.TEA_SCREENSHOT)await page.screenshot({path:process.env.TEA_SCREENSHOT.replace('.png','-'+width+'.png')});
@@ -33,7 +33,7 @@ let browser;
   }
   await page.setViewportSize({width:390,height:844});
   for(const mode of ['scratch','number','capsule','slot','box','flip','wheel']){
-    await page.locator('#mode-'+mode).click();assert.equal(await page.locator('#mode-'+mode).getAttribute('aria-pressed'),'true');
+    await page.locator('#mode-picker').evaluate(el=>el.open=true);await page.locator('#mode-'+mode).click();assert.equal(await page.locator('#mode-'+mode).getAttribute('aria-pressed'),'true');
   }
   await page.locator('#wheel-spin').click();await page.locator('#result').waitFor({state:'visible'});
   assert.equal(await page.locator('.intro').count(),0);assert.deepEqual(errors,[]);

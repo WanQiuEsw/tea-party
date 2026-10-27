@@ -79,7 +79,7 @@ let browser;
   await page.evaluate(()=>showResult(drinks[0]));assert.equal(await page.locator('#result-tier').textContent(),'');await page.locator('#close').click();
   await page.evaluate(()=>scrollTo(0,0));
   if(process.env.TEA_SCREENSHOT)await page.screenshot({path:process.env.TEA_SCREENSHOT,fullPage:true});
-  await page.locator('#mode-capsule').click();
+  await page.locator('#mode-picker').evaluate(el=>el.open=true);await page.locator('#mode-capsule').click();
   for(const width of [320,390,768,1280]){
     await page.setViewportSize({width,height:900});
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'capsule fits '+width);
@@ -93,7 +93,7 @@ let browser;
     if(process.env.TEA_SCREENSHOT)await page.locator('#capsule-stage').screenshot({path:process.env.TEA_SCREENSHOT.replace('.png','-capsule-'+width+'.png')});
   }
   await page.setViewportSize({width:390,height:844});
-  await page.locator('#mode-wheel').click();
+  await page.locator('#mode-picker').evaluate(el=>el.open=true);await page.locator('#mode-wheel').click();
   let wheelRequests=0;
   await page.route('**/api/draws',async route=>{if(route.request().method()==='POST'){wheelRequests++;await new Promise(r=>setTimeout(r,300))}await route.continue()}, {times:1});
   let recorded=0;
@@ -153,7 +153,7 @@ let browser;
     if(mode==='capsule')await page.emulateMedia({reducedMotion:'reduce'});
   };
   for(const mode of ['wheel','scratch','number','capsule','box','slot','flip']){
-    await page.locator('#mode-'+mode).click();
+    await page.locator('#mode-picker').evaluate(el=>el.open=true);await page.locator('#mode-'+mode).click();
     await play(mode);
     if(mode==='wheel')assert.equal(wheelRequests,1,'center click submits once');
     recorded++;
@@ -169,7 +169,7 @@ let browser;
   await page.reload();await page.waitForFunction(()=>drawQuota!==null&&drinks.length>0);
   assert.equal(await hub.isEnabled(),true,'demo stays eligible after reload');
   assert.equal(await page.locator('#mode-fortune').count(),0,'no separate fortune mode');
-  await page.locator('#mode-slot').click();await play('slot');
+  await page.locator('#mode-picker').evaluate(el=>el.open=true);await page.locator('#mode-slot').click();await play('slot');
   await page.evaluate(()=>{navigator.clipboard.writeText=async text=>{window.shareCopied=text}});
   await page.locator('#copy').click();
   const copied=await page.evaluate(()=>window.shareCopied);
@@ -181,7 +181,7 @@ let browser;
   await page.setViewportSize({width:390,height:844});await close();
   // Real flip animation delays disclosure, uses one server draw and locks other actions.
   const art=await page.request.get(baseUrl+'/assets/flip-card-back.webp');assert.equal(art.status(),200);assert.equal(art.headers()['content-type'],'image/webp');assert.ok((await art.body()).length>1000);
-  const beforePreview=drawRequests;await page.locator('#mode-flip').click();assert.equal(drawRequests,beforePreview,'preview never draws');
+  const beforePreview=drawRequests;await page.locator('#mode-picker').evaluate(el=>el.open=true);await page.locator('#mode-flip').click();assert.equal(drawRequests,beforePreview,'preview never draws');
   for(const width of [320,390,1280]){
     await page.setViewportSize({width,height:900});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'flip fits '+width);
     assert.equal(await page.locator('.flip-card').count(),await page.evaluate(()=>Math.min(3,drinks.length)));
@@ -206,7 +206,7 @@ let browser;
   await page.route('**/api/draws',route=>route.abort(),{times:1});await page.locator('.flip-card').first().click();await page.locator('#notice[open]').waitFor();
   await page.waitForFunction(()=>!busy&&!requestingDraw);
   assert.equal(await page.evaluate(()=>busy||requestingDraw),false,'network failure releases controls');assert.equal(await page.locator('#flip-deck').getAttribute('data-phase'),'revealed','failed draw preserves last card');
-  await page.locator('#notice-ok').click();await page.locator('#mode-slot').click();
+  await page.locator('#notice-ok').click();await page.locator('#mode-picker').evaluate(el=>el.open=true);await page.locator('#mode-slot').click();
   // A pending prize permits redraw, but cancellation preserves it and makes no POST.
   await page.evaluate(async()=>enterApp(await api('/api/login',{method:'POST',body:JSON.stringify({username:'user',password:'123456'})})));
   await ensureShop();
@@ -215,21 +215,21 @@ let browser;
   assert.equal(await page.locator('#slot-play').isEnabled(),true);
   assert.equal(await page.locator('#pending-rewards li:not(.reward-empty)').count(),1);
   const held=await page.evaluate(()=>drawQuota.currentReward.id),beforeCancel=drawRequests;
-  await page.locator('#mode-flip').click();await page.locator('.flip-card').first().click();
+  await page.locator('#mode-picker').evaluate(el=>el.open=true);await page.locator('#mode-flip').click();await page.locator('.flip-card').first().click();
   await page.locator('#replace-reward[open]').waitFor();await page.locator('#skip-redraw-reminder').check();await page.locator('#replace-cancel').click();
   await page.waitForFunction(()=>!requestingDraw);
   assert.equal(await page.evaluate(()=>localStorage.getItem('tea_skip_redraw_'+currentUserId)),null,'cancel must not remember the checkbox');
   assert.equal(drawRequests,beforeCancel,'cancel must not submit a draw');
   assert.equal(await page.locator('#flip-deck').getAttribute('data-phase'),'idle','cancel does not start flipping');
   assert.equal(await page.evaluate(()=>drawQuota.currentReward.id),held);
-  rememberRedraw=true;await page.locator('#mode-slot').click();await play('slot');
+  rememberRedraw=true;await page.locator('#mode-picker').evaluate(el=>el.open=true);await page.locator('#mode-slot').click();await play('slot');
   assert.equal(await page.evaluate(()=>localStorage.getItem('tea_skip_redraw_'+currentUserId)),'1');
   assert.ok(await page.evaluate(()=>drawQuota.currentReward),'redraw immediately replaces the forfeited prize');
   await close();
   assert.notEqual(await page.evaluate(()=>drawQuota.currentReward.id),held);
   assert.equal(await page.locator('#pending-rewards li:not(.reward-empty)').count(),1);
   await page.reload();await page.waitForFunction(()=>drawQuota!==null&&drinks.length>0);
-  await play('wheel');assert.equal(await page.locator('#replace-reward').isVisible(),false,'saved choice suppresses reminders after reload');
+  assert.equal(await page.evaluate(()=>mode),'slot','last game survives reload');await page.locator('#mode-picker summary').click();await page.locator('#mode-wheel').click();await play('wheel');assert.equal(await page.locator('#replace-reward').isVisible(),false,'saved choice suppresses reminders after reload');
   await close();
   // Five dated rewards persist; exchange one old prize without touching the others.
   const db=new DatabaseSync(path.join(temp,'tea.db'));
@@ -262,14 +262,14 @@ let browser;
   assert.equal(await page.locator('#pending-rewards li:not(.reward-empty)').count(),3);
   assert.equal(await page.locator('#redeemed-rewards li:not(.reward-empty)').count(),2);
   assert.equal(await page.locator('.redeem-reward').count(),3);
-  await page.locator('#mode-wheel').click();assert.equal(await page.locator('#spin').isDisabled(),true);assert.equal(await hub.isDisabled(),true);
+  await page.locator('#mode-picker').evaluate(el=>el.open=true);await page.locator('#mode-wheel').click();assert.equal(await page.locator('#spin').isDisabled(),true);assert.equal(await hub.isDisabled(),true);
   await page.reload();await page.locator('#app-main').waitFor({state:'visible'});
   assert.equal(await page.locator('#spin').isDisabled(),true);
   // Another account can scratch and redeem only after the ticket is revealed.
   await page.evaluate(async()=>enterApp(await api('/api/login',{method:'POST',body:JSON.stringify({username:'ping',password:'123456'})})));
   await ensureShop();
   assert.equal(await page.evaluate(()=>localStorage.getItem('tea_skip_redraw_'+currentUserId)),null,'another account has its own reminder setting');
-  rememberRedraw=false;await page.locator('#mode-scratch').click();await play('scratch');await page.locator('#confirm').click();
+  rememberRedraw=false;await page.locator('#mode-picker').evaluate(el=>el.open=true);await page.locator('#mode-scratch').click();await play('scratch');await page.locator('#confirm').click();
   await page.evaluate(()=>{prepareTicket();void startScratch()});
   await approveReminder();await page.waitForFunction(()=>scratchStarted&&!requestingDraw);
   assert.equal(await page.locator('.redeem-reward').isDisabled(),true);
@@ -283,9 +283,9 @@ let browser;
   if(process.env.TEA_SCREENSHOT)await page.locator('.rewards-section').screenshot({path:process.env.TEA_SCREENSHOT.replace('.png','-rewards.png')});
   for(const width of [390,1280]){await page.setViewportSize({width,height:844});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'reward list fits '+width+'px')}
   await page.setViewportSize({width:390,height:844});
-  for(const mode of ['slot','scratch','number','capsule','flip']){await page.locator('#mode-'+mode).click();assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),mode+' mobile overflow')}
+  for(const mode of ['slot','scratch','number','capsule','flip']){await page.locator('#mode-picker').evaluate(el=>el.open=true);await page.locator('#mode-'+mode).click();assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),mode+' mobile overflow')}
   for(const mode of ['scratch','number']){
-    await page.locator('#mode-'+mode).click();
+    await page.locator('#mode-picker').evaluate(el=>el.open=true);await page.locator('#mode-'+mode).click();
     await page.waitForFunction(key=>ticketArt[key].complete&&ticketArt[key].naturalWidth>0,mode);
     for(const width of [320,390,768,1280]){
       await page.setViewportSize({width,height:900});

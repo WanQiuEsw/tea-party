@@ -86,7 +86,7 @@ test('named cross-brand lists persist, isolate accounts and control all draw can
       await page.reload();await page.waitForFunction(()=>drinks.length===2&&selectedListId!==null);
       assert.deepEqual(await page.evaluate(()=>layout.map(s=>s.prob)),[.5,.5]);
       for(const mode of ['wheel','flip','box','capsule','scratch','number','slot']){
-        await page.locator('#mode-'+mode).click();
+        await page.locator('#mode-picker').evaluate(el=>el.open=true);await page.locator('#mode-'+mode).click();
         if(mode==='flip')await page.locator('.flip-card').last().click();
         else if(mode==='box'){await page.locator('.lucky-box').last().click();await page.locator('#box-detail').click()}
         else if(mode==='capsule'){await page.locator('#capsule-knob').click();await page.waitForFunction(()=>capsulePhase==='ready');await page.locator('#capsule-drop').click()}
@@ -98,7 +98,7 @@ test('named cross-brand lists persist, isolate accounts and control all draw can
       }
       await page.locator('#edit-menu').click();await page.locator('#list-name').fill('一杯也开心');await page.locator('.menu-exclude').first().click();await saveUI();
       assert.equal(await page.evaluate(()=>drinks.length),1);assert.equal(await page.locator('#spin').isEnabled(),true);
-      for(const mode of ['wheel','flip','box','capsule','scratch','number','slot']){await page.locator('#mode-'+mode).click();assert.deepEqual(await page.evaluate(()=>layout.map(s=>s.prob)),[1]);}
+      for(const mode of ['wheel','flip','box','capsule','scratch','number','slot']){await page.locator('#mode-picker').evaluate(el=>el.open=true);await page.locator('#mode-'+mode).click();assert.deepEqual(await page.evaluate(()=>layout.map(s=>s.prob)),[1]);}
       await page.locator('#edit-menu').click();await page.locator('#list-name').fill('取消的修改');await page.locator('#cancel-menu').click();assert.equal(await page.locator('#shop-current').textContent(),'一杯也开心');
       page.once('dialog',dialog=>dialog.accept());await page.locator('#edit-menu').click();await page.locator('#delete-list').click();await page.locator('#personal-menu').waitFor({state:'hidden'});
       assert.equal(await page.evaluate(()=>selectedListId),null);assert.deepEqual(errors,[]);
@@ -136,12 +136,12 @@ test('named cross-brand lists persist, isolate accounts and control all draw can
       await page.locator('#clear-list').click();assert.equal(await page.locator('#save-menu').isDisabled(),true);
       await page.locator('#select-all-drinks').click();await saveUI();
       assert.equal(await page.evaluate(()=>drinks.length===allDrinks.length),true);
-      assert.equal(await page.locator('#mode-wheel').isVisible(),false);
+      assert.equal(await page.locator('#mode-wheel').evaluate(el=>!el.hidden),false);
       assert.equal(await page.locator('#wheel-stage').isVisible(),false);
       assert.equal(await page.locator('#wheel-limit-note').isVisible(),true);
       await page.evaluate(()=>setMode('wheel'));assert.notEqual(await page.evaluate(()=>mode),'wheel');
       await page.reload();await page.waitForFunction(()=>drinks.length===allDrinks.length&&drawQuota);
-      assert.equal(await page.locator('#mode-wheel').isVisible(),false);
+      assert.equal(await page.locator('#mode-wheel').evaluate(el=>!el.hidden),false);
       const counts=await page.evaluate(()=>{
         const saved=drinks,results=[];
         for(const size of [0,1,2,3,4,8,9,10,12,13,allDrinks.length]){
@@ -158,7 +158,7 @@ test('named cross-brand lists persist, isolate accounts and control all draw can
       await page.evaluate(()=>{globalThis.originalRequestDraw=requestDraw;requestDraw=async()=>drinks.at(-1)});
       const lastDrink=await page.evaluate(()=>drinks.at(-1).id);
       for(const mode of ['flip','box','capsule']){
-        await page.locator('#mode-'+mode).click();
+        await page.locator('#mode-picker').evaluate(el=>el.open=true);await page.locator('#mode-'+mode).click();
         for(const width of [320,390,768,1280]){
           await page.setViewportSize({width,height:900});
           assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),mode+' full catalog fits '+width);
@@ -172,16 +172,16 @@ test('named cross-brand lists persist, isolate accounts and control all draw can
         await page.locator('#close').click();
       }
       await page.evaluate(()=>{requestDraw=globalThis.originalRequestDraw;delete globalThis.originalRequestDraw});
-      await page.locator('#mode-slot').click();
+      await page.locator('#mode-picker').evaluate(el=>el.open=true);await page.locator('#mode-slot').click();
       await page.locator('#slot-play').click();await page.locator('#result[open]').waitFor();await page.locator('#close').click();
       for(const size of [25,24]){
         await page.locator('#edit-menu').click();
         await page.evaluate(size=>{draftIncluded=new Set(allDrinks.slice(0,size).map(d=>d.id));renderPersonalMenu()},size);
         await saveUI();
-        assert.equal(await page.locator('#mode-wheel').isVisible(),size<=24);
+        assert.equal(await page.locator('#mode-wheel').evaluate(el=>!el.hidden),size<=24);
         assert.equal(await page.locator('#wheel-limit-note').isVisible(),size>24);
       }
-      await page.locator('#mode-wheel').click();await page.locator('#wheel-spin').click();await page.locator('#result[open]').waitFor();await page.locator('#close').click();
+      await page.locator('#mode-picker').evaluate(el=>el.open=true);await page.locator('#mode-wheel').click();await page.locator('#wheel-spin').click();await page.locator('#result[open]').waitFor();await page.locator('#close').click();
       await page.locator('#new-list').click();await page.locator('#create-list').click();
       assert.equal(await page.locator('#list-name').inputValue(),'');assert.equal(await page.evaluate(()=>draftIncluded.size),0);
       await page.locator('#cancel-menu').click();assert.equal(await page.evaluate(()=>drinks.length),24);
