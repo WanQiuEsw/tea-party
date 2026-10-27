@@ -20,8 +20,8 @@ test('passwordless demo is unlimited, non-redeemable and cannot manage prizes; a
     assert.equal((await request('/api/me')).data.user,null);
     const demo=await request('/api/demo','',{});assert.equal(demo.data.username,'demo');assert.equal(demo.data.role,'user');assert.ok(demo.cookie);
     for(let i=0;i<3;i++)assert.equal((await request('/api/draws',demo.cookie,{})).status,201);
-    assert.deepEqual((await request('/api/rewards',demo.cookie)).data,[]);
-    assert.equal((await request('/api/quota',demo.cookie)).data.redeemed,false);
+    assert.equal((await request('/api/rewards',demo.cookie)).status,404);
+    assert.equal((await request('/api/quota',demo.cookie)).status,404);
     assert.equal((await request('/api/drinks',demo.cookie,{name:'forbidden',price:10})).status,403);
     assert.equal((await request('/api/draws/all',demo.cookie)).status,403);
     assert.equal((await request('/api/login',demo.cookie,{username:'admin',password:'wrong'})).status,401);
@@ -30,11 +30,11 @@ test('passwordless demo is unlimited, non-redeemable and cannot manage prizes; a
     assert.equal(user.data.username,'user');assert.equal((await request('/api/me',demo.cookie)).data.user,null);
     assert.deepEqual((await request('/api/draws',user.cookie)).data,[]);
     const draw=await request('/api/draws',user.cookie,{});
-    assert.equal((await request('/api/rewards/redeem',user.cookie,{drawIds:[draw.data.record.id]})).status,200);
-    assert.equal((await request('/api/draws',user.cookie,{})).status,429);
+    assert.equal((await request('/api/rewards/redeem',user.cookie,{drawIds:[draw.data.record.id]})).status,404);
+    assert.equal((await request('/api/draws',user.cookie,{})).status,201);
     const again=await request('/api/demo',user.cookie,{});
     assert.equal((await request('/api/me',user.cookie)).data.user,null);
-    assert.equal((await request('/api/rewards/redeem',again.cookie,{drawIds:[draw.data.record.id]})).status,409);
+    assert.equal((await request('/api/rewards/redeem',again.cookie,{drawIds:[draw.data.record.id]})).status,404);
     assert.equal((await request('/api/draws',again.cookie,{})).status,201);
   }finally{
     const done=new Promise(r=>server.once('exit',r));server.kill();await done;fs.rmSync(temp,{recursive:true,force:true});

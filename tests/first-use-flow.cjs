@@ -15,7 +15,7 @@ let browser;
   const page=await browser.newPage({viewport:{width:390,height:900},reducedMotion:'reduce'}),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   let draws=0;page.on('request',r=>{if(r.method()==='POST'&&new URL(r.url()).pathname==='/api/draws')draws++});
-  const ready=()=>page.waitForFunction(()=>allDrinks.length&&drawQuota!==null&&mode===(savedMode()==='wheel'&&drinks.length>WHEEL_LIMIT?'slot':savedMode()));
+  const ready=()=>page.waitForFunction(()=>allDrinks.length&&appReady&&mode===(savedMode()==='wheel'&&drinks.length>WHEEL_LIMIT?'slot':savedMode()));
   const choose=async mode=>{await page.locator('#mode-picker summary').click();await page.locator('#mode-'+mode).click()};
   await page.goto(base);await ready();
   assert.equal(await page.evaluate(()=>mode),'wheel');
@@ -45,6 +45,19 @@ let browser;
   assert.equal(await page.evaluate(()=>mode),'slot');
   assert.equal(await page.evaluate(()=>localStorage.getItem(MODE_STORAGE_KEY)),'wheel','automatic fallback preserves preference');
   for(let i=0;i<12;i++){await page.locator('#random-mode').click();assert.notEqual(await page.evaluate(()=>mode),'wheel')}
+  for(const count of [24,25,168]){
+    await page.evaluate(count=>{drinks=allDrinks.slice(0,count);computeLayout();updateWheelAvailability();setMode('number',false);updateSpinButton()},count);
+    for(const width of [320,390,768,1280]){
+      await page.setViewportSize({width,height:900});await page.locator('#mode-picker summary').click();
+      const buttons=page.locator('.mode-switch button:visible'),expected=count>24?6:7;
+      assert.equal(await buttons.count(),expected);
+      const rects=await buttons.evaluateAll(elements=>elements.map(el=>{const r=el.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width}}));
+      for(let i=2;i<rects.length;i+=2){assert.equal(rects[i].x,rects[0].x,'each new row starts in the first column');assert.ok(rects[i].y>rects[i-1].y,'only two modes per row')}
+      for(let i=0;i+1<rects.length;i+=2){assert.equal(rects[i].y,rects[i+1].y,'visible modes pack into complete rows');assert.ok(rects[i+1].x>=rects[i].x+rects[i].width,'columns do not overlap')}
+      if(count===25&&width===390&&process.env.TEA_SCREENSHOT)await page.screenshot({path:path.join(root,'.screenshots','mode-picker-25-390.png')});
+      await page.locator('#mode-picker summary').click();
+    }
+  }
   await page.reload();await ready();await choose('wheel');
   for(const width of [320,390,768,1280]){
     await page.setViewportSize({width,height:900});await page.locator('#mode-picker summary').click();
@@ -62,7 +75,7 @@ let browser;
   assert.equal(await page.locator('#confirm').textContent(),'确认这一杯');await page.locator('#confirm').click();
   await page.waitForFunction(()=>!document.getElementById('random-mode').disabled);
   await page.locator('#logout').click();await page.locator('#login-user').fill('user');await page.locator('#login-pass').fill('123456');await page.locator('#login-btn').click();
-  await page.waitForFunction(()=>document.getElementById('whoami').textContent==='user · 用户'&&drawQuota!==null);
+  await page.waitForFunction(()=>document.getElementById('whoami').textContent==='user · 用户'&&appReady);
   assert.equal(await page.locator('#demo-notice').isVisible(),false);
   assert.equal(await page.locator('#result-demo-notice').evaluate(el=>el.hidden),true);
   await page.addInitScript(()=>{Storage.prototype.getItem=Storage.prototype.setItem=()=>{throw new Error('Storage disabled')}});

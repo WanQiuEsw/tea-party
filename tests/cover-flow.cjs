@@ -16,7 +16,7 @@ let browser;
   browser=await chromium.launch({headless:true,channel:process.env.TEA_BROWSER||'chrome'});
   const page=await browser.newPage({reducedMotion:'reduce'}),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
-  await page.goto(base);await page.waitForFunction(()=>allDrinks.length&&drawQuota!==null);
+  await page.goto(base);await page.waitForFunction(()=>allDrinks.length&&appReady);
   await page.setViewportSize({width:320,height:568});
   assert.ok(await page.locator('#wheel-spin').evaluate(el=>el.getBoundingClientRect().bottom<innerHeight),'first visit shows wheel before selecting a shop');
   await page.locator('#shop-select').click();await page.locator('.shop-option').first().click();await page.locator('#save-menu').click();await page.waitForFunction(()=>selectedBrand!==null&&!menuSaving);

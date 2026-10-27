@@ -16,7 +16,7 @@ let browser;
   page.on('pageerror',e=>errors.push(e.message));
   const choose=async brand=>{await page.locator('#shop-search').fill(brand);await page.locator('.shop-option').filter({has:page.getByText(brand,{exact:true})}).click()};
   const save=async()=>{await page.locator('#save-menu').click();await page.locator('#personal-menu').waitFor({state:'hidden'})};
-  await page.goto(base);await page.waitForFunction(()=>allDrinks.length&&drawQuota!==null);
+  await page.goto(base);await page.waitForFunction(()=>allDrinks.length&&appReady);
   await page.locator('#shop-select').click();
   assert.equal(await page.locator('#shop-search').evaluate(el=>el===document.activeElement),true);
   assert.equal(await page.locator('#save-menu').isDisabled(),true);
@@ -36,7 +36,7 @@ let browser;
   assert.equal(await page.locator('#personal-menu').isVisible(),true);assert.equal(await page.locator('#save-menu').isEnabled(),true);
   assert.equal(await page.evaluate(()=>selectedBrand),null,'failed save leaves selection unchanged');
   await page.unroute('**/api/menu');await save();assert.equal(await page.evaluate(()=>drinks.length),11);
-  await page.reload();await page.waitForFunction(()=>drinks.length===11&&drawQuota!==null);
+  await page.reload();await page.waitForFunction(()=>drinks.length===11&&appReady);
   await page.locator('#shop-select').click();await page.locator('#show-available').click();await page.locator('.menu-exclude').click();await save();
   assert.equal(await page.evaluate(()=>drinks.length),12);
   await page.locator('#shop-select').click();
@@ -59,7 +59,7 @@ let browser;
   await save();assert.equal(await page.evaluate(()=>drinks.length),1);assert.equal(await page.locator('#wheel-spin').isEnabled(),true);
   for(const size of [1,2,3,12]){
     if(size!==1){await page.locator('#edit-menu').click();if(size===12)await page.locator('#restore-menu').click();else{await page.locator('#show-available').click();await page.locator('.menu-exclude').first().click()}await save()}
-    await page.reload();await page.waitForFunction(n=>drinks.length===n&&drawQuota!==null,size);
+    await page.reload();await page.waitForFunction(n=>drinks.length===n&&appReady,size);
     for(const mode of ['flip','box','capsule','number','scratch','wheel','slot']){
       await page.locator('#mode-picker').evaluate(el=>el.open=true);await page.locator('#mode-'+mode).click();
       if(mode==='flip')assert.equal(await page.locator('.flip-card').count(),Math.min(3,size));

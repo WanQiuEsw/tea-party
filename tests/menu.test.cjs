@@ -59,11 +59,11 @@ test('personal menus isolate accounts and shops, enforce draw candidates and sur
     let draw=await request('/api/draws',user,{drinkIds:shop.slice(-2).map(d=>d.id)});
     assert.equal(draw.data.outcome.id,shop.at(-2).id,'server uses only eligible drinks');
     const held=draw.data.record.id;
-    // Simulate an old saved one-drink menu without changing today's reward.
+    // A legacy empty menu cannot create a draw or alter existing history.
     const legacy=new DatabaseSync(path.join(temp,'tea.db'));
     legacy.prepare('UPDATE user_menus SET excluded_ids=? WHERE brand=?').run(JSON.stringify(shop.map(d=>d.id)),'古茗');legacy.close();
     assert.equal((await request('/api/draws',user,{replaceDrawId:held})).status,400);
-    assert.equal((await request('/api/quota',user)).data.currentReward.id,held,'empty menu preserves reward');
+    assert.equal((await request('/api/draws',user)).data[0].id,held,'empty menu preserves draw history');
     await save(user,'茶百道',[]);await save(user,'古茗',[]);
     const menus=(await request('/api/menu',user)).data;
     assert.equal(menus.menus.length,2);assert.deepEqual(menus.menus.find(m=>m.brand==='茶百道').excludedIds,[]);

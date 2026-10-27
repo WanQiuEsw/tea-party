@@ -15,7 +15,7 @@ let browser;
   browser=await chromium.launch({headless:true,channel:process.env.TEA_BROWSER||'chrome'});
   const page=await browser.newPage({viewport:{width:390,height:900},deviceScaleFactor:2,hasTouch:true,reducedMotion:'reduce'}),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
-  await page.goto(base);await page.waitForFunction(()=>allDrinks.length&&drawQuota!==null);
+  await page.goto(base);await page.waitForFunction(()=>allDrinks.length&&appReady);
   await page.locator('#shop-select').click();const brand=await page.locator('.shop-option b').first().textContent();
   await page.locator('.shop-option').first().click();await page.locator('#save-menu').click();
   await page.waitForFunction(()=>drinks.length&&!menuSaving);

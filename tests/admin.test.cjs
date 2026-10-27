@@ -29,7 +29,7 @@ test('admin pagination searches all history, validates input and supports prize 
     for(let i=0;i<213;i++)insert.run(uid,'测试品牌',i===0?'早期奖品100%':'分页奖品'+i,i===1?null:18.5,'2026-10-26T17:30:00.000Z');
     assert.equal((await request('/api/draws',admin,{})).status,403,'admin draws are blocked on the server');
     assert.equal(db.prepare('SELECT COUNT(*) AS total FROM draws').get().total,213,'blocked draw creates no history');
-    assert.equal((await request('/api/quota',admin)).data.remaining,0);
+    assert.equal((await request('/api/quota',admin)).status,404);
     for(const size of [5,10,20,50]){
       const {data}=await request('/api/draws/all?page=1&pageSize='+size,admin);
       assert.equal(data.total,213);assert.equal(data.items.length,size);assert.equal(data.items[0].name,'分页奖品212');

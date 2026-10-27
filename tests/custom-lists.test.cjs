@@ -54,7 +54,7 @@ test('named cross-brand lists persist, isolate accounts and control all draw can
     if(process.env.TEA_LIST_BROWSER){
       const {chromium}=require('playwright');browser=await chromium.launch({headless:true,channel:process.env.TEA_BROWSER||'chrome'});
       const page=await browser.newPage({viewport:{width:1280,height:900},reducedMotion:'reduce'}),errors=[];page.on('pageerror',e=>errors.push(e.message));
-      await page.goto(base);await page.waitForFunction(()=>allDrinks.length&&drawQuota);
+      await page.goto(base);await page.waitForFunction(()=>allDrinks.length&&appReady);
       const choose=async brand=>{await page.locator('#shop-search').fill(brand);await page.locator('#shop-results .shop-option').filter({has:page.getByText(brand,{exact:true})}).click()};
       const saveUI=async()=>{await page.locator('#save-menu').click();await page.locator('#personal-menu').waitFor({state:'hidden'})};
       for(const suffix of ['01','02']){
@@ -67,7 +67,7 @@ test('named cross-brand lists persist, isolate accounts and control all draw can
         await saveUI();
         assert.equal(await page.locator('#shop-current').textContent(),'奶茶自定义清单'+suffix);
       }
-      await page.reload();await page.waitForFunction(()=>drawQuota&&selectedListId!==null);
+      await page.reload();await page.waitForFunction(()=>appReady&&selectedListId!==null);
       assert.equal(await page.locator('#shop-current').textContent(),'奶茶自定义清单02');
       assert.deepEqual(await page.evaluate(()=>customLists.map(list=>list.name)),['奶茶自定义清单01','奶茶自定义清单02']);
       await page.locator('#new-list').click();await page.locator('#create-list').click();assert.equal(await page.locator('#save-menu').isDisabled(),true);
@@ -140,7 +140,7 @@ test('named cross-brand lists persist, isolate accounts and control all draw can
       assert.equal(await page.locator('#wheel-stage').isVisible(),false);
       assert.equal(await page.locator('#wheel-limit-note').isVisible(),true);
       await page.evaluate(()=>setMode('wheel'));assert.notEqual(await page.evaluate(()=>mode),'wheel');
-      await page.reload();await page.waitForFunction(()=>drinks.length===allDrinks.length&&drawQuota);
+      await page.reload();await page.waitForFunction(()=>drinks.length===allDrinks.length&&appReady);
       assert.equal(await page.locator('#mode-wheel').evaluate(el=>!el.hidden),false);
       const counts=await page.evaluate(()=>{
         const saved=drinks,results=[];
