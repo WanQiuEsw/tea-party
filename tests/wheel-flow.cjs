@@ -16,8 +16,8 @@ let browser;
   const page=await browser.newPage({viewport:{width:390,height:900},deviceScaleFactor:2,hasTouch:true,reducedMotion:'reduce'}),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto(base);await page.waitForFunction(()=>allDrinks.length&&drawQuota!==null);
-  const brand=await page.locator('#shop-select option').nth(1).getAttribute('value');
-  await page.locator('#shop-select').selectOption(brand);
+  await page.locator('#shop-select').click();const brand=await page.locator('.shop-option b').first().textContent();
+  await page.locator('.shop-option').first().click();await page.locator('#save-menu').click();
   await page.waitForFunction(()=>drinks.length&&!menuSaving);
   const probabilities=await page.evaluate(()=>layout.map(s=>({prob:s.prob,start:s.start,span:s.span})));
   for(const width of [320,390,768,1280]){

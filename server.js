@@ -123,7 +123,8 @@ const SESSION_TTL = 7 * 24 * 60 * 60 * 1000;
 
 function quota(user) {
   const day = GameRules.dayKey();
-  if (user.role === 'admin' || user.username === 'demo') return {day, unlimited: true, remaining: 1, redeemed: false, currentReward: null};
+  if (user.role === 'admin') return {day, unlimited: false, remaining: 0, redeemed: false, currentReward: null};
+  if (user.username === 'demo') return {day, unlimited: true, remaining: 1, redeemed: false, currentReward: null};
   const reward = rewardsFor(user).find(r => r.day === day);
   const redeemed = !!reward?.redeemed_at;
   return {day, unlimited: true, remaining: redeemed ? 0 : 1, redeemed, currentReward: reward && !redeemed ? reward : null};
@@ -221,7 +222,7 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       return res.end(PAGE);
     }
-    if (['/inventory.js', '/game-rules.js', '/fortune.js', '/flip.css', '/wheel.css', '/scratch.css', '/cover.css', '/assets/scratch-cover.webp', '/assets/number-cover.webp', '/assets/flip-card-back.webp', '/assets/milk-tea-glass.webp'].includes(pathname) && req.method === 'GET') {
+    if (['/inventory.js', '/game-rules.js', '/fortune.js', '/flip.css', '/wheel.css', '/scratch.css', '/cover.css', '/result.css', '/assets/result-gift.webp', '/assets/scratch-cover.webp', '/assets/number-cover.webp', '/assets/flip-card-back.webp', '/assets/milk-tea-glass.webp'].includes(pathname) && req.method === 'GET') {
       res.writeHead(200, { 'Content-Type': pathname.endsWith('.css') ? 'text/css; charset=utf-8' : pathname.endsWith('.webp') ? 'image/webp' : 'text/javascript; charset=utf-8' });
       return res.end(fs.readFileSync(path.join(__dirname, pathname.slice(1))));
     }
@@ -284,6 +285,7 @@ const server = http.createServer(async (req, res) => {
       const ids = new Set(items.map(d => d.id));
       if (!items.length || !body.excludedIds.every(id => ids.has(id)))
         return json(res, 400, {error: '店铺或饮品已变化，请刷新后重试'});
+      if (items.length - body.excludedIds.length < 2) return json(res, 400, {error: '至少保留 2 款饮品才能抽奖'});
       db.exec('BEGIN IMMEDIATE');
       try {
         db.prepare('INSERT INTO user_shops (user_id, brand) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET brand = excluded.brand').run(user.id, body.brand);
@@ -351,6 +353,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (pathname === '/api/draws' && req.method === 'POST') {
+      if (user.role === 'admin') return json(res, 403, { error: '管理员仅可管理奖品清单和查看抽奖记录，不能参与抽奖' });
       const {replaceDrawId, drinkIds} = await readJson(req) || {};
       db.exec('BEGIN IMMEDIATE');
       try {
@@ -367,7 +370,7 @@ const server = http.createServer(async (req, res) => {
         if (brand === undefined) { db.exec('ROLLBACK'); return json(res, 400, {error:'请先选择店铺'}); }
         const excluded = new Set(JSON.parse(db.prepare('SELECT excluded_ids FROM user_menus WHERE user_id = ? AND brand = ?').get(user.id, brand)?.excluded_ids ?? '[]'));
         const drinks = db.prepare('SELECT * FROM drinks WHERE brand = ? ORDER BY brand, name').all(brand).filter(d => !excluded.has(d.id));
-        if (!drinks.length) { db.exec('ROLLBACK'); return json(res, 400, {error:'当前店铺没有参与抽取的饮品，请恢复部分饮品'}); }
+        if (drinks.length < 2) { db.exec('ROLLBACK'); return json(res, 400, {error:'至少保留 2 款饮品才能抽奖，请添加饮品'}); }
         if (drinkIds !== undefined && (!Array.isArray(drinkIds) || JSON.stringify(drinkIds) !== JSON.stringify(drinks.map(d => d.id)))) {
           db.exec('ROLLBACK'); return json(res, 409, {error:'个人清单已在其他页面修改，请刷新后再抽'});
         }
@@ -399,6 +402,21 @@ const server = http.createServer(async (req, res) => {
 
     if (pathname === '/api/draws/all' && req.method === 'GET') {
       if (user.role !== 'admin') return json(res, 403, { error: '只有管理员可以查看全部记录' });
+      const params = new URL(req.url, 'http://localhost').searchParams;
+      if (params.has('page')) {
+        const page = Number(params.get('page')), pageSize = Number(params.get('pageSize') || 10);
+        const search = (params.get('search') || '').trim();
+        if (!Number.isSafeInteger(page) || page < 1 || ![5, 10, 20, 50].includes(pageSize) || search.length > 100) {
+          return json(res, 400, { error: '分页或搜索参数无效' });
+        }
+        const where = `FROM draws d JOIN users u ON u.id = d.user_id
+          WHERE instr(lower(u.username || ' ' || d.brand || ' ' || d.name || ' ' || coalesce(d.price, '') || ' ' || coalesce(datetime(d.created_at, '+8 hours'), d.created_at)), lower(?)) > 0`;
+        const total = db.prepare('SELECT COUNT(*) AS total ' + where).get(search).total;
+        const currentPage = Math.min(page, Math.max(1, Math.ceil(total / pageSize)));
+        const items = db.prepare('SELECT d.id, d.brand, d.name, d.price, d.created_at, u.username ' + where + ' ORDER BY d.id DESC LIMIT ? OFFSET ?')
+          .all(search, pageSize, (currentPage - 1) * pageSize);
+        return json(res, 200, { items, total, page: currentPage, pageSize });
+      }
       return json(
         res,
         200,

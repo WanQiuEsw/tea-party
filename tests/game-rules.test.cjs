@@ -37,17 +37,17 @@ test('probabilities sum to 100%, with no blanks, 3% retry and rank-weighted priz
   assert.equal(run('counts.reduce((a,b)=>a+b,0)'), 100000);
   assert.ok(run('counts.every((n,i)=>Math.abs(n/100000-layout[i].prob)<.006)'));
 });
-test('one lucky number matches at any of 15 positions, with one guaranteed matching outcome', () => {
-  for (const size of [1,3,23,100]) {
+test('one lucky number matches every adaptive ticket position, with one guaranteed matching outcome', () => {
+  for (const size of [2,3,5,23,100]) {
     const run=rules(Array.from({length:size},(_,i)=>7+i));
     run(`const positions=new Set();for(let i=0;i<500;i++)for(const result of [drinks[0],...SPECIAL_PRIZES]){
-      const ticket=makeNumberTicket(result),matches=ticket.cards.filter(c=>ticket.lucky.includes(c.label));
+      const rows=Math.min(5,drinks.length),total=rows*(rows+1)/2,ticket=makeNumberTicket(result),matches=ticket.cards.filter(c=>ticket.lucky.includes(c.label));
       if(ticket.lucky.length!==1)throw Error('expected one lucky number');
-      if(ticket.cards.length!==15||new Set(ticket.cards.map(c=>c.label)).size!==15)throw Error('invalid number pool');
+      if(ticket.cards.length!==total||new Set(ticket.cards.map(c=>c.label)).size!==total)throw Error('invalid number pool');
       if(!ticket.cards.every(c=>c.drink&&/^\\d{2}$/.test(c.label)))throw Error('missing prize');
       if(!ticket.cards.every(c=>c.winner===ticket.lucky.includes(c.label)))throw Error('incorrect winner');
       let offset=0;
-      for(let count=1;count<=5;count++){
+      for(let count=1;count<=Math.min(5,drinks.length);count++){
         const row=ticket.cards.slice(offset,offset+count);
         if(!row.every(c=>c.drink===row[0].drink)||row[0].drink.kind==='blank')throw Error('invalid shared row prize');
         offset+=count;
@@ -58,7 +58,7 @@ test('one lucky number matches at any of 15 positions, with one guaranteed match
         positions.add(ticket.cards.findIndex(c=>c.winner));
       }
     }`);
-    assert.equal(run('positions.size'),15);
+    assert.equal(run('positions.size'),Math.min(5,size)*(Math.min(5,size)+1)/2);
   }
 });
 

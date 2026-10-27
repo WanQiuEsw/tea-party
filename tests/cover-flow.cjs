@@ -19,7 +19,7 @@ let browser;
   await page.goto(base);await page.waitForFunction(()=>allDrinks.length&&drawQuota!==null);
   await page.setViewportSize({width:320,height:568});
   assert.ok(await page.locator('#wheel-spin').evaluate(el=>el.getBoundingClientRect().bottom<innerHeight),'first visit shows wheel before selecting a shop');
-  await page.locator('#shop-select').selectOption(await page.locator('#shop-select option').nth(1).getAttribute('value'));
+  await page.locator('#shop-select').click();await page.locator('.shop-option').first().click();await page.locator('#save-menu').click();await page.waitForFunction(()=>selectedBrand!==null&&!menuSaving);
   for(const [width,height] of [[1280,800],[768,1024],[390,844],[375,667],[320,568]]){
     await page.setViewportSize({width,height});await page.evaluate(()=>scrollTo(0,0));
     const bounds=await page.evaluate(()=>{

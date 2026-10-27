@@ -7,7 +7,7 @@ const {DatabaseSync}=require('node:sqlite');
 test('winner feed requires login, limits results and masks names; ticker handles empty, scrolling and mobile',async()=>{
   const root=process.env.TEA_TEST_ROOT||path.join(__dirname,'..');
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'tea-winners-'));
-  for(const file of ['server.js','catalog.json','index.html','inventory.js','game-rules.js','fortune.js','flip.css','scratch.css','wheel.css','cover.css'])fs.copyFileSync(path.join(root,file),path.join(temp,file));
+  for(const file of ['server.js','catalog.json','index.html','inventory.js','game-rules.js','fortune.js','flip.css','scratch.css','wheel.css','cover.css','result.css'])fs.copyFileSync(path.join(root,file),path.join(temp,file));
   fs.cpSync(path.join(root,'assets'),path.join(temp,'assets'),{recursive:true});
   fs.appendFileSync(path.join(temp,'game-rules.js'),"\nif(typeof module!=='undefined')module.exports.pick=drinks=>drinks[0];\n");
   const port=41000+process.pid%10000,base='http://127.0.0.1:'+port;
@@ -56,9 +56,10 @@ test('winner feed requires login, limits results and masks names; ticker handles
       assert.equal((await feed())[0].tier,tier,'tier follows the actual draw pool');
     }
     const excluded=db.prepare('SELECT id FROM drinks WHERE brand=? AND id!=?').all('测试档位',chosen).map(d=>d.id);
-    await request('/api/menu',{brand:'测试档位',excludedIds:excluded},'PUT');
+    db.prepare('UPDATE drinks SET price=1 WHERE id=?').run(excluded[0]);
+    await request('/api/menu',{brand:'测试档位',excludedIds:excluded.slice(1)},'PUT');
     await request('/api/draws',{});
-    assert.equal((await feed())[0].tier,'king','one-item personal menu is king, regardless of its price');
+    assert.equal((await feed())[0].tier,'king','rarity is recalculated for the two-item personal menu');
     db.prepare('DELETE FROM drinks WHERE brand=?').run('测试档位');
     assert.deepEqual((await feed()).filter(r=>saved.includes(r.id)).map(r=>r.tier),['bronze','gold','diamond','king'],'saved tiers survive catalog changes');
     if(browser){
