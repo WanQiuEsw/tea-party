@@ -8,7 +8,7 @@ A general decision tool with no runtime dependencies. Add options for drinks, fo
 
 Requires Node.js 24+. Run `node server.js` and open <http://localhost:3000>.
 
-Visitors use the app without an account. Open the custom list dialog, enter arbitrary options such as Coffee and Milk tea, and save. Multiple lists support renaming, removal and deletion. Public catalog items can also be added. Custom items need no brand or price and never display invented prices.
+Visitors use the app without an account. Switch between **Enter my options** and **Choose milk tea** on the homepage. Enter one option per line and save to use it, without naming a list or choosing a brand or price. Duplicates are merged; edit and save the text to add or remove options. Existing lists from earlier versions remain available in a dropdown. Milk tea mode uses the supplied catalog and existing shop picker. Both sources retain their saved contents independently, including after a page reload. Custom options never display invented prices.
 
 Seven modes remain available: wheel, flip cards, scratch card, lucky numbers, capsules, blind boxes and shake. Each option has an equal chance; selection uses browser Web Crypto randomness. The wheel supports up to 24 options; other modes still select from the complete list. Full animations and quick reveal are supported.
 
@@ -37,4 +37,4 @@ node --test tests/*.test.cjs
 node tests/selector-flow.cjs
 ```
 
-Browser tests require Playwright and Chrome; use `NODE_PATH` for an existing installation or `TEA_BROWSER=msedge` for Edge. Tests use temporary directories and isolated databases. Coverage includes uniform probability, Beijing day boundaries, CSV validation/import, administrator permissions, legacy data cleanup, anonymous completion deduplication, all seven modes, local lists/results, browser isolation, storage failures, list renaming/deletion and 320/390/768/1280px layouts. Physical motion sensors need testing on a real phone.
+Browser tests require Playwright and Chrome; use `NODE_PATH` for an existing installation or `TEA_BROWSER=msedge` for Edge. Tests use temporary directories and isolated databases. Coverage includes uniform probability, Beijing day boundaries, CSV validation/import, administrator permissions, legacy data cleanup, anonymous completion deduplication, all seven modes, local lists/results, browser isolation, storage failures, source switching, direct text entry, legacy list compatibility and 320/390/768/1280px layouts. Physical motion sensors need testing on a real phone.
