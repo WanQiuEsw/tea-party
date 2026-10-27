@@ -49,7 +49,24 @@
     const cell = value => '"' + String(value).replace(/^['=+\-@\t\r]/, c => "'" + c).replaceAll('"', '""') + '"';
     return '\uFEFF' + [headers, ...items.map(d => [d.name, d.brand, d.price, d.note])].map(r => r.map(cell).join(',')).join('\r\n') + '\r\n';
   }
-  const api = { normalize, parseCSV, toCSV };
+  const ALL_SHOPS = '__all_shops__';
+  const teaCategories = ['咖啡', '奶茶', '果茶', '其他'];
+  function teaCategory(item) {
+    const name = item.name || '';
+    // 按饮品名识别，咖啡店也有非咖啡；水果咖啡优先归咖啡。
+    if (/咖啡|美式|澳白|卡布奇诺|摩卡|冷萃|浓缩|espresso|americano/i.test(name) || /拿铁/.test(name) && !/抹茶|红茶|乌龙|纯奶/.test(name)) return '咖啡';
+    if (/冰淇淋|方砖|麻薯|固体/.test(name)) return '其他';
+    if (/柠|柚|橙|橘|葡萄|青提|芭乐|桃|莓|芒|杨枝甘露|杨桃|苹果|杏子|油柑|青柑|番茄|黄皮|橄榄|酸角|冬枣|菠萝|水果|榴莲|余甘|木梨/.test(name)) return '果茶';
+    if (/奶|乳|珍奶|可可|抹茶|豆浆|生酪/.test(name)) return '奶茶';
+    return '其他';
+  }
+  function teaScope(items, brand) {
+    return items.filter(d => !d.custom && (brand === ALL_SHOPS || d.brand === brand));
+  }
+  function teaSelection(items, brand, category) {
+    return teaScope(items, brand).filter(d => !category || teaCategory(d) === category);
+  }
+  const api = { normalize, parseCSV, toCSV, ALL_SHOPS, teaCategories, teaCategory, teaScope, teaSelection };
   if (typeof module !== 'undefined') module.exports = api;
   else root.Inventory = api;
 })(globalThis);
