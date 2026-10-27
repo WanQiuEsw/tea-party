@@ -26,8 +26,9 @@ const server=spawn(process.execPath,['server.js'],{cwd:temp,env:{...process.env,
   assert.equal(await page.locator('#custom-options-dialog').isVisible(),false);assert.match(await page.locator('#custom-summary').textContent(),/2 个选项/);
   await page.locator('#edit-custom-options').click();await page.locator('#custom-options').fill('未保存');await page.keyboard.press('Escape');await page.waitForFunction(()=>!customDirty);assert.equal(await page.locator('#spin').isDisabled(),false);assert.equal(await page.locator('#custom-options').inputValue(),'咖啡\n奶茶');assert.equal(await page.locator('#edit-custom-options').evaluate(el=>el===document.activeElement),true);
   await page.locator('[name=reveal-speed][value=quick]').check();
+  assert.equal(await page.locator('.mode-switch button:visible').count(),8);const beforeRandom=await page.evaluate(()=>({mode,history:history.length}));await page.locator('#random-mode').click();assert.notEqual(await page.evaluate(()=>mode),beforeRandom.mode);assert.equal(await page.evaluate(()=>history.length),beforeRandom.history);assert.equal(await page.locator('#result').isVisible(),false);
   for(const m of ['wheel','scratch','number','capsule','box','slot','flip']){
-    await page.locator('#mode-picker summary').click();await page.locator('#mode-'+m).click();
+    await page.locator('#mode-'+m).click();
     if(m==='box')await page.locator('.lucky-box').first().click();else if(m==='slot')await page.locator('#slot-play').click();else await page.locator('#spin').click();
     await page.locator('#result[open]').waitFor();assert.ok(['咖啡','奶茶'].includes(await page.locator('#name').textContent()),m);
     assert.equal(await page.locator('#result-price').textContent(),'');await page.waitForFunction(n=>history.length===n,posts.filter(p=>p.url==='/api/completions').length||1);
@@ -39,16 +40,16 @@ const server=spawn(process.execPath,['server.js'],{cwd:temp,env:{...process.env,
   await page.locator('#current-result').click();await page.locator('#confirm').click();assert.equal(posts.length,7,'review does not count');
   await page.reload();await ready();assert.equal(await page.evaluate(()=>history.length),7);assert.equal(await page.locator('#current-result').isVisible(),true);
   const other=await browser.newPage();await other.goto(base);await other.waitForFunction(()=>appReady);assert.equal(await other.evaluate(()=>customLists.length),0);await other.close();
-  for(const width of [320,390,768,1280]){await page.setViewportSize({width,height:900});await page.locator('#edit-custom-options').click();assert.ok(await page.locator('#custom-options-dialog').evaluate(el=>el.scrollWidth<=el.clientWidth&&el.getBoundingClientRect().bottom<=innerHeight));await page.keyboard.press('Escape');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.locator('#source-tea').click();assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.locator('#source-custom').click()}
+  for(const width of [320,390,768,1280]){await page.setViewportSize({width,height:900});assert.equal(await page.locator('.mode-switch button:visible').count(),8);assert.ok(await page.locator('#random-mode').evaluate(el=>el.getBoundingClientRect().right<=innerWidth));await page.locator('#edit-custom-options').click();assert.ok(await page.locator('#custom-options-dialog').evaluate(el=>el.scrollWidth<=el.clientWidth&&el.getBoundingClientRect().bottom<=innerHeight));await page.keyboard.press('Escape');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.locator('#source-tea').click();assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.locator('#source-custom').click()}
   await page.setViewportSize({width:390,height:900});
   if(process.env.TEA_SCREENSHOT_DIR){await page.screenshot({path:path.join(process.env.TEA_SCREENSHOT_DIR,'selector-simple-custom.png'),fullPage:true});await page.locator('#source-tea').click();await page.screenshot({path:path.join(process.env.TEA_SCREENSHOT_DIR,'selector-tea.png'),fullPage:true});await page.locator('#source-custom').click()}
   // A scratch request is not a completed choice until the foil is revealed.
-  await page.locator('[name=reveal-speed][value=full]').check();await page.locator('#mode-picker summary').click();await page.locator('#mode-scratch').click();
+  await page.locator('[name=reveal-speed][value=full]').check();await page.locator('#mode-scratch').click();
   await page.evaluate(()=>startScratch());assert.equal(posts.length,7);assert.equal(await page.locator('#source-tea').isDisabled(),true);
   await page.locator('#spin').click();await page.locator('#result[open]').waitFor();await page.locator('#confirm').click();
   await page.waitForFunction(()=>history.length===8);
   // Full box reveals count even when the visitor never opens its details dialog.
-  await page.locator('#mode-picker summary').click();await page.locator('#mode-box').click();await page.locator('.lucky-box').first().click();await page.waitForFunction(()=>history.length===9);
+  await page.locator('#mode-box').click();await page.locator('.lucky-box').first().click();await page.waitForFunction(()=>history.length===9);
   assert.equal(await page.locator('#result').isVisible(),false);await page.locator('#box-detail').click();await page.locator('#confirm').click();await page.waitForTimeout(200);assert.equal(posts.length,9);
   await page.locator('#logout').click();await page.locator('#login-user').fill('admin');await page.locator('#login-pass').fill('admin123');await page.locator('#login-btn').click();await page.waitForFunction(()=>appReady&&adminMode);
   assert.equal(await page.locator('#admin-config').isVisible(),true);assert.equal(await page.locator('#admin-stats').isVisible(),true);assert.match(await page.locator('#stats-summary').textContent(),/累计 9 次/);assert.equal(await page.locator('.quick-start').isVisible(),false);
