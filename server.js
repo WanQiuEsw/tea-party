@@ -163,7 +163,7 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       return res.end(PAGE);
     }
-    if (['/inventory.js', '/game-rules.js', '/fortune.js', '/flip.css', '/wheel.css', '/scratch.css', '/cover.css', '/result.css', '/assets/result-gift.webp', '/assets/scratch-cover.webp', '/assets/number-cover.webp', '/assets/flip-card-back.webp', '/assets/milk-tea-glass.webp'].includes(pathname) && req.method === 'GET') {
+    if (['/inventory.js', '/game-rules.js', '/fortune.js', '/flip.css', '/wheel.css', '/scratch.css', '/cover.css', '/result.css', '/capsule.css', '/slot.css', '/assets/boba-egg.webp', '/assets/boba-knob.webp', '/assets/boba-coin.webp', '/assets/boba-slot.webp', '/assets/result-gift.webp', '/assets/scratch-cover.webp', '/assets/number-cover.webp', '/assets/flip-card-back.webp', '/assets/milk-tea-glass.webp'].includes(pathname) && req.method === 'GET') {
       res.writeHead(200, { 'Content-Type': pathname.endsWith('.css') ? 'text/css; charset=utf-8' : pathname.endsWith('.webp') ? 'image/webp' : 'text/javascript; charset=utf-8' });
       return res.end(fs.readFileSync(path.join(__dirname, pathname.slice(1))));
     }

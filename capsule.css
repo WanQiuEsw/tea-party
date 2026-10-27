@@ -1,0 +1,42 @@
+/* Selected caramel milk-tea artwork; dimensions stay inside the machine. */
+.capsule-body{height:180px;background:linear-gradient(120deg,#fff8ed,#f3dfc5);border-color:#d7ad80}
+.capsule-knob{left:36%;top:53%;width:clamp(96px,24vw,128px);height:auto;aspect-ratio:1;padding:0;border:0;background:none;box-shadow:none}
+.capsule-knob:before{display:none}
+.capsule-knob img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 3px #83593126)}
+.capsule-hint{width:72%;bottom:7px;font-size:12px;color:#805a3e}
+.coin-panel{top:20px;right:10%;width:62px;padding:0;border:0;background:none;box-shadow:none}
+.coin-slot{display:block;width:100%;height:122px;margin:0;object-fit:contain;border-radius:0;background:none;box-shadow:none}
+.coin-panel small{display:block;margin-top:2px;color:#805a3e}
+.gacha-coin{top:-8px;left:50%;width:42px;height:42px;margin-left:-21px;border:0;background:none;box-shadow:none;object-fit:contain;opacity:1}
+.capsule-machine[data-phase="coin"] .gacha-coin{animation:bobaCoinInsert .8s ease-in both}
+.capsule-machine[data-phase="turn"] .gacha-coin,.capsule-machine[data-phase="drop"] .gacha-coin,.capsule-machine[data-phase="ready"] .gacha-coin,.capsule-machine[data-phase="opening"] .gacha-coin{opacity:0}
+.gacha-capsule{background:none!important;border:0;box-shadow:none;aspect-ratio:1;height:auto}
+.gacha-capsule:before,.gacha-capsule:after{display:none}
+.gacha-capsule img{display:block;width:100%;height:100%;object-fit:contain}
+.capsule-drop{width:104px;height:104px;margin:-52px 0 0 -52px;border-radius:20px}
+.capsule-drop img{display:block;width:100%;height:100%;object-fit:contain}
+.capsule-drop.ready:after{content:'点击放大';bottom:-12px}
+.capsule-drop.open{opacity:0}
+#capsule-dialog{width:min(480px,calc(100% - 24px));max-width:480px;max-height:calc(100dvh - 24px);overflow:auto;padding:36px 24px 22px;border:1px solid #dab68c;background:radial-gradient(ellipse at 50% 56%,#fff6d9,#fffaf2 68%);box-shadow:0 24px 90px #56382440}
+#capsule-dialog::backdrop{background:#3b241c80;backdrop-filter:blur(9px)}
+#capsule-dialog .eyebrow{display:block;padding-right:12px;font-size:10px;letter-spacing:2px;color:#987345}
+#capsule-dialog h2{margin:12px 0 6px;font-size:clamp(21px,5vw,28px);line-height:1.4}
+#capsule-dialog-hint{font-size:13px;color:#8c6a4e;margin:0 0 8px}
+#capsule-open{position:relative;display:block;width:min(100%,320px,46dvh);aspect-ratio:1;margin:12px auto;padding:0;border:0;background:none;border-radius:32%;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;isolation:isolate}
+#capsule-open img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;pointer-events:none;filter:drop-shadow(0 10px 8px #a56b3820);animation:bobaFloat 2.6s ease-in-out infinite}
+#capsule-open .egg-top{clip-path:inset(0 0 42% 0);transform-origin:15% 58%}
+#capsule-open .egg-bottom{clip-path:inset(58% 0 0 0);transform-origin:85% 58%}
+.capsule-aura{position:absolute;inset:8%;z-index:-1;border-radius:50%;background:radial-gradient(circle,#ffe3a5b0,transparent 70%);transition:transform .7s,opacity .7s}
+.capsule-tap-hint{margin:8px 0 0;font-size:12px;letter-spacing:2px;color:#946335}
+#capsule-dialog.opening #capsule-open{animation:none;cursor:default}
+#capsule-dialog.opening .egg-top{animation:bobaTop 1.3s ease-in-out forwards}
+#capsule-dialog.opening .egg-bottom{animation:bobaBottom 1.3s ease-in-out forwards}
+#capsule-dialog.opening .capsule-aura{transform:scale(1.5);opacity:0}
+#capsule-dialog.opening .capsule-tap-hint{visibility:hidden}
+@keyframes bobaCoinInsert{0%{opacity:1;transform:translateY(-26px) rotateY(0)}55%{opacity:1;transform:translateY(24px) rotateY(75deg)}100%{opacity:0;transform:translateY(42px) rotateY(88deg) scale(.7)}}
+@keyframes bobaFloat{50%{transform:translateY(-7px) rotate(2deg)}}
+@keyframes bobaTop{25%{transform:translateY(-5px) rotate(-4deg)}100%{transform:translate(-20px,-55px) rotate(-22deg);opacity:0}}
+@keyframes bobaBottom{25%{transform:translateY(3px)}100%{transform:translate(18px,45px) rotate(16deg);opacity:0}}
+@media(max-width:640px){.capsule-body{height:154px}.capsule-knob{width:100px;left:35%;top:52%}.coin-panel{width:52px;top:18px;right:9%}.coin-slot{height:104px}.gacha-coin{width:36px;height:36px;margin-left:-18px}.capsule-hint{width:70%;bottom:5px}.capsule-out{height:140px}#capsule-dialog{padding:32px 16px 20px}#capsule-open{margin:10px auto}.capsule-drop{width:92px;height:92px;margin:-46px 0 0 -46px}}
+@media(max-height:560px){#capsule-dialog{padding:22px 16px 14px}#capsule-dialog h2{margin:6px 0}#capsule-open{width:min(220px,43dvh);margin:6px auto}.capsule-tap-hint{margin:0}}
+@media(prefers-reduced-motion:reduce){#capsule-open img{animation:none}#capsule-dialog.opening .egg-top,#capsule-dialog.opening .egg-bottom{opacity:0}.capsule-machine[data-phase="coin"] .gacha-coin{opacity:0;transform:none}}
