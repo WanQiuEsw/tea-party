@@ -1,62 +1,40 @@
 **English** | [中文](./README.md)
 
-# Tea Party Wheel
+# Make a Choice · Random decision selector
 
-A tiny tea-drink lucky wheel with login, SQLite persistence and a minimal admin panel.
-
-## Features
-
-- **Reveal speed**: all seven games offer full animation or quick reveal, with full animation as the default and the preference remembered in this browser. Quick reveal skips waits and opens the result directly; scratch covers reveal on tap, and capsules and boxes need no second action. Speed changes are locked during a draw. Server outcomes and odds are unchanged; full mode still respects reduced motion.
-
-- **Simpler first visit**: choose a shop or list, start, then confirm your drink. The wheel is the default; “换个玩法” lists all seven games and “随机换一个” picks another available game without drawing. The browser remembers the last chosen game; unavailable storage falls back safely. Demo notices on the home and result screens state that experience results cannot be redeemed.
-- **Named custom lists**: open “Custom list” beside the homepage menu editor. Selecting a specific brand shows only select-brand and clear-brand actions, preserving selections from other brands. With no brand selected or “All brands” selected, select-all and clear-all actions apply to the entire catalog. Bulk actions ignore search filters. The shop picker only manages single-brand menus. Create multiple lists with a 1–30 character name and manually add distinct drinks from different brands. Saving requires at least one drink; blank names automatically use the next available name such as “奶茶自定义清单01”. Save to use, switch lists, rename, remove drinks or delete lists. Lists are isolated by account and persist across reloads and restarts. Catalog additions do not automatically join custom lists. Deleting a list preserves drinks and draw history.
-- **Personal shop menus**: select a brand, then draw immediately or edit your menu to exclude drinks. Confirm to save, cancel to discard, and restore individual drinks or the whole menu. Each account and brand has independent server-stored preferences, retained across reloads and devices. The demo account shares its preferences. All seven modes use the same eligible drinks; active games lock menu changes. New drinks join by default. Menus must retain at least one drink; the UI and server both enforce this minimum. Older menus with fewer choices must be restored before drawing.
-- **Spinning wheel**: supports up to 24 drinks. Larger lists hide the wheel with an explanation and switch an active wheel to Lucky Shake, preserving the full pool and equal odds. Reducing the list to 24 or fewer restores the wheel option. Every drink is a sector on a Canvas wheel; all sectors are equal and every eligible drink has the same chance.
-- **Golden card flip**: choose from up to three champagne-gold cards (fewer when the pool is smaller) with AI-generated artwork. A 2.6-second spin and star orbit leads into a golden reveal, then the shared prize dialog. Server odds are unchanged; duplicate draws are blocked during animation. Supports keyboard input and reduced motion. The WebP card artwork is about 38 KB; no new runtime dependencies.
-- **Scratch cards**: standalone classic cards reveal at 40% scratched, with touch, mouse and one-click reveal.
-- **Lucky Numbers**: a standalone sixth mode, with one lucky number and one to five rows based on the eligible drink count (two drinks: three positions; three drinks: six; five or more drinks: 15). One match awards a prize; reveal at 90% scratched. Lucky number, ticket numbers and ticket ID stay fixed when scratching begins; only the server-selected prize is bound. Reveal a started ticket before switching modes. Previews cost no attempt.
-- **Blind boxes and capsules**: show up to nine boxes and twelve decorative capsules, using the actual count for smaller pools and updating after edits, shop changes and reloads. Every eligible drink remains drawable with equal odds regardless of the display cap. Blind boxes wrap into at most three columns.
-- **Lucky Shake**: the server draws one outcome, then all three reels stop on that same prize. Lever, button and opt-in phone motion are supported.
-- **Equal odds**: each of N eligible drinks has a fixed 1/N chance in every mode. One drink is 100%, two are 50% each, and five are 20% each. Price and brand never affect the result. Users cannot edit probabilities; there are no retry outcomes. The server selects and records the prize.
-- **Persistent results**: the dialog counts down from five seconds; copying or sharing pauses automatic closing until you close it manually. A fixed “本次结果” button opens the latest result without moving the game or drawing again. Reviewing stays open until dismissed and also works after reload. Sharing opens the system share sheet or copies text as a fallback. Cancellation and errors preserve the result.
-- **Decisions only**: regular and demo users can draw freely. Daily rewards, redemption endpoints and replacement prompts are removed. Existing draw history and legacy reward data are preserved; legacy rewards no longer restrict draws.
-- **Celebration and winner feed**: shared animations and confetti remain. Rank badges and probability displays are removed. The live winner ticker still shows masked usernames and their drinks; historical records remain intact.
-- **Login**: new visitors automatically enter the shared `demo` account without a password. Demo draws are unlimited and cannot be redeemed; demo has no admin permissions. “切换账号” allows password login, returning to the current account, or one-click demo access. Refresh preserves a valid session; failed login preserves the previous account.
-- **Admin panel**: admin accounts see only prize management and user draw records; game controls, shop selection, winner feed are hidden, and the server rejects admin draw requests. Add, edit, and delete general prizes (tea, gifts, etc.), with a required name and reference value plus optional brand/source and notes. Values range from ¥0.01 to ¥1,000,000, with two decimal places. Existing tea data and draw records remain compatible.
-- **CSV import/export**: download a blank template or export the current list. Fill the template in Excel/WPS and save as CSV UTF-8 (not XLSX), then preview and confirm the import. Matching brand/source and name are skipped without overwriting; validation failures reject the entire batch. Up to 5000 prizes total, 1–100 rows per import, and 250 KB per file.
-- **SQLite storage**: drinks and draw records are persisted in `tea.db` via Node's built-in `node:sqlite`; no npm dependencies.
-- **Mobile friendly**: single-column layout on phones, scrollable tables, 44px touch targets.
+A general decision tool with no runtime dependencies. Add options for drinks, food, activities or any other choice, then let the browser pick fairly.
 
 ## Run
 
-Requires **Node.js 24+** (for `node:sqlite`).
+Requires Node.js 24+. Run `node server.js` and open <http://localhost:3000>.
 
-```bash
-node server.js
+Visitors use the app without an account. Open the custom list dialog, enter arbitrary options such as Coffee and Milk tea, and save. Multiple lists support renaming, removal and deletion. Public catalog items can also be added. Custom items need no brand or price and never display invented prices.
+
+Seven modes remain available: wheel, flip cards, scratch card, lucky numbers, capsules, blind boxes and shake. Each option has an equal chance; selection uses browser Web Crypto randomness. The wheel supports up to 24 options; other modes still select from the complete list. Full animations and quick reveal are supported.
+
+Personal lists, current selection, the latest 50 revealed results and preferences stay in browser storage. Results can be reviewed, copied and shared. Ordinary and demo accounts, shared draw history and the public winner ticker have been removed. Personal options and outcomes are never uploaded.
+
+## Administration
+
+Use the administrator entry in the header. Default login: `admin` / `admin123`.
+
+The admin interface contains only public catalog management and anonymous completion statistics. Catalog tools include search, pagination, create/edit, single/bulk delete and CSV import/export. Existing CSV templates remain compatible, using `奖品名称,品牌/来源,参考价值,备注`. Imports accept 1–100 rows per batch, with 5,000 total items. Duplicate brand/name pairs are skipped; invalid batches are rejected atomically.
+
+Statistics show today's and all-time totals, lifetime totals per mode and daily totals for the latest 30 dates with activity, using Beijing time. Only a random event ID and mode are sent after a result is revealed; the server assigns the date and deduplicates IDs. Previews, mode changes, unfinished scratch cards and result reviews do not count. Failed uploads display a message. Counts represent successfully reported completions, not unique visitors.
+
+## Storage and upgrades
+
+Public catalog data and anonymous statistics live in SQLite `tea.db`. Admin sessions live in memory and expire on restart. The HTML page is cached at startup, so restart the server after updating code. Set `PORT` to change the port.
+
+On upgrade, startup removes ordinary/demo accounts, old draw history, personal lists, shop preferences and retired reward tables. Administrators and an already initialized public catalog remain. Old account data is not migrated to visitor browsers.
+
+Local data belongs to the current browser and site origin. Clearing site data, private browsing or switching devices does not restore it. Storage failures prevent list saves and keep the dialog available for retry.
+
+## Tests
+
+```sh
+node --test tests/*.test.cjs
+node tests/selector-flow.cjs
 ```
 
-Open <http://localhost:3000>.
-
-| Role  | Username | Password   |
-| ----- | -------- | ---------- |
-| User  | `user`   | `123456`   |
-| User  | `ping`   | `123456`   |
-| Admin | `admin`  | `admin123` |
-
-After logging in as admin, the admin sections appear below the wheel and odds list.
-
-## Notes
-
-- `tea.db` is created automatically on first run and imported once from the supplied 2026-10-26 reference menu (`catalog.json`: 14 brands, 168 items); clearing the list will not bring them back. Existing catalogs are replaced once with docs/奶茶价格表_2026-10-26.md, clearing old prizes, notes, personal exclusions and shop selections while preserving draw history and redemption records. Prices are supplied reference values, not live store prices.
-- Sessions live in memory. After a restart `demo` signs in automatically; regular users and the admin need to log in again.
-- `index.html` is loaded at startup; restart the server after editing it.
-- Set a different port with `PORT=3001 node server.js`.
-- Phone motion requires a supported browser and a secure context (HTTPS or localhost); shake strength never changes the odds.
-
-## Validation
-
-Run `node --test tests/auth.test.cjs tests/game-rules.test.cjs tests/inventory.test.cjs tests/quota.test.cjs tests/fortune.test.cjs tests/menu.test.cjs tests/custom-lists.test.cjs` for probability and card-generation checks, including 100,000 draws and single/empty menus.
-
-With Playwright and Chrome available, run `node tests/game-flow.cjs` (`NODE_PATH` can point to an existing Playwright installation; set `TEA_BROWSER=msedge` for Edge). It uses an isolated temporary app/database and tests all seven modes, share captions, and management-only admin access and account switching, stable numbers before and after scratching, pointer scratching, history, replacement confirmation, cancellation, batch redemption, and mobile layout. Physical phone sensors still need device testing.
-
-Set `TEA_LIST_BROWSER=1` and run `node --test tests/custom-lists.test.cjs` with Playwright available for cross-brand list and seven-mode browser checks at mobile and desktop widths.
+Browser tests require Playwright and Chrome; use `NODE_PATH` for an existing installation or `TEA_BROWSER=msedge` for Edge. Tests use temporary directories and isolated databases. Coverage includes uniform probability, Beijing day boundaries, CSV validation/import, administrator permissions, legacy data cleanup, anonymous completion deduplication, all seven modes, local lists/results, browser isolation, storage failures, list renaming/deletion and 320/390/768/1280px layouts. Physical motion sensors need testing on a real phone.

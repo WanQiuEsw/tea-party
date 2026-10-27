@@ -32,7 +32,7 @@ test('admin import is atomic, skips duplicates, preserves old data and enforces 
     for(let i=0;i<80;i++){try{await request('/api/me');break}catch{await new Promise(r=>setTimeout(r,100))}}
     assert.equal((await request('/api/drinks/import',{items:[]})).status,401);
     const user = (await request('/api/login',{username:'user',password:'123456'})).cookie;
-    assert.equal((await request('/api/drinks/import',{items:[]},user)).status,403);
+    assert.equal((await request('/api/drinks/import',{items:[]},user)).status,401);
     const admin = (await request('/api/login',{username:'admin',password:'admin123'})).cookie;
     const before = (await request('/api/drinks',null,admin)).data;
     assert.equal(before.length,require('../catalog.json').length);
