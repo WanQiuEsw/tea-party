@@ -62,9 +62,9 @@ let browser;
     await page.reload();await page.waitForFunction(n=>drinks.length===n&&drawQuota!==null,size);
     for(const mode of ['flip','box','capsule','number','scratch','wheel','slot']){
       await page.locator('#mode-'+mode).click();
-      if(mode==='flip')assert.equal(await page.locator('.flip-card').count(),size);
-      if(mode==='box')assert.equal(await page.locator('.lucky-box').count(),size);
-      if(mode==='capsule')assert.equal(await page.locator('.gacha-capsule').count(),size);
+      if(mode==='flip')assert.equal(await page.locator('.flip-card').count(),Math.min(3,size));
+      if(mode==='box')assert.equal(await page.locator('.lucky-box').count(),Math.min(9,size));
+      if(mode==='capsule')assert.equal(await page.locator('.gacha-capsule').count(),Math.min(12,size));
       if(mode==='number'){assert.equal(await page.locator('.ticket-number-row').count(),Math.min(5,size));assert.equal(await page.locator('.ticket-cell.winner').count(),1)}
       if(mode==='wheel')assert.equal(await page.evaluate(()=>layout.filter(s=>!s.special).length),size);
       for(const width of [320,390,768,1280]){await page.setViewportSize({width,height:900});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),mode+' fits '+width+' with '+size+' choices')}

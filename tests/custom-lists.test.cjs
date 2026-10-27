@@ -57,7 +57,7 @@ test('named cross-brand lists persist, isolate accounts and control all draw can
       await page.goto(base);await page.waitForFunction(()=>allDrinks.length&&drawQuota);
       const choose=async brand=>{await page.locator('#shop-search').fill(brand);await page.locator('#shop-results .shop-option').filter({has:page.getByText(brand,{exact:true})}).click()};
       const saveUI=async()=>{await page.locator('#save-menu').click();await page.locator('#personal-menu').waitFor({state:'hidden'})};
-      await page.locator('#shop-select').click();await page.locator('#new-list').click();assert.equal(await page.locator('#save-menu').isDisabled(),true);
+      await page.locator('#new-list').click();assert.equal(await page.locator('#save-menu').isDisabled(),true);
       await page.locator('#list-name').fill('跨店快乐水');
       await choose('古茗');await page.locator('.menu-exclude').first().click();
       await choose('茶百道');await page.locator('.menu-exclude').first().click();
@@ -89,6 +89,80 @@ test('named cross-brand lists persist, isolate accounts and control all draw can
       await page.locator('#edit-menu').click();await page.locator('#list-name').fill('取消的修改');await page.locator('#cancel-menu').click();assert.equal(await page.locator('#shop-current').textContent(),'一杯也开心');
       page.once('dialog',dialog=>dialog.accept());await page.locator('#edit-menu').click();await page.locator('#delete-list').click();await page.locator('#personal-menu').waitFor({state:'hidden'});
       assert.equal(await page.evaluate(()=>selectedListId),null);assert.deepEqual(errors,[]);
+      // Bulk selection preserves every catalog item and only limits the wheel presentation.
+      await page.locator('#shop-select').click();
+      assert.equal(await page.locator('#custom-lists').isVisible(),false);
+      await page.locator('#cancel-menu').click();
+      await page.locator('#new-list').click();await page.locator('#list-name').fill('全部奶茶');
+      await choose('古茗');await page.locator('#select-brand').click();
+      const brandCount=await page.evaluate(()=>allDrinks.filter(d=>d.brand==='古茗').length);
+      assert.equal(await page.evaluate(()=>draftIncluded.size),brandCount);
+      assert.equal(await page.locator('#select-brand').isDisabled(),true);
+      await page.locator('#drink-search').fill('不存在的饮品');
+      await page.locator('#select-all-drinks').click();
+      assert.equal(await page.evaluate(()=>draftIncluded.size===allDrinks.length),true);
+      assert.equal(await page.locator('#select-all-drinks').isDisabled(),true);
+      await page.locator('#clear-list').click();assert.equal(await page.locator('#save-menu').isDisabled(),true);
+      await page.locator('#select-all-drinks').click();await saveUI();
+      assert.equal(await page.evaluate(()=>drinks.length===allDrinks.length),true);
+      assert.equal(await page.locator('#mode-wheel').isVisible(),false);
+      assert.equal(await page.locator('#wheel-stage').isVisible(),false);
+      assert.equal(await page.locator('#wheel-limit-note').isVisible(),true);
+      await page.evaluate(()=>setMode('wheel'));assert.notEqual(await page.evaluate(()=>mode),'wheel');
+      await page.reload();await page.waitForFunction(()=>drinks.length===allDrinks.length&&drawQuota);
+      assert.equal(await page.locator('#mode-wheel').isVisible(),false);
+      const counts=await page.evaluate(()=>{
+        const saved=drinks,results=[];
+        for(const size of [0,1,2,3,4,8,9,10,12,13,allDrinks.length]){
+          drinks=allDrinks.slice(0,size);renderFlip();renderBoxes();renderCapsules();
+          results.push({size,flip:document.querySelectorAll('.flip-card').length,box:document.querySelectorAll('.lucky-box').length,capsule:document.querySelectorAll('.gacha-capsule').length,rewards:boxRewards.length});
+        }
+        drinks=saved;renderAll();return results;
+      });
+      for(const {size,flip,box,capsule,rewards} of counts){
+        assert.equal(flip,Math.min(3,size));assert.equal(box,Math.min(9,size));
+        assert.equal(capsule,Math.min(12,size));assert.equal(rewards,box);
+      }
+      // A result beyond every display cap must still appear on the chosen object.
+      await page.evaluate(()=>{globalThis.originalRequestDraw=requestDraw;requestDraw=async()=>drinks.at(-1)});
+      const lastDrink=await page.evaluate(()=>drinks.at(-1).id);
+      for(const mode of ['flip','box','capsule']){
+        await page.locator('#mode-'+mode).click();
+        for(const width of [320,390,768,1280]){
+          await page.setViewportSize({width,height:900});
+          assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),mode+' full catalog fits '+width);
+          if(process.env.TEA_SCREENSHOT&&width===390)await page.locator('#'+mode+'-stage').screenshot({path:path.join(root,'.screenshots','capped-'+mode+'.png')});
+        }
+        if(mode==='flip')await page.locator('.flip-card').last().click();
+        if(mode==='box'){await page.locator('.lucky-box').last().click();await page.locator('#box-detail').click()}
+        if(mode==='capsule'){await page.locator('#capsule-knob').click();await page.waitForFunction(()=>capsulePhase==='ready');await page.locator('#capsule-drop').click()}
+        await page.locator('#result[open]').waitFor();
+        assert.equal(await page.evaluate(()=>current.id),lastDrink,mode+' can reveal the last catalog drink');
+        await page.locator('#close').click();
+      }
+      await page.evaluate(()=>{requestDraw=globalThis.originalRequestDraw;delete globalThis.originalRequestDraw});
+      await page.locator('#mode-slot').click();
+      await page.locator('#slot-play').click();await page.locator('#result[open]').waitFor();await page.locator('#close').click();
+      for(const size of [25,24]){
+        await page.locator('#edit-menu').click();
+        await page.evaluate(size=>{draftIncluded=new Set(allDrinks.slice(0,size).map(d=>d.id));renderPersonalMenu()},size);
+        await saveUI();
+        assert.equal(await page.locator('#mode-wheel').isVisible(),size<=24);
+        assert.equal(await page.locator('#wheel-limit-note').isVisible(),size>24);
+      }
+      await page.locator('#mode-wheel').click();await page.locator('#wheel-spin').click();await page.locator('#result[open]').waitFor();await page.locator('#close').click();
+      await page.locator('#new-list').click();await page.locator('#create-list').click();
+      assert.equal(await page.locator('#list-name').inputValue(),'');assert.equal(await page.evaluate(()=>draftIncluded.size),0);
+      await page.locator('#cancel-menu').click();assert.equal(await page.evaluate(()=>drinks.length),24);
+      for(const width of [320,390,768,1280]){
+        await page.setViewportSize({width,height:900});
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'bulk homepage fits '+width);
+        await page.locator('#new-list').click();
+        assert.ok(await page.locator('#personal-menu').evaluate(el=>el.scrollWidth<=el.clientWidth),'bulk dialog fits '+width);
+        if(process.env.TEA_SCREENSHOT&&[390,1280].includes(width))await page.screenshot({path:path.join(root,'.screenshots','bulk-list-'+width+'.png')});
+        await page.locator('#cancel-menu').click();
+      }
+      assert.deepEqual(errors,[]);
       await page.evaluate(()=>loadWinnerTicker());assert.equal(await page.locator('.winner-badge').count(),0);
     }
   }finally{if(browser)await browser.close();if(server?.exitCode===null)await stop();fs.rmSync(temp,{recursive:true,force:true})}

@@ -72,10 +72,8 @@ let browser;
   const hub=page.locator('#wheel-spin'),hubRect=await hub.boundingBox();
   assert.ok(hubRect.y>=0&&hubRect.y+hubRect.height<=844,'mobile center button visible without scrolling');
   assert.equal(await hub.isEnabled(),true);
-  await page.locator('#open-odds').click();
-  assert.equal(await page.locator('#odds-list p').count(),await page.evaluate(()=>drinks.length));
-  if(process.env.TEA_SCREENSHOT)await page.locator('#odds').screenshot({path:process.env.TEA_SCREENSHOT.replace('.png','-odds.png')});
-  await page.locator('#odds-close').click();
+  assert.equal(await page.locator('#open-odds, #odds').count(),0);
+  assert.equal(await page.locator('.hint').textContent(),'清单内每款奶茶机会相同');
   await page.evaluate(()=>{const saved=allDrinks;allDrinks=[];renderAll();window.emptyHubDisabled=$('wheel-spin').disabled;allDrinks=saved;renderAll()});
   assert.equal(await page.evaluate(()=>window.emptyHubDisabled),true);
   await page.evaluate(()=>showResult(drinks[0]));assert.equal(await page.locator('#result-tier').textContent(),'');await page.locator('#close').click();
@@ -166,10 +164,8 @@ let browser;
     if(mode==='number'){assert.equal(await page.locator('.ticket-cell').count(),15);assert.equal(await page.locator('.ticket-cell.winner').count(),1)}
     await close();
   }
-  await page.locator('#open-odds').click();
-  assert.equal(await page.locator('#odds-list p').count(),await page.evaluate(()=>drinks.length));
-  assert.ok(!(await page.locator('#odds-list').textContent()).includes('空奖'));
-  await page.locator('#odds-close').click();
+  assert.equal(await page.locator('#open-odds, #odds').count(),0);
+  assert.equal(await page.locator('.hint').textContent(),'清单内每款奶茶机会相同');
   await page.reload();await page.waitForFunction(()=>drawQuota!==null&&drinks.length>0);
   assert.equal(await hub.isEnabled(),true,'demo stays eligible after reload');
   assert.equal(await page.locator('#mode-fortune').count(),0,'no separate fortune mode');
@@ -188,7 +184,7 @@ let browser;
   const beforePreview=drawRequests;await page.locator('#mode-flip').click();assert.equal(drawRequests,beforePreview,'preview never draws');
   for(const width of [320,390,1280]){
     await page.setViewportSize({width,height:900});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'flip fits '+width);
-    assert.equal(await page.locator('.flip-card').count(),await page.evaluate(()=>drinks.length));
+    assert.equal(await page.locator('.flip-card').count(),await page.evaluate(()=>Math.min(3,drinks.length)));
     if(process.env.TEA_SCREENSHOT)await page.locator('#flip-stage').screenshot({path:process.env.TEA_SCREENSHOT.replace('.png','-flip-'+width+'.png')});
   }
   await page.setViewportSize({width:390,height:844});await page.emulateMedia({reducedMotion:'no-preference'});
@@ -208,6 +204,7 @@ let browser;
   await close();await page.emulateMedia({reducedMotion:'reduce'});
   if(process.env.TEA_SCREENSHOT)await page.locator('#flip-stage').screenshot({path:process.env.TEA_SCREENSHOT.replace('.png','-flip-revealed.png')});
   await page.route('**/api/draws',route=>route.abort(),{times:1});await page.locator('.flip-card').first().click();await page.locator('#notice[open]').waitFor();
+  await page.waitForFunction(()=>!busy&&!requestingDraw);
   assert.equal(await page.evaluate(()=>busy||requestingDraw),false,'network failure releases controls');assert.equal(await page.locator('#flip-deck').getAttribute('data-phase'),'revealed','failed draw preserves last card');
   await page.locator('#notice-ok').click();await page.locator('#mode-slot').click();
   // A pending prize permits redraw, but cancellation preserves it and makes no POST.
