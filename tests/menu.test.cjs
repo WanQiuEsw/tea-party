@@ -51,7 +51,7 @@ test('personal menus isolate accounts and shops, enforce draw candidates and sur
     assert.equal((await save(user,'不存在',[])).status,400);
     assert.equal((await save(user,'古茗',[shop[0].id,shop[0].id])).status,400);
     assert.equal((await save(user,'古茗',['1'])).status,400);
-    assert.equal((await save(user,'古茗',shop.slice(0,-1).map(d=>d.id))).status,400,'one drink is rejected');
+    assert.equal((await save(user,'古茗',shop.slice(0,-1).map(d=>d.id))).status,200,'one drink is allowed');
     assert.equal((await save(user,'古茗',shop.map(d=>d.id))).status,400,'empty menu is rejected');
     assert.equal((await save(user,'古茗',shop.slice(0,-2).map(d=>d.id))).status,200);
     assert.deepEqual((await request('/api/menu',ping)).data,{brand:null,menus:[]});
@@ -61,7 +61,7 @@ test('personal menus isolate accounts and shops, enforce draw candidates and sur
     const held=draw.data.record.id;
     // Simulate an old saved one-drink menu without changing today's reward.
     const legacy=new DatabaseSync(path.join(temp,'tea.db'));
-    legacy.prepare('UPDATE user_menus SET excluded_ids=? WHERE brand=?').run(JSON.stringify(shop.slice(0,-1).map(d=>d.id)),'古茗');legacy.close();
+    legacy.prepare('UPDATE user_menus SET excluded_ids=? WHERE brand=?').run(JSON.stringify(shop.map(d=>d.id)),'古茗');legacy.close();
     assert.equal((await request('/api/draws',user,{replaceDrawId:held})).status,400);
     assert.equal((await request('/api/quota',user)).data.currentReward.id,held,'empty menu preserves reward');
     await save(user,'茶百道',[]);await save(user,'古茗',[]);

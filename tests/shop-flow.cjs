@@ -53,12 +53,12 @@ let browser;
   await page.keyboard.press('Escape');assert.equal(await page.locator('#personal-menu').isVisible(),false);
   assert.equal(await page.evaluate(()=>document.body.classList.contains('menu-open')),false);
   await page.locator('#shop-select').click();
-  while(await page.locator('.menu-exclude').count()>2)await page.locator('.menu-exclude').first().click();
-  assert.equal(await page.locator('.menu-exclude:disabled').count(),2);
-  assert.match(await page.locator('#menu-message').textContent(),/至少保留 2/);
-  await save();assert.equal(await page.evaluate(()=>drinks.length),2);assert.equal(await page.locator('#wheel-spin').isEnabled(),true);
-  for(const size of [2,3,12]){
-    if(size!==2){await page.locator('#edit-menu').click();if(size===12)await page.locator('#restore-menu').click();else{await page.locator('#show-available').click();await page.locator('.menu-exclude').first().click()}await save()}
+  while(await page.locator('.menu-exclude').count()>1)await page.locator('.menu-exclude').first().click();
+  assert.equal(await page.locator('.menu-exclude:disabled').count(),1);
+  assert.match(await page.locator('#menu-message').textContent(),/至少保留 1/);
+  await save();assert.equal(await page.evaluate(()=>drinks.length),1);assert.equal(await page.locator('#wheel-spin').isEnabled(),true);
+  for(const size of [1,2,3,12]){
+    if(size!==1){await page.locator('#edit-menu').click();if(size===12)await page.locator('#restore-menu').click();else{await page.locator('#show-available').click();await page.locator('.menu-exclude').first().click()}await save()}
     await page.reload();await page.waitForFunction(n=>drinks.length===n&&drawQuota!==null,size);
     for(const mode of ['flip','box','capsule','number','scratch','wheel','slot']){
       await page.locator('#mode-'+mode).click();
@@ -77,7 +77,7 @@ let browser;
         else if(mode==='capsule'){await page.locator('#capsule-knob').click();await page.waitForFunction(()=>capsulePhase==='ready');await page.locator('#capsule-drop').click()}
         else await page.locator('#spin').click();
         await page.locator('#result[open]').waitFor();
-        assert.ok(await page.evaluate(()=>current.kind==='retry'||drinks.some(d=>d.id===current.id)),mode+' result belongs to the selected pool');
+        assert.ok(await page.evaluate(()=>drinks.some(d=>d.id===current.id)),mode+' result belongs to the selected pool');
         const count=await page.evaluate(()=>history.length);assert.ok(count===before||count===before+1,'one draw per interaction');
         await page.locator('#close').click();
       }
@@ -85,5 +85,5 @@ let browser;
   }
   await page.locator('#shop-select').click();await page.locator('#restore-menu').click();await save();
   await page.evaluate(()=>{busy=true;updateSpinButton()});assert.equal(await page.locator('#shop-select').isDisabled(),true);await page.evaluate(()=>{busy=false;updateSpinButton()});
-  assert.deepEqual(errors,[]);console.log('Shop search, quick add/remove, draft cancel, failed save, refresh persistence, minimum two choices and adaptive games, draw locks and 320–1280px dialog layouts passed.');
+  assert.deepEqual(errors,[]);console.log('Shop search, quick add/remove, draft cancel, failed save, refresh persistence, minimum one choice and adaptive games, draw locks and 320–1280px dialog layouts passed.');
 })().catch(err=>{console.error(err);process.exitCode=1}).finally(async()=>{if(browser)await browser.close();server.kill();await new Promise(r=>server.once('exit',r));fs.rmSync(temp,{recursive:true,force:true})});

@@ -7,8 +7,8 @@ const {DatabaseSync}=require('node:sqlite');
 test('unlimited redraws retain one reward per day; confirmed replacement, persistence and exactly-once redemption',async()=>{
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'tea-rewards-'));
   for(const file of ['server.js','catalog.json','index.html','inventory.js','game-rules.js','fortune.js'])fs.copyFileSync(path.join(__dirname,'..',file),path.join(temp,file));
-  const outcomeFile=path.join(temp,'outcome.txt');fs.writeFileSync(outcomeFile,'retry');
-  fs.appendFileSync(path.join(temp,'game-rules.js'),"\nmodule.exports.pick=drinks=>{const value=require('fs').readFileSync(require('path').join(__dirname,'outcome.txt'),'utf8');return value==='retry'?module.exports.RETRY:drinks[Number(value)]};\n");
+  const outcomeFile=path.join(temp,'outcome.txt');fs.writeFileSync(outcomeFile,'0');
+  fs.appendFileSync(path.join(temp,'game-rules.js'),"\nmodule.exports.pick=drinks=>{const value=require('fs').readFileSync(require('path').join(__dirname,'outcome.txt'),'utf8');return drinks[Number(value)]};\n");
   const port=40000+process.pid%10000,base='http://127.0.0.1:'+port;let server;
   const start=async()=>{
     server=spawn(process.execPath,['server.js'],{cwd:temp,env:{...process.env,PORT:String(port)},windowsHide:true,stdio:'pipe'});
@@ -26,9 +26,7 @@ test('unlimited redraws retain one reward per day; confirmed replacement, persis
     await start();assert.equal((await request('/api/draws','',{})).status,401);
     let user=await login('user'),ping=await login('ping');
     let result=await request('/api/draws',user,{});
-    assert.equal(result.data.outcome.kind,'retry');assert.equal(result.data.record,null);
-    assert.deepEqual((await request('/api/rewards',user)).data,[]);
-    fs.writeFileSync(outcomeFile,'0');result=await request('/api/draws',user,{});
+    assert.equal(result.status,201);assert.equal(result.data.outcome.kind,undefined);
     const first=result.data.record.id;assert.equal(result.data.quota.remaining,1);
     assert.equal(result.data.quota.currentReward.id,first);
     assert.equal((await request('/api/draws',user,{})).status,409,'redraw requires explicit current reward ID');
@@ -40,10 +38,9 @@ test('unlimited redraws retain one reward per day; confirmed replacement, persis
     let rewards=(await request('/api/rewards',user)).data;assert.equal(rewards.length,1);
     let held=rewards[0].id;assert.notEqual(held,first);
     assert.equal((await request('/api/rewards/redeem',user,{drawIds:[first]})).status,409,'forfeited reward cannot be redeemed');
-    fs.writeFileSync(outcomeFile,'retry');result=await request('/api/draws',user,{replaceDrawId:held});
-    assert.equal(result.status,201);assert.equal(result.data.quota.currentReward,null);
-    assert.equal((await request('/api/rewards',user)).data.length,0,'retry does not keep the forfeited prize');
-    fs.writeFileSync(outcomeFile,'2');result=await request('/api/draws',user,{});held=result.data.record.id;
+    fs.writeFileSync(outcomeFile,'2');result=await request('/api/draws',user,{replaceDrawId:held});
+    assert.equal(result.status,201);held=result.data.record.id;
+    assert.equal((await request('/api/rewards',user)).data.length,1,'redraw atomically replaces the held reward');
     await stop();await start();user=await login('user');
     assert.equal((await request('/api/quota',user)).data.currentReward.id,held);
     await stop();

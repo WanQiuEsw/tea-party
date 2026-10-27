@@ -48,6 +48,16 @@ CREATE TABLE IF NOT EXISTS user_shops (
   brand TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT);
+CREATE TABLE IF NOT EXISTS custom_lists (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  name TEXT NOT NULL,
+  drink_ids TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS selected_lists (
+  user_id INTEGER PRIMARY KEY,
+  list_id INTEGER NOT NULL
+);
 CREATE TABLE IF NOT EXISTS daily_draws (
   user_id INTEGER NOT NULL,
   day TEXT NOT NULL,
@@ -115,6 +125,15 @@ function menuFor(user) {
     brand: db.prepare('SELECT brand FROM user_shops WHERE user_id = ?').get(user.id)?.brand ?? null,
     menus: db.prepare('SELECT brand, excluded_ids FROM user_menus WHERE user_id = ?').all(user.id)
       .map(row => ({brand: row.brand, excludedIds: JSON.parse(row.excluded_ids)}))
+  };
+}
+
+function listsFor(user) {
+  const available = new Set(db.prepare('SELECT id FROM drinks').all().map(d => d.id));
+  return {
+    selectedId: db.prepare('SELECT list_id FROM selected_lists WHERE user_id = ?').get(user.id)?.list_id ?? null,
+    lists: db.prepare('SELECT id, name, drink_ids FROM custom_lists WHERE user_id = ? ORDER BY id').all(user.id)
+      .map(row => ({id: row.id, name: row.name, drinkIds: JSON.parse(row.drink_ids).filter(id => available.has(id))}))
   };
 }
 
@@ -274,6 +293,42 @@ const server = http.createServer(async (req, res) => {
       } catch (err) { db.exec('ROLLBACK'); throw err; }
     }
 
+    if (pathname === '/api/lists' && req.method === 'GET') return json(res, 200, listsFor(user));
+    const listMatch = pathname.match(/^\/api\/lists\/(\d+)$/);
+    if (pathname === '/api/lists' && req.method === 'POST' || listMatch && ['PUT', 'DELETE'].includes(req.method)) {
+      if (user.role === 'admin') return json(res, 403, {error: '管理员不能设置个人清单'});
+      const id = listMatch ? Number(listMatch[1]) : null;
+      if (id !== null && !db.prepare('SELECT 1 FROM custom_lists WHERE id = ? AND user_id = ?').get(id, user.id))
+        return json(res, 404, {error: '清单不存在'});
+      if (req.method === 'DELETE') {
+        db.exec('BEGIN IMMEDIATE');
+        try {
+          db.prepare('DELETE FROM custom_lists WHERE id = ? AND user_id = ?').run(id, user.id);
+          db.prepare('DELETE FROM selected_lists WHERE user_id = ? AND list_id = ?').run(user.id, id);
+          db.exec('COMMIT');
+        } catch (err) { db.exec('ROLLBACK'); throw err; }
+        return json(res, 200, listsFor(user));
+      }
+      const body = await readJson(req);
+      if (!body || typeof body.name !== 'string' || !body.name.trim() || body.name.trim().length > 30)
+        return json(res, 400, {error: '请填写 1—30 字的清单名称'});
+      if (!Array.isArray(body.drinkIds) || !body.drinkIds.length || body.drinkIds.length > 5000
+          || new Set(body.drinkIds).size !== body.drinkIds.length || !body.drinkIds.every(Number.isSafeInteger))
+        return json(res, 400, {error: '请选择饮品，同一款不能重复添加'});
+      const available = new Set(db.prepare('SELECT id FROM drinks').all().map(d => d.id));
+      if (!body.drinkIds.every(id => available.has(id))) return json(res, 400, {error: '饮品已变化，请刷新后重新选择'});
+      if (id !== null && !db.prepare('SELECT 1 FROM custom_lists WHERE id = ? AND user_id = ?').get(id, user.id))
+        return json(res, 404, {error: '清单已删除，请刷新后重试'});
+      db.exec('BEGIN IMMEDIATE');
+      try {
+        let savedId = id;
+        if (id === null) savedId = Number(db.prepare('INSERT INTO custom_lists (user_id, name, drink_ids) VALUES (?, ?, ?)').run(user.id, body.name.trim(), JSON.stringify(body.drinkIds)).lastInsertRowid);
+        else db.prepare('UPDATE custom_lists SET name = ?, drink_ids = ? WHERE id = ? AND user_id = ?').run(body.name.trim(), JSON.stringify(body.drinkIds), id, user.id);
+        db.prepare('INSERT INTO selected_lists (user_id, list_id) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET list_id = excluded.list_id').run(user.id, savedId);
+        db.exec('COMMIT');
+      } catch (err) { db.exec('ROLLBACK'); throw err; }
+      return json(res, id === null ? 201 : 200, listsFor(user));
+    }
     if (pathname === '/api/menu' && req.method === 'GET') return json(res, 200, menuFor(user));
     if (pathname === '/api/menu' && req.method === 'PUT') {
       const body = await readJson(req);
@@ -285,9 +340,10 @@ const server = http.createServer(async (req, res) => {
       const ids = new Set(items.map(d => d.id));
       if (!items.length || !body.excludedIds.every(id => ids.has(id)))
         return json(res, 400, {error: '店铺或饮品已变化，请刷新后重试'});
-      if (items.length - body.excludedIds.length < 2) return json(res, 400, {error: '至少保留 2 款饮品才能抽奖'});
+      if (items.length - body.excludedIds.length < 1) return json(res, 400, {error: '至少保留 1 款饮品才能抽奖'});
       db.exec('BEGIN IMMEDIATE');
       try {
+        db.prepare('DELETE FROM selected_lists WHERE user_id = ?').run(user.id);
         db.prepare('INSERT INTO user_shops (user_id, brand) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET brand = excluded.brand').run(user.id, body.brand);
         db.prepare('INSERT INTO user_menus (user_id, brand, excluded_ids) VALUES (?, ?, ?) ON CONFLICT(user_id, brand) DO UPDATE SET excluded_ids = excluded.excluded_ids').run(user.id, body.brand, JSON.stringify(body.excludedIds));
         db.exec('COMMIT');
@@ -366,24 +422,22 @@ const server = http.createServer(async (req, res) => {
           db.exec('ROLLBACK');
           return json(res, 409, {error:'当前奖励已变化，请确认是否放弃当前奖励后再抽', quota: allowance});
         }
+        const selected = db.prepare('SELECT c.drink_ids FROM selected_lists s JOIN custom_lists c ON c.id = s.list_id AND c.user_id = s.user_id WHERE s.user_id = ?').get(user.id);
         const brand = db.prepare('SELECT brand FROM user_shops WHERE user_id = ?').get(user.id)?.brand;
-        if (brand === undefined) { db.exec('ROLLBACK'); return json(res, 400, {error:'请先选择店铺'}); }
-        const excluded = new Set(JSON.parse(db.prepare('SELECT excluded_ids FROM user_menus WHERE user_id = ? AND brand = ?').get(user.id, brand)?.excluded_ids ?? '[]'));
-        const drinks = db.prepare('SELECT * FROM drinks WHERE brand = ? ORDER BY brand, name').all(brand).filter(d => !excluded.has(d.id));
-        if (drinks.length < 2) { db.exec('ROLLBACK'); return json(res, 400, {error:'至少保留 2 款饮品才能抽奖，请添加饮品'}); }
+        if (!selected && brand === undefined) { db.exec('ROLLBACK'); return json(res, 400, {error:'请先选择店铺或自定义清单'}); }
+        const excluded = new Set(JSON.parse(db.prepare('SELECT excluded_ids FROM user_menus WHERE user_id = ? AND brand = ?').get(user.id, brand ?? '')?.excluded_ids ?? '[]'));
+        const included = selected ? new Set(JSON.parse(selected.drink_ids)) : null;
+        const drinks = db.prepare('SELECT * FROM drinks ORDER BY brand, name').all().filter(d => included ? included.has(d.id) : d.brand === brand && !excluded.has(d.id));
+        if (!drinks.length) { db.exec('ROLLBACK'); return json(res, 400, {error:'至少保留 1 款饮品才能抽奖，请添加饮品'}); }
         if (drinkIds !== undefined && (!Array.isArray(drinkIds) || JSON.stringify(drinkIds) !== JSON.stringify(drinks.map(d => d.id)))) {
           db.exec('ROLLBACK'); return json(res, 409, {error:'个人清单已在其他页面修改，请刷新后再抽'});
         }
         const outcome = GameRules.pick(drinks, () => crypto.randomInt(0, 2 ** 32) / 2 ** 32);
-        let record = null;
-        if (!outcome.kind) {
-          const tier = GameRules.distribution(drinks).find(entry => entry.drink.id === outcome.id).tier.key;
-          const result = db.prepare('INSERT INTO draws (user_id, drink_id, brand, name, note, price, created_at, tier) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
-            .run(user.id, outcome.id, outcome.brand, outcome.name, outcome.note, outcome.price, new Date().toISOString(), tier);
-          record = db.prepare('SELECT id, brand, name, note, price, created_at FROM draws WHERE id = ?').get(result.lastInsertRowid);
-        }
+        const result = db.prepare('INSERT INTO draws (user_id, drink_id, brand, name, note, price, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
+          .run(user.id, outcome.id, outcome.brand, outcome.name, outcome.note, outcome.price, new Date().toISOString());
+        const record = db.prepare('SELECT id, brand, name, note, price, created_at FROM draws WHERE id = ?').get(result.lastInsertRowid);
         if (user.role !== 'admin' && user.username !== 'demo') db.prepare('INSERT INTO daily_rewards (user_id, day, draw_id) VALUES (?, ?, ?) ON CONFLICT(user_id, day) DO UPDATE SET draw_id = excluded.draw_id')
-          .run(user.id, allowance.day, record?.id ?? null);
+          .run(user.id, allowance.day, record.id);
         const remaining = quota(user);
         db.exec('COMMIT');
         return json(res, 201, {outcome, record, quota: remaining});

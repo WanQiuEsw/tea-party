@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
 const {spawn}=require('node:child_process');
 
-test('gift result modal fits screens and preserves prize, retry, copy and close actions',{skip:!process.env.TEA_RESULT_BROWSER},async()=>{
+test('gift result modal fits screens and preserves prize, copy and close actions',{skip:!process.env.TEA_RESULT_BROWSER},async()=>{
   const {chromium}=require('playwright');
   const root=path.join(__dirname,'..'),temp=fs.mkdtempSync(path.join(os.tmpdir(),'tea-result-'));
   for(const file of ['server.js','catalog.json','index.html','inventory.js','game-rules.js','fortune.js','flip.css','scratch.css','wheel.css','cover.css','result.css'])fs.copyFileSync(path.join(root,file),path.join(temp,file));
@@ -35,12 +35,7 @@ test('gift result modal fits screens and preserves prize, retry, copy and close 
       await page.locator('#confirm').click();assert.equal(await page.locator('#result').isVisible(),false);
     }
     await page.setViewportSize({width:390,height:844});
-    for(const tier of ['king','diamond','gold','bronze']){
-      await page.evaluate(key=>showResult(layout.find(s=>s.tier?.key===key).drink),tier);
-      assert.match(await page.locator('#result').getAttribute('class'),new RegExp(tier));
-      assert.match(await page.locator('#result-tier').textContent(),/王者|钻石|黄金|青铜/);
-      await page.screenshot({path:path.join(out,tier+'.png')});await page.keyboard.press('Escape');
-    }
+    await open();assert.equal(await page.locator('#result-tier').textContent(),'');await page.keyboard.press('Escape');
     await open();await page.locator('#copy').click();
     await page.waitForFunction(()=>$('copy').textContent==='奖品信息已复制！');
     assert.equal(await page.locator('#copy').textContent(),'奖品信息已复制！');
@@ -49,28 +44,17 @@ test('gift result modal fits screens and preserves prize, retry, copy and close 
     await page.evaluate(()=>{mode='number';showResult(drinks[0],[drinks[0],drinks[1]])});
     assert.match(await page.locator('#name').textContent(),/2 份/);
     assert.equal(await page.locator('#result-prizes').isVisible(),true);
-    assert.match(await page.locator('#result-tier').textContent(),/命中 2 个号码/);
+    assert.equal(await page.locator('#result-tier').textContent(),'');
     await page.screenshot({path:path.join(out,'multiple.png')});await page.keyboard.press('Escape');
     await page.evaluate(()=>{mode='wheel';showResult({...drinks[0],name:'超长奖品名称'.repeat(8)})});
     assert.ok(await page.locator('#result').evaluate(el=>el.scrollWidth<=el.clientWidth+1),'long names wrap');
     await page.keyboard.press('Escape');
-    await page.evaluate(()=>showResult(SPECIAL_PRIZES[0]));
-    assert.equal(await page.locator('#copy').isVisible(),false);
-    assert.equal(await page.locator('#result-auto-close').isVisible(),false);
-    assert.equal(await page.locator('#result-price').isVisible(),false);
-    await page.waitForTimeout(5200);assert.equal(await page.locator('#result').isVisible(),true,'retry stays open');
-    await page.screenshot({path:path.join(out,'retry.png')});
-    const drawn=page.waitForResponse(r=>r.url().endsWith('/api/draws')&&r.request().method()==='POST');
-    await page.locator('#confirm').click();await drawn;
-    await page.waitForFunction(()=>!busy&&$('result').open);
-    assert.equal(await page.locator('#copy').isVisible(),true,'retry reveals the next prize');
-    await page.evaluate(()=>$('result').close());
     await open();await page.waitForTimeout(3200);
     assert.equal(await page.locator('#result').isVisible(),true,'ordinary prize stays open after three seconds');
     await page.waitForTimeout(2000);
     assert.equal(await page.locator('#result').isVisible(),false,'ordinary prize auto closes');
     await page.emulateMedia({reducedMotion:'no-preference'});
-    await page.evaluate(()=>showResult(layout.find(s=>s.tier?.key==='king').drink));
+    await page.evaluate(()=>showResult(drinks[0]));
     await page.waitForTimeout(500);
     assert.ok(await page.locator('#result').evaluate(el=>el.scrollWidth<=el.clientWidth+1),'celebration does not cause horizontal scrolling');
     await page.screenshot({path:path.join(out,'celebration.png')});

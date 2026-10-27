@@ -53,15 +53,15 @@ test('winner feed requires login, limits results and masks names; ticker handles
     for(const [price,tier] of [[100,'king'],[80,'diamond'],[50,'gold'],[10,'bronze']]){
       db.prepare('UPDATE drinks SET price=? WHERE id=?').run(price,chosen);
       const result=await request('/api/draws',{});saved.push(result.record.id);
-      assert.equal((await feed())[0].tier,tier,'tier follows the actual draw pool');
+      assert.equal((await feed())[0].tier,null,'new draws have no rarity');
     }
     const excluded=db.prepare('SELECT id FROM drinks WHERE brand=? AND id!=?').all('测试档位',chosen).map(d=>d.id);
     db.prepare('UPDATE drinks SET price=1 WHERE id=?').run(excluded[0]);
     await request('/api/menu',{brand:'测试档位',excludedIds:excluded.slice(1)},'PUT');
     await request('/api/draws',{});
-    assert.equal((await feed())[0].tier,'king','rarity is recalculated for the two-item personal menu');
+    assert.equal((await feed())[0].tier,null,'two-item menus also have no rarity');
     db.prepare('DELETE FROM drinks WHERE brand=?').run('测试档位');
-    assert.deepEqual((await feed()).filter(r=>saved.includes(r.id)).map(r=>r.tier),['bronze','gold','diamond','king'],'saved tiers survive catalog changes');
+    assert.deepEqual((await feed()).filter(r=>saved.includes(r.id)).map(r=>r.tier),[null,null,null,null],'feed preserves draws without tiers');
     if(browser){
       const page=browser.tickerPage;
       await page.evaluate(()=>loadWinnerTicker());
@@ -69,15 +69,7 @@ test('winner feed requires login, limits results and masks names; ticker handles
       assert.equal(await page.locator('.winner-group[aria-hidden=true]').count(),1);
       assert.equal(await page.locator('.winner-track img').count(),0,'prize names are text, not HTML');
       assert.match(await page.locator('.winner-track').textContent(),/<img src=x/);
-      const colors=[];
-      for(const tier of ['king','diamond','gold','bronze']){
-        const message=page.locator('.winner-group').first().locator('.winner-'+tier).first();
-        assert.equal(await message.count(),1);
-        assert.match(await message.locator('.winner-badge').textContent(),new RegExp({king:'王者',diamond:'钻石',gold:'黄金',bronze:'青铜'}[tier]));
-        colors.push(await message.locator('strong').evaluate(el=>getComputedStyle(el).color));
-      }
-      assert.equal(new Set(colors).size,4,'all four tiers have different colors');
-      assert.equal(await page.locator('.winner-group').first().locator('.winner-message:not([class*="winner-king"]):not([class*="winner-diamond"]):not([class*="winner-gold"]):not([class*="winner-bronze"]) .winner-badge').count(),0);
+      assert.equal(await page.locator('.winner-badge').count(),0,'ticker does not display obsolete tiers');
       const transform=()=>page.locator('.winner-track').evaluate(el=>getComputedStyle(el).transform);
       const before=await transform();await page.waitForTimeout(250);assert.notEqual(await transform(),before,'ticker actually moves');
       await page.locator('.winner-ticker').hover();
